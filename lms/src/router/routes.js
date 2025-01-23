@@ -8,6 +8,7 @@ const routes = [
       { path: 'studentInfoInput', component: () => import('pages/studentInfoInput.vue') },
       { path: 'courseInfo', component: () => import('pages/courseInfo.vue') },
       { path: 'reviewInfo', component: () => import('pages/reviewInfo.vue') },
+      { path: 'queuingPage', component: () => import('src/pages/queuingPage.vue') },
     ],
   },
   {

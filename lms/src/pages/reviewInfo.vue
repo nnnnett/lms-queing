@@ -45,12 +45,20 @@
                   </q-table>
                 </div>
               </div>
+              <q-card-section class="flex flex-center">
+                <div
+                  style="
+                    width: 120px;
+                    background-color: #31562d;
+                    color: #ffffff;
+                    height: 50px;
+                    border-radius: 5px;
+                  "
+                >
+                  <q-btn style="width: 100%; height: 100%" @click="submit" flat label="Submit" />
+                </div>
+              </q-card-section>
             </q-form>
-            <q-card-section class="flex flex-center">
-              <div style="width: 120px;background-color: #31562d;color: #ffffff;height: 50px;border-radius: 5px;">
-                <q-btn style="width: 100%;height: 100%;" flat label="Submit" />
-              </div>
-            </q-card-section>
           </q-card-section>
         </q-card-section>
       </div>
@@ -69,6 +77,9 @@ async function backBtn() {
   router.replace(`/courseInfo`)
 }
 
+async function submit() {
+  router.replace(`/queuingPage`)
+}
 const myGradesRow = ref([
   {
     id: 1,
@@ -119,8 +130,6 @@ const myGradesColumn = ref([
     field: 'remarks',
   },
 ])
-
-
 </script>
 
 <style lang="sass" scoped>
