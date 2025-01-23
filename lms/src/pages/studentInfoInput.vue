@@ -149,7 +149,7 @@ async function submitStudentInfo() {
       })
       return
     }
-    console.log("brtbrt");
+    router.replace(`/courseInfo`)
   }catch(err){
     console.error(err)
   }finally{
