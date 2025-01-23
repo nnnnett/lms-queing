@@ -32,6 +32,7 @@
                     style="width: 100%; height: 100%; color: #fcfddd"
                     class="text-h5 text-weight-medium"
                     label="1st Semester "
+                    @click="firstSem"
                   />
                 </div>
                 <div class="semesterBtn">
@@ -73,6 +74,10 @@ import { useRouter } from 'vue-router';
 const router = useRouter()
 async function backBtn() {
   router.replace(`/`)
+}
+
+async function firstSem() {
+  router.replace(`/studentInfoInput`)
 }
 </script>
 
