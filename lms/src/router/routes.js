@@ -15,7 +15,7 @@ const routes = [
   {
     path: '/new',
     component: () => import('src/layouts/newLayout.vue'),
-    children: [],
+    children: [{ path: 'dashboardPage', component: () => import('pages/dashboardPage.vue') }],
   },
 
   // Always leave this as last one,

@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div class="q-pa-lg">
+    <div>
       <div
         class="main-container"
         style="
@@ -8,7 +8,7 @@
             no-repeat center center;
           background-size: cover;
           width: 100%;
-          height: 95vh;
+          height: 100vh;
           border: 3px solid #606060;
         "
       >

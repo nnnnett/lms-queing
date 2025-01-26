@@ -1,13 +1,13 @@
 <template>
   <q-page>
-    <div class="q-pa-lg">
+    <div>
       <div
         style="
           background: url('https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617278/assets/queing/q5xrh22iplhm2bndvvru.jpg')
             no-repeat center center;
           background-size: cover;
           width: 100%;
-          height: 95vh;
+          height: 100vh;
           border: 3px solid #606060;
         "
       >
