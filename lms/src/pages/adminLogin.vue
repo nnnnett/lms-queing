@@ -15,7 +15,7 @@
         <q-card class="login-container q-pb-xl">
           <div class="sub-container">
             <q-card-section
-            class="q-pb-xl"
+              class="q-pb-xl"
               style="
                 padding-top: 70px;
                 width: 100%;
@@ -52,7 +52,7 @@
               </q-card-section>
               <q-card-section class="q-mt-xl">
                 <!-- double check if email or username need pang login sa admin -->
-                <q-form>
+                <q-form @submit.prevent="login">
                   <div>
                     <q-input
                       type="text"
@@ -111,12 +111,26 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-// loading button
+// imports
 const loading = ref(false)
+const router = useRouter()
 // login input
 const username = ref('')
 const password = ref('')
+
+async function login() {
+  loading.value = true
+  try {
+    router.replace(`/new/dashboardPage`)
+  }
+  catch (err) {
+    console.error(err)
+  }finally{
+    loading.value = false
+  }
+}
 </script>
 
 <style lang="sass" scoped>

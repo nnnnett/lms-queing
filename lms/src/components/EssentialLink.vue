@@ -1,44 +1,64 @@
 <template>
-  <q-item
-    clickable
-    tag="a"
-    target="_blank"
-    :href="props.link"
-  >
-    <q-item-section
-      v-if="props.icon"
-      avatar
-    >
-      <q-icon :name="props.icon" />
-    </q-item-section>
-
-    <q-item-section>
-      <q-item-label>{{ props.title }}</q-item-label>
-      <q-item-label caption>{{ props.caption }}</q-item-label>
-    </q-item-section>
-  </q-item>
+  <div class="text-white">
+    <div class="q-py-sm">
+      <q-item clickable @click="router.replace(`/main`)">
+        <q-item-section avatar>
+          <q-icon name="home" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Homepage</q-item-label>
+        </q-item-section>
+      </q-item>
+    </div>
+    <div class="q-py-sm">
+      <q-item clickable @click="router.replace(`/main`)">
+        <q-item-section avatar>
+          <q-icon name="person" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Student</q-item-label>
+        </q-item-section>
+      </q-item>
+    </div>
+    <div class="q-py-sm">
+      <q-item clickable @click="router.replace(`/main`)">
+        <q-item-section avatar>
+          <q-icon name="library_books" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Course</q-item-label>
+        </q-item-section>
+      </q-item>
+    </div>
+    <div class="q-py-sm">
+      <q-item >
+        <q-item-section avatar>
+          <q-icon name="menu" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Queue</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+        <q-item-section> All </q-item-section>
+      </q-item>
+    </div>
+    <div>
+      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+        <q-item-section> Registrar </q-item-section>
+      </q-item>
+    </div>
+    <div>
+      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+        <q-item-section> Cashier </q-item-section>
+      </q-item>
+    </div>
+    <div>
+      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+        <q-item-section> OSAS </q-item-section>
+      </q-item>
+    </div>
+  </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-
-  caption: {
-    type: String,
-    default: ''
-  },
-
-  link: {
-    type: String,
-    default: '#'
-  },
-
-  icon: {
-    type: String,
-    default: ''
-  }
-})
-</script>
+<script setup></script>
