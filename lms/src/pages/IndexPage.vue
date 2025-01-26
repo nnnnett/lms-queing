@@ -49,6 +49,7 @@
                 </div>
               </div>
             </q-card-section>
+            <q-btn label="admin" @click="adminLogin" />
           </div>
         </q-card-section>
       </div>
@@ -69,6 +70,10 @@ async function regularStudent() {
 
 async function irregularStudent() {
   console.log('irregular Student')
+}
+
+async function adminLogin() {
+  router.replace(`/adminLogin`)
 }
 </script>
 

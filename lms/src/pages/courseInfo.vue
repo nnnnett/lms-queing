@@ -15,7 +15,7 @@
 
         <q-card-section class="flex flex-center">
           <div style="width: 80%">
-            <q-card-section class="text-center" style="margin-top: 90px">
+            <q-card-section class="text-center" style="margin-top: 40px">
               <div class="text-h4 text-weight-bold text-uppercase">Course Information</div>
             </q-card-section>
             <q-card-section class="container-courseInfo">
@@ -46,7 +46,8 @@
                     </div>
                   </div>
                 </q-card-section>
-                <div>
+                <!-- table -->
+                <div v-if="isRegular">
                   <q-table
                     class="courseTable"
                     :rows="myGradesRow"
@@ -54,7 +55,6 @@
                     separator="cell"
                     row-key="id"
                   >
-
                     <template #body="props">
                       <q-tr :props="props">
                         <q-td>{{ props.row.courseCode }}</q-td>
@@ -66,6 +66,42 @@
                       </q-tr>
                     </template>
                   </q-table>
+                </div>
+                <div v-if="isIrregular">
+                  <q-table
+                    class="courseTable"
+                    :rows="myGradesRow"
+                    :columns="myGradesColumn"
+                    separator="cell"
+                    row-key="id"
+                    selection="multiple"
+                    v-model:selected="selected"
+                  >
+                    <template #header="props">
+                      <q-tr :props="props">
+                        <q-th auto-width>
+                          <q-checkbox v-model="selectAll" @update:model-value="onSelectAllClick" />
+                        </q-th>
+                        <q-th v-for="col in props.cols" :key="col.name">
+                          {{ col.label }}
+                        </q-th>
+                      </q-tr>
+                    </template>
+                    <template #body="props">
+                      <q-tr :props="props">
+                        <q-td auto-width>
+                          <q-checkbox v-model="props.selected" />
+                        </q-td>
+                        <q-td>{{ props.row.courseCode }}</q-td>
+                        <q-td>{{ props.row.courseTitle }}</q-td>
+                        <q-td>{{ props.row.units }}</q-td>
+                        <q-td>{{ props.row.time }}</q-td>
+                        <q-td>{{ props.row.day }}</q-td>
+                        <q-td>{{ props.row.remarks }}</q-td>
+                      </q-tr>
+                    </template>
+                  </q-table>
+                  add popup notification for irregstudent before clicking the right button
                 </div>
                 <div style="display: flex; width: 100%" class="q-mt-md">
                   <div style="display: flex; justify-content: center" class="q-ml-md">
@@ -88,7 +124,7 @@
                     <!-- change @click to submit later -->
                     <q-btn
                       :loading="loading"
-                       @click="confirmBtn"
+                      @click="confirmBtn"
                       icon="arrow_forward"
                       size="24px"
                       style="
@@ -111,7 +147,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 // router
 const router = useRouter()
@@ -120,10 +156,61 @@ const program = ref('')
 const year = ref('')
 const section = ref('')
 const status = ref('')
+const role = ref('irregular')
+const isRegular = ref('')
+const isIrregular = ref('')
+
+async function roleValidation() {
+  if (role.value === 'regular') {
+    return (isRegular.value = true)
+  } else if (role.value === 'irregular') {
+    return (isIrregular.value = true)
+  }
+}
+
+const selected = ref([])
+const selectAll = ref(false)
 
 const myGradesRow = ref([
   {
     id: 1,
+    courseCode: 'itec101',
+    courseTitle: 'brtbrt',
+    units: 5,
+    time: '500hrs',
+    day: 5,
+    remarks: 'Check',
+  },
+  {
+    id: 2,
+    courseCode: 'itec101',
+    courseTitle: 'brtbrt',
+    units: 5,
+    time: '500hrs',
+    day: 5,
+    remarks: 'Check',
+  },
+  {
+    id: 3,
+    courseCode: 'itec101',
+    courseTitle: 'brtbrt',
+    units: 5,
+    time: '500hrs',
+    day: 5,
+    remarks: 'Check',
+  },
+  {
+    id: 4,
+    courseCode: 'itec101',
+    courseTitle: 'brtbrt',
+    units: 5,
+    time: '500hrs',
+    day: 5,
+    remarks: 'Check',
+  },
+
+  {
+    id: 5,
     courseCode: 'itec101',
     courseTitle: 'brtbrt',
     units: 5,
@@ -172,14 +259,28 @@ const myGradesColumn = ref([
   },
 ])
 
-async function backBtn( ) {
+async function backBtn() {
   router.replace(`/studentInfoInput`)
 }
 
-async function confirmBtn( ) {
+async function confirmBtn() {
   router.replace(`/reviewInfo`)
 }
 
+const onSelectAllClick = (val) => {
+  selected.value = val ? [...myGradesRow.value] : []
+}
+
+// Update the watch to also handle selectAll state
+watch(selected, (newVal) => {
+  console.log('Selected rows:', newVal)
+  // Update selectAll checkbox state based on selection
+  selectAll.value = newVal.length === myGradesRow.value.length
+})
+
+onMounted(() => {
+  roleValidation()
+})
 </script>
 
 <style lang="sass" scoped>

@@ -9,6 +9,7 @@ const routes = [
       { path: 'courseInfo', component: () => import('pages/courseInfo.vue') },
       { path: 'reviewInfo', component: () => import('pages/reviewInfo.vue') },
       { path: 'queuingPage', component: () => import('src/pages/queuingPage.vue') },
+      { path: 'adminLogin', component: () => import('src/pages/adminLogin.vue') },
     ],
   },
   {
