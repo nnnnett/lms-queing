@@ -20,6 +20,7 @@ const routes = [
       { path: 'addStudent', component: () => import('src/pages/addStudent.vue') },
       { path: 'addProgram', component: () => import('src/pages/addProgram.vue') },
       { path: 'queueAll', component: () => import('src/pages/queueAll.vue') },
+      { path: 'adminSettings', component: () => import('src/pages/adminSettings.vue') },
     ],
   },
 

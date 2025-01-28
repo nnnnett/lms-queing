@@ -68,6 +68,22 @@
         <q-item-section> OSAS </q-item-section>
       </q-item>
     </div>
+    <div class="q-py-sm">
+      <q-item >
+        <q-item-section avatar>
+          <q-icon name="settings" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Settings</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item clickable @click="router.replace(`/new/adminSettings`)" style="padding-left: 70px;width: 100%;">
+        <q-item-section> Admin Settings </q-item-section>
+      </q-item>
+      <q-item clickable @click="router.replace(`#`)" style="padding-left: 70px;width: 100%;">
+        <q-item-section> Create New Account </q-item-section>
+      </q-item>
+    </div>
   </div>
 </template>
 
