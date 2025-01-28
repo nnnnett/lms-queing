@@ -38,7 +38,7 @@
             title="Recent Students"
             :rows="rows"
             :columns="columns"
-            row-key="id"
+            row-key="studentId"
             separator="cell"
             :rows-per-page-options="[0, 15, 20, 25, 30]"
             class="responsive-table"
@@ -46,7 +46,7 @@
             <template #body="props">
               <q-tr :props="props">
                 <q-td v-for="col in columns" :key="col.name" :props="props">
-                  {{ props.row[col.name] }}
+                  {{ col.name === '#' ? props.rowIndex + 1 : props.row[col.name] }}
                 </q-td>
               </q-tr>
             </template>
@@ -61,6 +61,14 @@
 import { ref } from 'vue'
 
 const columns = ref([
+  {
+    name: '#',
+    required: true,
+    label: '#',
+    align: 'center',
+    field: (row, index) => index + 1,
+    sortable: true,
+  },
   {
     name: 'studentId',
     required: true,

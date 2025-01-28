@@ -1,7 +1,7 @@
 <template>
   <div class="text-white">
     <div class="q-py-sm">
-      <q-item clickable @click="router.replace(`/main`)">
+      <q-item clickable @click="router.replace(`/new/dashboardPage`)">
         <q-item-section avatar>
           <q-icon name="home" />
         </q-item-section>
@@ -11,7 +11,7 @@
       </q-item>
     </div>
     <div class="q-py-sm">
-      <q-item clickable @click="router.replace(`/main`)">
+      <q-item clickable @click="router.replace(`/new/addStudent`)">
         <q-item-section avatar>
           <q-icon name="person" />
         </q-item-section>
@@ -21,7 +21,7 @@
       </q-item>
     </div>
     <div class="q-py-sm">
-      <q-item clickable @click="router.replace(`/main`)">
+      <q-item   @click="router.replace(`/main`)">
         <q-item-section avatar>
           <q-icon name="library_books" />
         </q-item-section>
@@ -39,26 +39,30 @@
           <q-item-label>Queue</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> All </q-item-section>
       </q-item>
     </div>
     <div>
-      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> Registrar </q-item-section>
       </q-item>
     </div>
     <div>
-      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> Cashier </q-item-section>
       </q-item>
     </div>
     <div>
-      <q-item clickable @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> OSAS </q-item-section>
       </q-item>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+</script>
