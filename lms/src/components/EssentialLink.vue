@@ -49,7 +49,7 @@
           <q-item-label>Queue</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item clickable @click="router.replace(`/new/queueAll`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> All </q-item-section>
       </q-item>
     </div>

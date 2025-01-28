@@ -83,7 +83,7 @@
             row-key="id"
             separator="cell"
             :filter="filter"
-            :rows-per-page-options="[0, 15, 20, 25, 30]"
+            :rows-per-page-options="[0, 5, 10, 15, 20]"
             class="responsive-table"
           >
             <template #body="props">
@@ -199,6 +199,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { Notify } from 'quasar'
 
 // loading
 const loading = ref(false)
@@ -227,36 +228,40 @@ const columns = ref([
     required: true,
     label: 'Program Code',
     align: 'left',
-    field: (row) => row.programId,
+    field: 'program',
     sortable: true,
   },
   {
     name: 'programTitle',
     align: 'left',
-    label: 'program Title',
+    label: 'Program Title',
     field: 'programTitle',
+    sortable: true,
   },
   {
     name: 'numCourse',
     align: 'left',
     label: 'Total Number of Course',
     field: 'numCourse',
+    sortable: true,
   },
   {
     name: 'numUnits',
     align: 'left',
     label: 'Total Number of Units',
     field: 'numUnits',
+    sortable: true,
   },
   {
     name: 'numEnrolled',
     align: 'left',
     label: 'Total Number of Enrolled',
     field: 'numEnrolled',
+    sortable: true,
   },
   {
     name: 'action',
-    align: 'left',
+    align: 'center',
     label: 'Action',
     field: 'action',
   },
@@ -330,7 +335,18 @@ const editForm = ref({
 })
 
 async function addProgram() {
-  console.log('program added')
+  loading.value = true
+  try {
+    Notify.create({
+      type: 'positive',
+      message: 'program added',
+    })
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+    addProgramPopUp.value = false
+  }
 }
 
 // Function to open edit dialog
@@ -348,6 +364,10 @@ async function editProgram() {
   loading.value = true
   try {
     console.log('Editing program:', editForm.value)
+    Notify.create({
+      type: 'positive',
+      message: 'program edited',
+    })
     editProgramPopUp.value = false
   } catch (err) {
     console.error(err)
@@ -359,6 +379,10 @@ async function editProgram() {
 // Function to handle program deletion
 function deleteProgram(programCode) {
   console.log('Deleting program:', programCode)
+  Notify.create({
+    type: 'positive',
+    message: 'program deleted',
+  })
   // TODO: Implement delete functionality
 }
 

@@ -119,7 +119,7 @@
             row-key="id"
             separator="cell"
             :filter="filter"
-            :rows-per-page-options="[0, 15, 20, 25, 30]"
+            :rows-per-page-options="[0, 5, 10, 15, 20]"
             class="responsive-table"
           >
             <template #body="props">
@@ -315,6 +315,12 @@ async function cancelAdd() {
 async function addStudent() {
   loading.value = true
   try {
+    Notify.create({
+      type: 'positive',
+      message:'student added'
+
+    })
+    addStudentPopUp.value = false
     console.log('dsds')
   } catch (err) {
     console.error(err)
@@ -499,17 +505,26 @@ async function editStudent() {
   try {
     // TODO: Implement your edit logic here
     console.log('Editing student:',)
+    Notify.create({
+      type: 'positive',
+      message: 'edited succesfully'
+    })
 
   } catch (err) {
     console.error(err)
   } finally {
     loading.value = false
+    editStudentInfo.value = false
   }
 }
 
 function deleteStudent(row) {
   // TODO: Implement delete functionality
   console.log('Delete student:', row)
+  Notify.create({
+      type: 'positive',
+      message: 'deleted succesfully'
+    })
 }
 </script>
 
