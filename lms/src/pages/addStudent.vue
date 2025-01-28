@@ -128,6 +128,30 @@
                   <template v-if="col.name === '#'">
                     {{ props.rowIndex + 1 }}
                   </template>
+                  <template v-else-if="col.name === 'action'">
+                    <div class="row q-gutter-x-sm">
+                      <q-btn
+                        flat
+                        dense
+                        size="sm"
+                        icon="edit"
+                        color="primary"
+                        @click="openEditDialog(props.row)"
+                      >
+                        <q-tooltip>Edit</q-tooltip>
+                      </q-btn>
+                      <q-btn
+                        flat
+                        dense
+                        size="sm"
+                        icon="delete"
+                        color="negative"
+                        @click="deleteStudent(props.row.studentId)"
+                      >
+                        <q-tooltip>Delete</q-tooltip>
+                      </q-btn>
+                    </div>
+                  </template>
                   <template v-else>
                     {{ props.row[col.name] }}
                   </template>
@@ -145,6 +169,97 @@
         </div>
       </div>
     </div>
+    <!-- Edit dialog -->
+    <q-dialog v-model="editStudentInfo" persistent>
+      <q-card style="width: 800px; max-width: 95vw">
+        <q-form @submit.prevent="editStudent">
+          <div class="q-pa-md">
+            <q-card-section class="text-h6 text-weight-medium" style="color: #282726">
+              Edit Student Info
+            </q-card-section>
+            <q-card-section>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">First Name</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.firstName" type="text" borderless />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Middle Name</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.middleName" type="text" borderless />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Last Name</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.lastName" type="text" borderless />
+                  </div>
+                </div>
+              </div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Student ID</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.studentId" type="number" borderless />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Email</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.email" type="email" borderless />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Program</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.program" type="text" borderless />
+                  </div>
+                </div>
+              </div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Year</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.year" type="number" borderless />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Section</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.section" type="text" borderless />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Status</div>
+                  <div class="input-field">
+                    <q-input v-model="editForm.status" type="text" borderless />
+                  </div>
+                </div>
+              </div>
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn
+                flat
+                label="Cancel"
+                @click="editStudentInfo = false"
+                color="red-8"
+                class="q-px-md"
+              />
+              <q-btn
+                :loading="loading"
+                type="submit"
+                flat
+                label="Save"
+                class="q-px-md"
+                style="background-color: #306b30; color: #ffffff; width: 100px"
+              />
+            </q-card-actions>
+          </div>
+        </q-form>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -155,8 +270,10 @@ import { Notify, exportFile } from 'quasar'
 // loading
 const loading = ref(false)
 
-// add student
+// popup
 const addStudentPopUp = ref(false)
+const editStudentInfo = ref(false)
+
 // Form fields
 const firstName = ref('')
 const middleName = ref('')
@@ -167,6 +284,19 @@ const program = ref('')
 const year = ref('')
 const section = ref('')
 const status = ref('')
+
+// Edit form
+const editForm = ref({
+  firstName: '',
+  middleName: '',
+  lastName: '',
+  studentId: '',
+  email: '',
+  program: '',
+  year: '',
+  section: '',
+  status: '',
+})
 
 // cancel add
 async function cancelAdd() {
@@ -184,14 +314,13 @@ async function cancelAdd() {
 // add student btn
 async function addStudent() {
   loading.value = true
-  try{
-    console.log("dsds")
-  }catch(err){
+  try {
+    console.log('dsds')
+  } catch (err) {
     console.error(err)
-  }finally{
+  } finally {
     loading.value = false
   }
-
 }
 
 // table
@@ -252,6 +381,12 @@ const columns = ref([
     label: 'Status',
     field: 'status',
     sortable: true,
+  },
+  {
+    name: 'action',
+    align: 'left',
+    label: 'Action',
+    field: 'action',
   },
 ])
 
@@ -355,6 +490,44 @@ function exportTable() {
       icon: 'warning',
     })
   }
+}
+
+// Function to open edit dialog with student data
+function openEditDialog(student) {
+  // Parse the full name into components
+  const [firstName, middleName, lastName] = student.name.split(' ')
+
+  editForm.value = {
+    firstName: firstName || '',
+    middleName: middleName || '',
+    lastName: lastName || '',
+    studentId: student.studentId,
+    email: student.email,
+    program: student.program,
+    year: student.year,
+    section: student.section,
+    status: student.status,
+  }
+  editStudentInfo.value = true
+}
+
+// Function to handle edit submission
+async function editStudent() {
+  loading.value = true
+  try {
+    // TODO: Implement your edit logic here
+    console.log('Editing student:', editForm.value)
+    editStudentInfo.value = false
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+
+function deleteStudent(row) {
+  // TODO: Implement delete functionality
+  console.log('Delete student:', row)
 }
 </script>
 
