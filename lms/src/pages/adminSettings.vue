@@ -8,7 +8,16 @@
           </div>
         </q-card-section>
         <q-card-section style="width: 100%" class="flex flex-center">
-          <div style="display: flex; flex-direction: column; width: 80%">
+          <div
+          class="q-pa-xl"
+            style="
+              display: flex;
+              flex-direction: column;
+              width: 80%;
+              background-color: #fbfedf;
+              border-radius: 14px;
+            "
+          >
             <div>
               <div
                 style="
@@ -80,7 +89,13 @@
                   />
                 </q-card-section>
                 <q-card-section>
-                  <q-btn label="Sign Out" :loading="loading" @click="signOut" style="color: red" flat />
+                  <q-btn
+                    label="Sign Out"
+                    :loading="loading"
+                    @click="signOut"
+                    style="color: red"
+                    flat
+                  />
                 </q-card-section>
               </div>
             </div>
@@ -92,8 +107,8 @@
 </template>
 
 <script setup>
-import { Notify,  } from 'quasar'
- import { ref } from 'vue'
+import { Notify } from 'quasar'
+import { ref } from 'vue'
 
 const loading = ref(false)
 

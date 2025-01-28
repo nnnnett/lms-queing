@@ -21,6 +21,7 @@ const routes = [
       { path: 'addProgram', component: () => import('src/pages/addProgram.vue') },
       { path: 'queueAll', component: () => import('src/pages/queueAll.vue') },
       { path: 'adminSettings', component: () => import('src/pages/adminSettings.vue') },
+      { path: 'adminCreateAccount', component: () => import('src/pages/adminCreateAccount.vue') },
     ],
   },
 

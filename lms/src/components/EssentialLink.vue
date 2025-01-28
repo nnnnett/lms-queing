@@ -80,7 +80,7 @@
       <q-item clickable @click="router.replace(`/new/adminSettings`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> Admin Settings </q-item-section>
       </q-item>
-      <q-item clickable @click="router.replace(`#`)" style="padding-left: 70px;width: 100%;">
+      <q-item clickable @click="router.replace(`/new/adminCreateAccount`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> Create New Account </q-item-section>
       </q-item>
     </div>
