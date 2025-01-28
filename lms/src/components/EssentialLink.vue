@@ -21,7 +21,17 @@
       </q-item>
     </div>
     <div class="q-py-sm">
-      <q-item   @click="router.replace(`/main`)">
+      <q-item clickable  @click="router.replace(`/new/addProgram`)">
+        <q-item-section avatar>
+          <q-icon name="folder" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Program</q-item-label>
+        </q-item-section>
+      </q-item>
+    </div>
+    <div class="q-py-sm">
+      <q-item   @click="router.replace(`/new/`)">
         <q-item-section avatar>
           <q-icon name="library_books" />
         </q-item-section>

@@ -94,24 +94,28 @@ const columns = ref([
     align: 'left',
     label: 'Program',
     field: 'program',
+    sortable: true,
   },
   {
     name: 'year',
     align: 'left',
     label: 'Year',
     field: 'year',
+    sortable: true,
   },
   {
     name: 'section',
     align: 'left',
     label: 'Section',
     field: 'section',
+    sortable: true,
   },
   {
     name: 'status',
     align: 'left',
     label: 'Status',
     field: 'status',
+    sortable: true,
   },
 ])
 

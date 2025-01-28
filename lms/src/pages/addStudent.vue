@@ -136,7 +136,7 @@
                         size="sm"
                         icon="edit"
                         color="primary"
-                        @click="openEditDialog(props.row)"
+                        @click="editStudentInfo = true"
                       >
                         <q-tooltip>Edit</q-tooltip>
                       </q-btn>
@@ -243,7 +243,7 @@
               <q-btn
                 flat
                 label="Cancel"
-                @click="editStudentInfo = false"
+                v-close-popup
                 color="red-8"
                 class="q-px-md"
               />
@@ -300,7 +300,7 @@ const editForm = ref({
 
 // cancel add
 async function cancelAdd() {
-  ;(firstName.value = ''),
+  (firstName.value = ''),
     (middleName.value = ''),
     (lastName.value = ''),
     (studentId.value = ''),
@@ -493,31 +493,13 @@ function exportTable() {
 }
 
 // Function to open edit dialog with student data
-function openEditDialog(student) {
-  // Parse the full name into components
-  const [firstName, middleName, lastName] = student.name.split(' ')
-
-  editForm.value = {
-    firstName: firstName || '',
-    middleName: middleName || '',
-    lastName: lastName || '',
-    studentId: student.studentId,
-    email: student.email,
-    program: student.program,
-    year: student.year,
-    section: student.section,
-    status: student.status,
-  }
-  editStudentInfo.value = true
-}
-
 // Function to handle edit submission
 async function editStudent() {
   loading.value = true
   try {
     // TODO: Implement your edit logic here
-    console.log('Editing student:', editForm.value)
-    editStudentInfo.value = false
+    console.log('Editing student:',)
+
   } catch (err) {
     console.error(err)
   } finally {
