@@ -109,7 +109,9 @@
 <script setup>
 import { Notify } from 'quasar'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const loading = ref(false)
 
 async function changePass() {
@@ -120,10 +122,19 @@ async function changePass() {
 }
 
 async function signOut() {
-  Notify.create({
+  loading.value = false
+  try{
+    Notify.create({
     type: 'positive',
     message: 'Sign out Succesfully',
   })
+  router.replace(`/`)
+  }
+  catch(err){
+    console.error(err)
+  }finally{
+    loading.value = false
+  }
 }
 </script>
 

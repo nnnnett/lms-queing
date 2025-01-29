@@ -1,0 +1,284 @@
+<template>
+  <q-page class="monitor-page">
+    <div>
+      <div class="main-container">
+        <!-- box 1 -->
+        <q-card-section class="left-section">
+          <div class="header-container">
+            <div clickable style="cursor: pointer;" @click="backBtn">
+              <q-img
+                src="https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617283/assets/queing/ja3s742lgdzsca55fu1w.png"
+                class="logo-img"
+
+              />
+            </div>
+            <div class="title-container">
+              <div class="university-title">CAVITE STATE UNIVERSITY</div>
+              <div class="campus-title-wrapper">
+                <div class="campus-title">TANZA CAMPUS</div>
+              </div>
+            </div>
+          </div>
+          <div class="banner-container">
+            <q-img
+              class="banner-img"
+              src="https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617288/assets/queing/rdv7tsdjfeavayc4ca5p.jpg"
+            />
+          </div>
+        </q-card-section>
+
+        <!-- box 2 -->
+        <q-card-section class="right-section">
+          <div class="datetime-container">
+            <div class="datetime-wrapper">
+              <div class="time-display">08:00 AM | THURS</div>
+              <div>
+                <div class="date-display">06 June 2024</div>
+              </div>
+            </div>
+          </div>
+          <q-card-section class="queue-section">
+            <div class="queue-item">
+              <div class="queue-number">R0001</div>
+              <div class="counter-container">
+                <div class="counter-label">COUNTER</div>
+                <div class="counter-number">01</div>
+              </div>
+            </div>
+            <div class="queue-item">
+              <div class="queue-number">C0001</div>
+              <div class="counter-container">
+                <div class="counter-label">COUNTER</div>
+                <div class="counter-number">02</div>
+              </div>
+            </div>
+            <div class="queue-item">
+              <div class="queue-number">S0001</div>
+              <div class="counter-container">
+                <div class="counter-label">COUNTER</div>
+                <div class="counter-number">03</div>
+              </div>
+            </div>
+          </q-card-section>
+        </q-card-section>
+      </div>
+    </div>
+  </q-page>
+</template>
+
+<script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+async function backBtn() {
+  router.replace(`/`)
+}
+</script>
+
+<style lang="sass" scoped>
+.monitor-page
+  height: 90vh
+
+
+.main-container
+  width: 100%
+  height: 100vh
+  border: 3px solid #606060
+  display: flex
+
+
+.left-section
+  width: 60%
+  height: 100%
+  padding-left: 3rem !important
+
+
+.header-container
+  margin-left: 3rem
+  display: flex
+  align-items: center
+
+
+.logo-img
+  width: 150px
+
+
+.title-container
+  width: 100%
+
+
+.university-title
+  color: #30532f
+  font-size: 4em
+  font-weight: 500
+  margin-left: 3rem
+
+
+.campus-title-wrapper
+  display: flex
+  justify-content: flex-end
+
+
+.campus-title
+  color: #6a268d
+  font-size: 2rem
+  font-weight: 500
+  margin-right: 3rem
+
+
+.banner-container
+  border: 10px solid #31582c
+  width: 57.3vw
+  height: auto
+  margin-top: 1rem
+
+
+.banner-img
+  height: 700px
+
+
+.right-section
+  width: 30%
+  height: 93%
+  background-color: #f2f7d5
+  padding-left: 0 !important
+
+
+.datetime-container
+  display: flex
+  justify-content: center
+  text-align: center
+
+
+.datetime-wrapper
+  width: 100%
+
+.time-display
+  color: red
+  font-size: 4em
+  font-weight: 500
+
+
+.date-display
+  color: #272923
+  font-size: 2rem
+  font-weight: 500
+
+
+.queue-section
+  padding-left: 0 !important
+  margin-top: 0.5rem
+
+.queue-item
+  display: flex
+  height: 240px
+  border: 5px solid #d9dad9
+
+
+.queue-number
+  background-color: #31582c
+  width: 60%
+  color: #f30601
+  font-size: 6em
+  font-weight: 500
+  display: flex
+  justify-content: center
+  align-items: center
+
+.counter-container
+  width: 40%
+
+
+.counter-label
+  font-size: 2em
+  justify-self: flex-end
+  color: #481a6b
+  font-weight: 500
+
+
+.counter-number
+  font-size: 6em
+  justify-self: flex-end
+  color: #31582c
+
+/* Responsive Styles */
+@media (max-width: 1440px)
+  .university-title
+    font-size: 3em
+  .campus-title
+    font-size: 1.5rem
+  .time-display
+    font-size: 3em
+
+  .queue-number, .counter-number
+    font-size: 4em
+
+  .counter-label
+    font-size: 1.5em
+
+  .queue-item
+    height: 180px
+
+  .banner-img
+    height: 500px
+
+
+
+@media (max-width: 1024px)
+  .main-container
+    flex-direction: column
+
+  .left-section, .right-section
+    width: 100%
+
+  .banner-container
+    width: 90vw
+
+  .queue-item
+    height: 120px
+
+  .queue-number, .counter-number
+    font-size: 3em
+
+  .counter-label
+    font-size: 1.2em
+
+
+@media (max-width: 768px)
+  .university-title
+    font-size: 2em
+    margin-left: 1rem
+
+  .logo-img
+    width: 100px
+
+  .header-container
+    margin-left: 1rem
+
+  .time-display
+    font-size: 2em
+
+  .date-display
+    font-size: 1.5rem
+
+  .banner-img
+    height: 400px
+
+@media (max-width: 480px)
+  .university-title
+    font-size: 1.5em
+
+  .campus-title
+    font-size: 1rem
+
+  .banner-img
+    height: 300px
+
+  .queue-item
+    height: 100px
+
+  .queue-number, .counter-number
+    font-size: 2em
+  .counter-label
+    font-size: 1em
+</style>

@@ -10,6 +10,7 @@ const routes = [
       { path: 'reviewInfo', component: () => import('pages/reviewInfo.vue') },
       { path: 'queuingPage', component: () => import('src/pages/queuingPage.vue') },
       { path: 'adminLogin', component: () => import('src/pages/adminLogin.vue') },
+      { path: 'publicMonitor', component: () => import('src/pages/publicMonitor.vue') },
     ],
   },
   {
