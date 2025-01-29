@@ -54,17 +54,17 @@
       </q-item>
     </div>
     <div>
-      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item clickable @click="router.replace(`/new/queueRegistrar`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> Registrar </q-item-section>
       </q-item>
     </div>
     <div>
-      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item clickable @click="router.replace(`/new/queueCashier`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> Cashier </q-item-section>
       </q-item>
     </div>
     <div>
-      <q-item   @click="router.replace(`/main`)" style="padding-left: 70px;width: 100%;">
+      <q-item clickable @click="router.replace(`/new/queueOsas`)" style="padding-left: 70px;width: 100%;">
         <q-item-section> OSAS </q-item-section>
       </q-item>
     </div>

@@ -22,6 +22,9 @@ const routes = [
       { path: 'queueAll', component: () => import('src/pages/queueAll.vue') },
       { path: 'adminSettings', component: () => import('src/pages/adminSettings.vue') },
       { path: 'adminCreateAccount', component: () => import('src/pages/adminCreateAccount.vue') },
+      { path: 'queueRegistrar', component: () => import('src/pages/queueRegistrar.vue') },
+      { path: 'queueCashier', component: () => import('src/pages/queueCashier.vue') },
+      { path: 'queueOsas', component: () => import('src/pages/queueOsas.vue') },
     ],
   },
 
