@@ -16,15 +16,15 @@
           <q-btn icon="arrow_back_ios" size="20px" flat @click="backBtn" />
         </div>
         <q-card-section class="flex flex-center">
-          <div style="width: 80%">
-            <q-card-section class="text-center" style="margin-top: 90px">
+          <div class="form-container">
+            <q-card-section class="text-center q-pt-xl">
               <div class="text-h4 text-weight-bold text-uppercase">Student Information</div>
             </q-card-section>
             <q-card-section class="container-courseInfo">
-              <q-card-section style="height: 520px">
+              <q-card-section class="form-section">
                 <q-form @submit.prevent="submitStudentInfo">
-                  <div style="display: flex; width: 100%">
-                    <div style="width: 100%">
+                  <div class="row q-col-gutter-md">
+                    <div class="col-12 col-md-6">
                       <q-card-section style="width: 100%">
                         Surname:
                         <div>
@@ -51,7 +51,7 @@
                         </div>
                       </q-card-section>
                     </div>
-                    <div style="width: 100%">
+                    <div class="col-12 col-md-6">
                       <q-card-section style="width: 100%">
                         First Name:
                         <div>
@@ -70,38 +70,20 @@
                           <q-input v-model="year" type="number" outlined />
                         </div>
                       </q-card-section>
-                      <q-card-section style="width: 100%; display: flex">
-                        <div
-                          class="q-pa-md"
-                          style="
-                            background-color: #ffffff;
-                            border: 1px solid black;
-                            width: 100%;
-                            display: flex;
-                            text-align: justify;
-                          "
-                        >
+                      <q-card-section class="notification-section">
+                        <div class="notification-box q-pa-md">
                           <q-icon name="notifications" color="red" size="30px" />
                           KINDLY REVIEW IF THE FILLED INFORMATION IS CORRECT BEFORE PROCEEDING. IF
                           YOU NOTICE ANY ERROR OR MISSPELLED INFORMATION, JUST VISIT REGISTRAR TO
                           ADDRESS YOUR CONCERN.
                         </div>
-                        <div
-                          style="width: 25%; display: flex; justify-content: center"
-                          class="q-ml-md"
-                        >
+                        <div class="submit-button-container q-ml-md">
                           <q-btn
-                          :loading="loading"
+                            :loading="loading"
                             type="submit"
                             icon="arrow_forward"
                             size="24px"
-                            style="
-                              width: 100px;
-                              height: 100px;
-                              color: #ffffff;
-                              background-color: #31562d;
-                              border-radius: 50%;
-                            "
+                            class="submit-button"
                           ></q-btn>
                         </div>
                       </q-card-section>
@@ -162,5 +144,52 @@ async function submitStudentInfo() {
 .container-courseInfo
   background-color: #fcfedf
   width: 100%
-  height: 550px
+  height: auto
+  min-height: 550px
+  padding: 20px
+
+.form-container
+  width: 90%
+  max-width: 1200px
+  margin: 0 auto
+
+.form-section
+  height: auto
+  min-height: 520px
+
+.notification-section
+  width: 100%
+  display: flex
+  flex-direction: row
+  @media (max-width: 600px)
+    flex-direction: column
+    align-items: center
+    gap: 20px
+
+.notification-box
+  background-color: #ffffff
+  border: 1px solid black
+  width: 100%
+  display: flex
+  text-align: justify
+  align-items: center
+  gap: 8px
+
+.submit-button-container
+  width: 25%
+  display: flex
+  justify-content: center
+  @media (max-width: 600px)
+    width: 100%
+
+.submit-button
+  width: 100px
+  height: 100px
+  color: #ffffff
+  background-color: #31562d
+  border-radius: 50%
+
+@media (max-width: 600px)
+  .text-h4
+    font-size: 1.5rem
 </style>

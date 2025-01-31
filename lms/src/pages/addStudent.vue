@@ -76,7 +76,7 @@
                       <div class="col-12 col-sm-4">
                         <div class="text-subtitle2 q-mb-sm">Year</div>
                         <div class="input-field">
-                          <q-input v-model="year" type="number" borderless />
+                          <q-input v-model="year" type="text" borderless />
                         </div>
                       </div>
                       <div class="col-12 col-sm-4">
@@ -112,6 +112,7 @@
         <!-- table -->
         <div class="q-mt-lg">
           <q-table
+            :loading="tableLoading"
             style="border-radius: 14px; background-color: #fdffdf"
             title="Recent Students"
             :rows="rows"
@@ -122,6 +123,11 @@
             :rows-per-page-options="[0, 5, 10, 15, 20]"
             class="responsive-table"
           >
+            <template v-slot:loading>
+              <q-inner-loading showing color="primary">
+                <q-spinner-dots size="50px" />
+              </q-inner-loading>
+            </template>
             <template #body="props">
               <q-tr :props="props">
                 <q-td v-for="col in columns" :key="col.name" :props="props">
@@ -130,30 +136,36 @@
                   </template>
                   <template v-else-if="col.name === 'action'">
                     <div class="row q-gutter-x-sm">
-                      <q-btn
-                        flat
-                        dense
-                        size="sm"
-                        icon="edit"
-                        color="primary"
-                        @click="editStudentInfo = true"
-                      >
-                        <q-tooltip>Edit</q-tooltip>
-                      </q-btn>
-                      <q-btn
-                        flat
-                        dense
-                        size="sm"
-                        icon="delete"
-                        color="negative"
-                        @click="deleteStudent(props.row.studentId)"
-                      >
-                        <q-tooltip>Delete</q-tooltip>
-                      </q-btn>
+                      <q-btn-dropdown flat dropdown-icon="more_vert">
+                        <q-list>
+                          <div>
+                            <q-btn @click="openEditDialog(props.row)" label="Edit" no-caps flat />
+                          </div>
+                          <div>
+                            <q-btn
+                              @click="openDeleteDialog(props.row._id)"
+                              label="Delete"
+                              no-caps
+                              flat
+                            />
+                          </div>
+                          <div>
+                            <q-btn
+                              :loading="loading"
+                              @click="sendEmail(props.row._id)"
+                              label="Send Email"
+                              no-caps
+                              flat
+                            />
+                          </div>
+                        </q-list>
+                      </q-btn-dropdown>
                     </div>
                   </template>
                   <template v-else>
-                    {{ props.row[col.name] }}
+                    {{
+                      typeof col.field === 'function' ? col.field(props.row) : props.row[col.name]
+                    }}
                   </template>
                 </q-td>
               </q-tr>
@@ -169,6 +181,25 @@
         </div>
       </div>
     </div>
+    <!-- delete popup -->
+    <template>
+      <q-dialog v-model="deletePopUp">
+        <q-card style="min-width: 300px">
+          <q-card-section class="text-h6">Confirm Delete</q-card-section>
+          <q-card-section>Are you sure you want to delete this student?</q-card-section>
+          <q-card-actions align="right">
+            <q-btn flat label="Cancel" color="red-8" v-close-popup />
+            <q-btn
+              flat
+              label="Delete"
+              :loading="loading"
+              style="background-color: #306b30; color: #ffffff"
+              @click="confirmDelete"
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+    </template>
     <!-- Edit dialog -->
     <q-dialog v-model="editStudentInfo" persistent>
       <q-card style="width: 800px; max-width: 95vw">
@@ -222,7 +253,7 @@
                 <div class="col-12 col-sm-4">
                   <div class="text-subtitle2 q-mb-sm">Year</div>
                   <div class="input-field">
-                    <q-input v-model="editForm.year" type="number" borderless />
+                    <q-input v-model="editForm.year" type="text" borderless />
                   </div>
                 </div>
                 <div class="col-12 col-sm-4">
@@ -240,13 +271,7 @@
               </div>
             </q-card-section>
             <q-card-actions align="right">
-              <q-btn
-                flat
-                label="Cancel"
-                v-close-popup
-                color="red-8"
-                class="q-px-md"
-              />
+              <q-btn flat label="Cancel" v-close-popup color="red-8" class="q-px-md" />
               <q-btn
                 :loading="loading"
                 type="submit"
@@ -264,8 +289,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Notify, exportFile } from 'quasar'
+import axios from 'axios'
 
 // loading
 const loading = ref(false)
@@ -273,7 +299,7 @@ const loading = ref(false)
 // popup
 const addStudentPopUp = ref(false)
 const editStudentInfo = ref(false)
-
+const deletePopUp = ref(false)
 // Form fields
 const firstName = ref('')
 const middleName = ref('')
@@ -298,9 +324,15 @@ const editForm = ref({
   status: '',
 })
 
+// Add this with your other refs
+const tableLoading = ref(false)
+
+// Add selectedStudentId ref
+const selectedStudentId = ref(null)
+
 // cancel add
 async function cancelAdd() {
-  (firstName.value = ''),
+  ;(firstName.value = ''),
     (middleName.value = ''),
     (lastName.value = ''),
     (studentId.value = ''),
@@ -317,11 +349,9 @@ async function addStudent() {
   try {
     Notify.create({
       type: 'positive',
-      message:'student added'
-
+      message: 'student added',
     })
     addStudentPopUp.value = false
-    console.log('dsds')
   } catch (err) {
     console.error(err)
   } finally {
@@ -341,30 +371,32 @@ const columns = ref([
     sortable: true,
   },
   {
-    name: 'studentId',
+    name: 'studentNumber',
     required: true,
     label: 'Student ID',
     align: 'left',
-    field: (row) => row.studentId,
+    field: (row) => row.studentNumber,
     sortable: true,
   },
   {
-    name: 'name',
+    name: 'fullName',
     align: 'left',
     label: 'Student Name',
-    field: 'name',
+    field: (row) => `${row.firstName} ${row.lastName}`,
+    sortable: true,
   },
   {
     name: 'email',
     align: 'left',
     label: 'Email',
     field: 'email',
+    sortable: true,
   },
   {
-    name: 'program',
+    name: 'course',
     align: 'left',
     label: 'Program',
-    field: 'program',
+    field: 'course',
     sortable: true,
   },
   {
@@ -385,7 +417,7 @@ const columns = ref([
     name: 'status',
     align: 'left',
     label: 'Status',
-    field: 'status',
+    field: (row) => (row.isRegular ? 'Regular' : 'Irregular'),
     sortable: true,
   },
   {
@@ -396,53 +428,41 @@ const columns = ref([
   },
 ])
 
-const rows = ref([
-  {
-    studentId: '2023-0001',
-    name: 'John Smith',
-    email: 'john.smith@email.com',
-    program: 'BSIT',
-    year: '1st',
-    section: 'A',
-    status: 'Enrolled',
-  },
-  {
-    studentId: '2023-0002',
-    name: 'Maria Garcia',
-    email: 'maria.garcia@email.com',
-    program: 'BSCS',
-    year: '2nd',
-    section: 'B',
-    status: 'Enrolled',
-  },
-  {
-    studentId: '2023-0003',
-    name: 'James Wilson',
-    email: 'james.wilson@email.com',
-    program: 'BSIT',
-    year: '3rd',
-    section: 'A',
-    status: 'Enrolled',
-  },
-  {
-    studentId: '2023-0004',
-    name: 'Sarah Johnson',
-    email: 'sarah.johnson@email.com',
-    program: 'BSCS',
-    year: '1st',
-    section: 'C',
-    status: 'Pending',
-  },
-  {
-    studentId: '2023-0005',
-    name: 'Michael Brown',
-    email: 'michael.brown@email.com',
-    program: 'BSIT',
-    year: '4th',
-    section: 'B',
-    status: 'Enrolled',
-  },
-])
+const rows = ref([])
+
+async function getAllStudents() {
+  tableLoading.value = true
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(`${process.env.api_host}/users?role=student`, {
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: token,
+      },
+    })
+    console.log(response.data)
+
+    if (response.data && Array.isArray(response.data)) {
+      rows.value = response.data
+    } else {
+      console.error('Invalid response format:', response)
+      rows.value = []
+      Notify.create({
+        type: 'negative',
+        message: 'Invalid data format received from server',
+      })
+    }
+  } catch (err) {
+    console.error(err)
+    rows.value = []
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to fetch students data',
+    })
+  } finally {
+    tableLoading.value = false
+  }
+}
 
 // export button
 function wrapCsvValue(val, formatFn, row) {
@@ -499,33 +519,146 @@ function exportTable() {
 }
 
 // Function to open edit dialog with student data
-// Function to handle edit submission
+function openEditDialog(student) {
+  editForm.value = {
+    firstName: student.firstName || '',
+    middleName: student.middleName || '',
+    lastName: student.lastName || '',
+    studentId: student.studentNumber || student.username || '',
+    email: student.email || '',
+    program: student.course || '',
+    year: student.year || '',
+    section: student.section || '',
+    status: student.isRegular ? 'Regular' : 'Irregular',
+    _id: student._id, // Store the ID for updating
+  }
+  editStudentInfo.value = true
+}
+
+// Update the edit submission function
 async function editStudent() {
   loading.value = true
   try {
-    // TODO: Implement your edit logic here
-    console.log('Editing student:',)
-    Notify.create({
-      type: 'positive',
-      message: 'edited succesfully'
-    })
+    const token = localStorage.getItem('authToken')
+    const response = await axios.put(
+      `${process.env.api_host}/users/${editForm.value._id}`,
+      {
+        firstName: editForm.value.firstName,
+        middleName: editForm.value.middleName,
+        lastName: editForm.value.lastName,
+        studentNumber: editForm.value.studentId,
+        email: editForm.value.email,
+        course: editForm.value.program,
+        year: editForm.value.year,
+        section: editForm.value.section,
+        isRegular: editForm.value.status === 'Regular',
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: token,
+        },
+      },
+    )
 
+    if (response.status === 200) {
+      Notify.create({
+        type: 'positive',
+        message: 'Student information updated successfully',
+      })
+      getAllStudents() // Refresh the table
+    }
   } catch (err) {
     console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to update student information',
+    })
   } finally {
     loading.value = false
     editStudentInfo.value = false
   }
 }
 
-function deleteStudent(row) {
-  // TODO: Implement delete functionality
-  console.log('Delete student:', row)
-  Notify.create({
-      type: 'positive',
-      message: 'deleted succesfully'
-    })
+// Add function to open delete dialog
+function openDeleteDialog(studentId) {
+  selectedStudentId.value = studentId
+  deletePopUp.value = true
 }
+
+// Add function to handle delete confirmation
+async function confirmDelete() {
+  if (!selectedStudentId.value) return
+
+  loading.value = true
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.delete(
+      `${process.env.api_host}/users/${selectedStudentId.value}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: token,
+        },
+      },
+    )
+
+    if (response.status === 200) {
+      Notify.create({
+        type: 'positive',
+        message: 'Student deleted successfully',
+      })
+      await getAllStudents() // Refresh the table
+    }
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to delete student',
+    })
+  } finally {
+    loading.value = false
+    deletePopUp.value = false
+    selectedStudentId.value = null
+  }
+}
+
+// Update send email function
+async function sendEmail(studentId) {
+  loading.value = true
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.post(
+      `${process.env.api_host}/users/sendEmail/${studentId}`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: token,
+        },
+      },
+    )
+    console.log(studentId)
+    if (response.status === 200) {
+      Notify.create({
+        type: 'positive',
+        message: 'Email sent successfully',
+      })
+    }
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to send email',
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  getAllStudents()
+})
 </script>
 
 <style lang="sass" scoped>
