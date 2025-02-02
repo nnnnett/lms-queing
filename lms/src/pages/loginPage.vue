@@ -52,7 +52,9 @@
 import axios from 'axios'
 import { ref } from 'vue'
 import { Notify } from 'quasar'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const username = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -75,10 +77,9 @@ async function login() {
     if (response.status === 200) {
       const token = response.data.token // Adjust based on your response structure
       localStorage.setItem('authToken', 'Bearer ' + token) // Save token to local storage
-
       Notify.create({ type: 'positive', message: 'Login successful!' })
       await new Promise((resolve) => setTimeout(resolve, 500))
-
+      router.replace(`/queueCourse`)
       // Handle successful login (e.g., redirect or store user info)
     } else {
       Notify.create({

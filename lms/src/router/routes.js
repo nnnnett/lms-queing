@@ -11,9 +11,11 @@ const routes = [
       { path: 'courseInfo', component: () => import('pages/courseInfo.vue') },
       { path: 'registerCourse/:userId', component: () => import('pages/registerCourse.vue') },
       { path: 'reviewInfo', component: () => import('pages/reviewInfo.vue') },
-      { path: 'queuingPage', component: () => import('src/pages/queuingPage.vue') },
+      { path: 'queuingPage/:queueId', component: () => import('src/pages/queuingPage.vue') },
       { path: 'adminLogin', component: () => import('src/pages/adminLogin.vue') },
       { path: 'publicMonitor', component: () => import('src/pages/publicMonitor.vue') },
+      { path: 'queueCourse', component: () => import('src/pages/queueCourse.vue') },
+      { path: 'queueSummary/:queueId', component: () => import('src/pages/queueSummary.vue') },
     ],
   },
   {

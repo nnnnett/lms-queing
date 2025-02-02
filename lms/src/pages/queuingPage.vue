@@ -20,7 +20,7 @@
             <q-card-section class="text-center" style="margin-top: 90px;color: #333332;">
               <div class="text-h4 text-weight-bold text-uppercase">queuing</div>
             </q-card-section>
-            <q-card-section class="container-queuing">
+            <q-card-section class="container-queuing" v-if="queueData">
               <q-card-section class="flex flex-center column">
                 <div style="color: #333332;" class="qrContainer">
                   <q-card-section  class="q-py-none">
@@ -29,8 +29,8 @@
                     </div>
                   </q-card-section>
                   <q-card-section class="q-py-none">
-                    <div class="text-h2 text-uppercase text-center  text-weight-bold">
-                      R0001
+                    <div class="text-h5 text-uppercase text-center text-weight-bold" style="color: green;">
+                      {{queueData.queueNumber}}
                     </div>
                   </q-card-section>
                   <q-card-section  class="q-py-none">
@@ -72,15 +72,31 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-// import { ref } from 'vue'
 
+import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 // router
+const route = useRoute()
 const router = useRouter()
+const queueId =  route.params.queueId
 
+const queueData = ref(null)
 async function backBtn() {
   router.replace(`/reviewInfo`)
 }
+
+async function getQueue() {
+  try{
+    const response = await axios.get(`${process.env.api_host}/queues?query=${queueId}`)
+    queueData.value = response.data[0]
+  }catch(err){
+    console.error(err)
+  }
+}
+onMounted(() => {
+  getQueue()
+})
 </script>
 
 <style lang="sass" scoped>
