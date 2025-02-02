@@ -1,0 +1,112 @@
+<template>
+  <q-page>
+    <div>
+      <div
+        style="
+          background: url('https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617278/assets/queing/q5xrh22iplhm2bndvvru.jpg')
+            no-repeat center center;
+          background-size: cover;
+          width: 100%;
+          height: 100vh;
+          border: 3px solid #606060;
+        "
+      >
+        <div class="main-container">
+          <q-card-section class="container-courseInfo">
+            <q-card-section class="text-center">
+              <div class="text-h4 text-weight-bold text-uppercase">Student Login</div>
+            </q-card-section>
+            <q-form @submit.prevent="login">
+              <q-card-section style="width: 100%">
+                Username:
+                <div style="width: 100%">
+                  <q-input type="text" outlined v-model="username" />
+                </div>
+              </q-card-section>
+              <q-card-section style="width: 100%">
+                Password:
+                <div style="width: 100%">
+                  <q-input type="password" outlined v-model="password" />
+                </div>
+              </q-card-section>
+              <q-card-section class="flex flex-center">
+                <q-btn
+                class="q-py-md q-px-xl"
+                  label="Sign In"
+                  no-caps
+                  type="submit"
+                  :loading="loading"
+                  flat
+                  style="background-color: #30572d; color: #ffffff"
+                />
+              </q-card-section>
+            </q-form>
+          </q-card-section>
+        </div>
+      </div>
+    </div>
+  </q-page>
+</template>
+
+<script setup>
+import axios from 'axios'
+import { ref } from 'vue'
+import { Notify } from 'quasar'
+
+const username = ref('')
+const password = ref('')
+const loading = ref(false)
+
+async function login() {
+  loading.value = true
+  try {
+    const response = await axios.post(
+      `${process.env.api_host}/users/login`,
+      {
+        username: username.value,
+        password: password.value,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+    if (response.status === 200) {
+      const token = response.data.token // Adjust based on your response structure
+      localStorage.setItem('authToken', 'Bearer ' + token) // Save token to local storage
+
+      Notify.create({ type: 'positive', message: 'Login successful!' })
+      await new Promise((resolve) => setTimeout(resolve, 500))
+
+      // Handle successful login (e.g., redirect or store user info)
+    } else {
+      Notify.create({
+        type: 'negative',
+        message: 'Unexpected response from server.',
+      })
+    }
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      message: 'Something went wrong',
+      type: 'negative',
+    })
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
+<style lang="sass" scoped>
+.container-courseInfo
+  background-color: #fcfedf
+  width: 100%
+  height: auto
+  padding: 20px
+  margin-top: 100px
+.main-container
+  width: 90%
+  max-width: 1200px
+  margin: 0 auto
+</style>
