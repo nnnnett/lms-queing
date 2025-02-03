@@ -24,25 +24,6 @@
                 <div class="text-center text-h5 text-weight-medium">CREATE NEW ACCOUNT</div>
               </q-card-section>
               <q-card-section>
-                <!-- image -->
-                <div
-                  class="q-mx-auto"
-                  style="
-                    border: 1px solid red;
-                    width: 100%;
-                    max-width: 350px;
-                    justify-self: center;
-                    border: 2px solid #9fa092;
-                    background-color: #fefeff;
-                    border-radius: 14px;
-                  "
-                >
-                  <q-file label="Add image" borderless v-model="Image" accept="image/*">
-                    <template v-slot:prepend>
-                      <q-icon name="attach_file" />
-                    </template>
-                  </q-file>
-                </div>
                 <div class="row justify-center q-col-gutter-md">
                   <div class="col-12 col-sm-4">
                     <q-card-section>
@@ -164,7 +145,7 @@
                 <div class="row justify-center q-col-gutter-md">
                   <div class="col-12 col-sm-6">
                     <q-card-section>
-                      Designation
+                      Role
                       <div
                         style="
                           border: 1px solid red;
@@ -178,22 +159,7 @@
                       </div>
                     </q-card-section>
                   </div>
-                  <div class="col-12 col-sm-6">
-                    <q-card-section>
-                      Status
-                      <div
-                        style="
-                          border: 1px solid red;
-                          width: 100%;
-                          border: 2px solid #9fa092;
-                          background-color: #fefeff;
-                          border-radius: 14px;
-                        "
-                      >
-                        <q-select v-model="status" :options="statusOptions" borderless />
-                      </div>
-                    </q-card-section>
-                  </div>
+
                 </div>
                 <!-- btn -->
                 <q-card-section class="flex flex-center">
@@ -224,12 +190,14 @@
 </template>
 
 <script setup>
+/* eslint-disable no-unused-vars */
 import { ref } from 'vue'
 import { Notify } from 'quasar'
+import axios from 'axios'
 const loading = ref(false)
 
 // Form data
-const Image = ref('')
+
 const firstName = ref('')
 const middleName = ref('')
 const lastName = ref('')
@@ -238,10 +206,8 @@ const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const role = ref(null)
-const status = ref(null)
-
 // Select options
-const roleOptions = ['Admin', 'Super Admin', 'Staff', 'Manager']
+const roleOptions = ['registrar', 'osas', 'cashier', 'admin ']
 
 const statusOptions = ['Active', 'Inactive']
 
@@ -254,15 +220,14 @@ async function cancelCreate() {
     (password.value = ''),
     (confirmPassword.value = '')
   role.value = null
-  status.value = null
-  Image.value = ''
+
 }
 
 async function createAccount() {
   loading.value = true
+  const token = localStorage.getItem('authToken')
   try {
     if (
-      !Image.value ||
       !firstName.value ||
       !middleName.value ||
       !lastName.value ||
@@ -270,8 +235,7 @@ async function createAccount() {
       !email.value ||
       !password.value ||
       !confirmPassword.value ||
-      !role.value ||
-      !status.value
+      !role.value
     ) {
       Notify.create({
         type: 'warning',
@@ -286,6 +250,24 @@ async function createAccount() {
       })
       return
     }
+    const response = await axios.post(
+      `${process.env.api_host}/users/create`,
+      {
+        firstName: firstName.value,
+        middleName: middleName.value,
+        lastName: lastName.value,
+        username: userName.value,
+        email: email.value,
+        password: password.value,
+        role: role.value,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: token,
+        },
+      },
+    )
     Notify.create({
       type: 'positive',
       message: 'Account Created Successfully',
@@ -298,8 +280,6 @@ async function createAccount() {
     password.value = ''
     confirmPassword.value = ''
     role.value = null
-    status.value = null
-    Image.value = ''
   } catch (err) {
     console.error(err)
     Notify.create({

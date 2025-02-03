@@ -37,8 +37,8 @@
                     </div>
                   </q-card-section>
                   <q-card-section  class="q-py-none flex flex-center">
-                    <div style="width: 130px;">
-                      <q-img src="https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737647662/assets/queing/uc3jvsszjqi9s9lhfysk.png" />
+                    <div>
+                        <qrcode :value="qrValue" v-if="queueData" :size="150" />
                     </div>
                   </q-card-section>
                   <q-card-section  class="q-py-none">
@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-
+import Qrcode from "qrcode.vue";
 import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -81,6 +81,8 @@ const router = useRouter()
 const queueId =  route.params.queueId
 
 const queueData = ref(null)
+
+const qrValue = ref(`https://queing.vercel.app/#/queueSummary/${queueId}`)
 
 async function getQueue() {
   try{

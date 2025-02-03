@@ -50,20 +50,21 @@
         </q-item-section>
       </q-item>
     </div>
+
+    <div>
+      <q-item clickable @click="router.replace(`/new/adminCreateAccount`)">
+        <q-item-section avatar>
+          <q-icon name="people" />
+        </q-item-section>
+        <q-item-section> Users </q-item-section>
+      </q-item>
+    </div>
     <div class="q-py-sm">
       <q-item clickable @click="router.replace(`/new/adminSettings`)">
         <q-item-section avatar>
           <q-icon name="settings" />
         </q-item-section>
         <q-item-section> Settings </q-item-section>
-      </q-item>
-    </div>
-    <div>
-      <q-item clickable @click="router.replace(`/new/adminCreateAccount`)">
-        <q-item-section avatar>
-          <q-icon name="people" />
-        </q-item-section>
-        <q-item-section> Create New Account </q-item-section>
       </q-item>
     </div>
     <div class="q-py-sm">
