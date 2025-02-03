@@ -12,9 +12,7 @@
         "
       >
         <!-- Main Content -->
-        <div class="q-ml-xl q-pt-xl" style="float: left; position: absolute; z-index: 100">
-          <q-btn icon="arrow_back_ios" size="20px" flat @click="backBtn" />
-        </div>
+
         <q-card-section class="flex flex-center">
           <div style="width: 80%">
             <q-card-section class="text-center" style="margin-top: 90px;color: #333332;">
@@ -60,7 +58,7 @@
                     border-radius: 5px;
                   "
                 >
-                  <q-btn style="width: 100%; height: 100%" flat label="Home" />
+                  <q-btn style="width: 100%; height: 100%" flat label="Done" @click="handleLogout"/>
                 </div>
               </q-card-section>
             </q-card-section>
@@ -76,15 +74,13 @@
 import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { Notify } from 'quasar'
 // router
 const route = useRoute()
 const router = useRouter()
 const queueId =  route.params.queueId
 
 const queueData = ref(null)
-async function backBtn() {
-  router.replace(`/reviewInfo`)
-}
 
 async function getQueue() {
   try{
@@ -94,9 +90,35 @@ async function getQueue() {
     console.error(err)
   }
 }
+
+
+const clearLocalStorage = () => {
+  localStorage.clear();
+};
+const handleLogout = async () => {
+  try {
+    // Clear localStorage when logging out
+    clearLocalStorage();
+    // Show a notification
+    Notify.create({ type: "positive", message: "Queuing number has been released" });
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Redirect to the login page
+    router.replace("/");
+  } catch (error) {
+    // If an error occurs during logout
+    Notify.create({ type: "negative", message: "Error during logout" });
+    console.error(error);
+  } finally {
+    // await isLogin();
+  }
+};
+
+
+
 onMounted(() => {
   getQueue()
 })
+
 </script>
 
 <style lang="sass" scoped>

@@ -3,10 +3,10 @@
     <div class="main-container q-pt-md">
       <div class="content-container q-px-md q-px-sm-xl">
         <q-card-section class="row justify-around q-col-gutter-md" style="color: #3d3c3b">
-          <div
+          <q-card
             class="info-box q-py-md ellipsis"
             style="
-              background-color: #fafedd;
+              background-color: #fefffe;
               border: 2px solid #cbcdc7;
               text-align: center;
               display: flex;
@@ -15,12 +15,12 @@
             "
           >
             <div class="text-h5 text-weight-medium">DEPARTMENT</div>
-            <div class="text-h3 text-weight-medium">CASHER</div>
-          </div>
-          <div
+            <div class="text-h3 text-weight-medium">REGISTRAR</div>
+          </q-card>
+          <q-card
             class="info-box q-py-md ellipsis"
             style="
-              background-color: #cbf980;
+              background-color: #fefffe;
               border: 2px solid #cbcdc7;
               text-align: center;
               display: flex;
@@ -29,12 +29,15 @@
             "
           >
             <div class="text-h5 text-weight-medium">WINDOW</div>
-            <div class="text-h3 text-weight-medium">2</div>
-          </div>
-          <div
+            <div class="text-h3 text-weight-medium">1</div>
+            <div align="right" class="q-mr-md">
+              <q-btn label="set" style="background-color: #fffeb8;" />
+            </div>
+          </q-card>
+          <q-card
             class="info-box q-py-md ellipsis"
             style="
-              background-color: #fafedd;
+              background-color: #fefffe;
               border: 2px solid #cbcdc7;
               text-align: center;
               display: flex;
@@ -42,57 +45,60 @@
               justify-content: space-around;
             "
           >
-            <div class="text-h5 text-weight-medium">CURRENT</div>
-            <div class="text-h3 text-weight-medium">C0001</div>
-          </div>
+            <div class="text-h5 text-weight-medium">CURRENT QUEUE</div>
+            <div class="text-h3 text-weight-medium">R0001</div>
+            <div align="right" class="q-mr-md">
+              <q-btn label="LIST" style="background-color: #fffeb8;" @click="queueListPage" />
+            </div>
+          </q-card>
         </q-card-section>
         <!-- buttons -->
         <q-card-section class="row justify-around q-col-gutter-md">
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #a7ab01">
+            <q-btn class="action-button" style="background-color: #b7faff">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="arrow_right_alt" size="80px" />
-                <div class="text-h4 text-white">NEXT</div>
+                <div class="text-h4 text-weight-medium">NEXT</div>
               </div>
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #02ceed">
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
-                <q-icon name="volume_up" size="80px" />
-                <div class="text-h4 text-white">CALL</div>
-              </div>
-            </q-btn>
-          </div>
-          <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #a8aba9">
-              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
-                <q-icon name="lock" size="80px" />
-                <div class="text-h4 text-white">STANDBY</div>
-              </div>
-            </q-btn>
-          </div>
-          <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #a8aba9">
+            <q-btn class="action-button" style="background-color: #fcffc2">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="sync_alt" size="80px" />
-                <div class="text-h4 text-white">TRANSFER</div>
+                <div class="text-h4 text-weight-medium">TRANSFER</div>
               </div>
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #08fe08">
+            <q-btn class="action-button" style="background-color: #aafeab">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="check" size="80px" />
-                <div class="text-h4 text-white">DONE</div>
+                <div class="text-h4 text-weight-medium">DONE</div>
               </div>
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #f60707">
+            <q-btn class="action-button" style="background-color: #fe7e7f">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="close" size="80px" />
-                <div class="text-h4 text-white">CANCEL</div>
+                <div class="text-h4 text-weight-medium">CANCEL</div>
+              </div>
+            </q-btn>
+          </div>
+          <div class="action-button-container ellipsis">
+            <q-btn class="action-button" style="background-color: #b7d0ff">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+                <q-icon name="refresh" size="80px" />
+                <div class="text-h4 text-weight-medium">REFRESH</div>
+              </div>
+            </q-btn>
+          </div>
+          <div class="action-button-container ellipsis">
+            <q-btn class="action-button" style="background-color: #b7d0ff">
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+                <q-icon name="restart_alt" size="80px" />
+                <div class="text-h4 text-weight-medium">RESET</div>
               </div>
             </q-btn>
           </div>
@@ -116,21 +122,21 @@
                 align-items: center;
               "
             >
-              WAITING NUMBER
+              # WAITING IN QUEUE
             </div>
             <div
               style="
                 background-color: #fefffe;
                 height: 350px;
+                width: 100%;
                 text-align: center;
-                overflow-y: scroll;
+                align-content: center;
+
               "
-              class="text-h5 q-py-md"
+              class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
+              <div>1000</div>
+
             </div>
           </div>
           <div class="list-container" style="border: 2px solid #cbcdc7">
@@ -147,21 +153,21 @@
                 align-items: center;
               "
             >
-              SUCCESFULL <br />TRANSACTIONS
+             # TRANSFERRED QUEUE
             </div>
             <div
               style="
                 background-color: #fefffe;
                 height: 350px;
+                width: 100%;
                 text-align: center;
-                overflow-y: scroll;
+                align-content: center;
+
               "
-              class="text-h5 q-py-md"
+              class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
+              <div>1000</div>
+
             </div>
           </div>
           <div class="list-container" style="border: 2px solid #cbcdc7">
@@ -178,21 +184,20 @@
                 align-items: center;
               "
             >
-              LAST CALLED
+              # SUCCESSFUL QUEUE
             </div>
             <div
               style="
                 background-color: #fefffe;
                 height: 350px;
+                width: 100%;
                 text-align: center;
-                overflow-y: scroll;
+                align-content: center;
               "
-              class="text-h5 q-py-md"
+              class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
+              <div>1000</div>
+
             </div>
           </div>
           <div class="list-container" style="border: 2px solid #cbcdc7">
@@ -209,7 +214,7 @@
                 align-items: center;
               "
             >
-              MISSED NUMBER
+             # MISSED QUEUE
             </div>
             <div
               style="
@@ -217,14 +222,12 @@
                 height: 350px;
                 width: 100%;
                 text-align: center;
-                overflow-y: scroll;
+                align-content: center;
               "
-              class="text-h5 q-py-md"
+              class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
-              <div>1234</div>
+              <div>1000</div>
+
             </div>
           </div>
         </q-card-section>
@@ -234,7 +237,13 @@
 </template>
 
 <script setup>
-//
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+async function queueListPage() {
+  router.push('/new/queueList')
+}
+
 </script>
 
 <style lang="sass" scoped>
@@ -245,7 +254,7 @@
 .info-box
   width: 400px
   height: 150px
-
+  border-radius: 14px
 .action-button
   height: 150px
   width: 200px
