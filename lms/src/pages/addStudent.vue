@@ -138,12 +138,13 @@
                     <div class="row q-gutter-x-sm">
                       <q-btn-dropdown flat dropdown-icon="more_vert">
                         <q-list>
-                          <div>
-                            <q-btn @click="openEditDialog(props.row)" label="Edit" no-caps flat />
+                          <div >
+                            <q-btn @click="openEditDialog(props.row)" label="Edit" no-caps flat style="width: 100%;"/>
                           </div>
                           <div>
                             <q-btn
                               @click="openDeleteDialog(props.row._id)"
+                              style="width: 100%;"
                               label="Delete"
                               no-caps
                               flat
@@ -154,6 +155,7 @@
                               :loading="loading"
                               @click="sendEmail(props.row._id)"
                               label="Send Email"
+                              style="width: 100%;"
                               no-caps
                               flat
                             />

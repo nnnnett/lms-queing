@@ -58,8 +58,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 const columns = ref([
   {
     name: '#',
@@ -72,7 +72,7 @@ const columns = ref([
   {
     name: 'studentId',
     required: true,
-    label: 'Student ID',
+    label: 'Student Number',
     align: 'left',
     field: (row) => row.studentId,
     sortable: true,
@@ -119,53 +119,28 @@ const columns = ref([
   },
 ])
 
-const rows = ref([
-  {
-    studentId: '2023-0001',
-    name: 'John Smith',
-    email: 'john.smith@email.com',
-    program: 'BSIT',
-    year: '1st',
-    section: 'A',
-    status: 'Enrolled',
-  },
-  {
-    studentId: '2023-0002',
-    name: 'Maria Garcia',
-    email: 'maria.garcia@email.com',
-    program: 'BSCS',
-    year: '2nd',
-    section: 'B',
-    status: 'Enrolled',
-  },
-  {
-    studentId: '2023-0003',
-    name: 'James Wilson',
-    email: 'james.wilson@email.com',
-    program: 'BSIT',
-    year: '3rd',
-    section: 'A',
-    status: 'Enrolled',
-  },
-  {
-    studentId: '2023-0004',
-    name: 'Sarah Johnson',
-    email: 'sarah.johnson@email.com',
-    program: 'BSCS',
-    year: '1st',
-    section: 'C',
-    status: 'Pending',
-  },
-  {
-    studentId: '2023-0005',
-    name: 'Michael Brown',
-    email: 'michael.brown@email.com',
-    program: 'BSIT',
-    year: '4th',
-    section: 'B',
-    status: 'Enrolled',
-  },
-])
+const rows = ref([])
+
+async function getUsers() {
+  try {
+    const response = await axios.get(`${process.env.api_host}/users?role=student`)
+    rows.value = response.data.map(student => ({
+      studentId: student.studentNumber,
+      name: `${student.firstName} ${student.middleName ? student.middleName + ' ' : ''}${student.lastName}`.trim(),
+      email: student.email,
+      program: student.course,
+      year: student.year,
+      section: student.section,
+      status: student.isRegular ? 'Regular' : 'Irregular'
+    }))
+  } catch (error) {
+    console.error('Error fetching users:', error)
+  }
+}
+
+onMounted(() => {
+  getUsers()
+})
 </script>
 
 <style lang="sass" scoped>

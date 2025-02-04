@@ -4,7 +4,7 @@
       <div class="content-container q-px-md q-px-sm-xl">
         <q-card-section class="q-pt-md">
           <div class="text-h6 text-weight-medium" style="color: #282726">
-            Admin/<span style="color: #b1b2b4">Instructor</span>
+            Admin/<span style="color: #b1b2b4">Program</span>
           </div>
         </q-card-section>
         <div class="button-container">

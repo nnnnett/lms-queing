@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div>
-      <div class="q-ml-xl q-pt-xl" style="float: left; position: absolute; z-index: 100">
+      <div class="q-ml-xl q-pt-md" style="float: left; position: absolute; z-index: 100">
         <q-btn icon="arrow_back_ios" size="20px" flat @click="backBtn" />
       </div>
       <div
@@ -145,21 +145,65 @@ async function login() {
   width: 60%
   height: 490px
   border-radius: 14px
-  @media (max-width:1450px)
-    width: 80%
+
 .logo
   width: 350px
-  @media (max-width:1100px)
-    width: 250px
+
 .sub-container
   display: flex
-  @media (max-width:730px)
-    display: flex
-    flex-direction: column
+
 .main-container
   display: flex
   justify-content: center
   padding-top: 150px
-  @media (max-width:730px)
-    padding-top: 30px
+
+// Add responsive styles
+@media (max-width: 1024px)
+  .login-container
+    width: 80%
+    height: auto
+    min-height: 450px
+
+  .logo
+    width: 250px
+
+  .text-h3
+    font-size: 2rem !important
+
+  .text-h4
+    font-size: 1.5rem !important
+
+@media (max-width: 768px)
+  .login-container
+    width: 90%
+
+  .sub-container
+    flex-direction: column
+
+  .q-card-section
+    border-radius: 14px !important
+    padding-top: 40px !important
+
+  .logo
+    width: 200px
+
+  .main-container
+    padding-top: 100px
+
+@media (max-width: 480px)
+  .login-container
+    width: 95%
+
+  .logo
+    width: 150px
+
+  .text-h3
+    font-size: 1.5rem !important
+
+  .text-h4
+    font-size: 1.2rem !important
+
+  .main-container
+    padding-top: 80px
+
 </style>

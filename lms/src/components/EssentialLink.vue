@@ -6,7 +6,7 @@
           <q-icon name="home" />
         </q-item-section>
         <q-item-section>
-          <q-item-label>Homepage</q-item-label>
+          <q-item-label>Dashboard</q-item-label>
         </q-item-section>
       </q-item>
     </div>

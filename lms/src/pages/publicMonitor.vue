@@ -9,7 +9,6 @@
               <q-img
                 src="https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617283/assets/queing/ja3s742lgdzsca55fu1w.png"
                 class="logo-img"
-
               />
             </div>
             <div class="title-container">
@@ -139,7 +138,7 @@ async function backBtn() {
 
 .right-section
   width: 30%
-  height: 93%
+  height: 100%
   background-color: #f2f7d5
   padding-left: 0 !important
 
@@ -167,7 +166,7 @@ async function backBtn() {
 
 .queue-section
   padding-left: 0 !important
-  margin-top: 0.5rem
+
 
 .queue-item
   display: flex
@@ -204,25 +203,26 @@ async function backBtn() {
 /* Responsive Styles */
 @media (max-width: 1440px)
   .university-title
-    font-size: 3em
+    font-size: 2.8em
   .campus-title
-    font-size: 1.5rem
+    font-size: 1.4rem
   .time-display
-    font-size: 3em
+    font-size: 2.8em
 
   .queue-number, .counter-number
-    font-size: 4em
+    font-size: 3.5em
 
   .counter-label
-    font-size: 1.5em
+    font-size: 1.4em
 
   .queue-item
-    height: 180px
+    height: 160px
 
   .banner-img
-    height: 500px
+    height: 450px
 
-
+  .banner-container
+    width: 55vw
 
 @media (max-width: 1024px)
   .main-container
@@ -230,55 +230,108 @@ async function backBtn() {
 
   .left-section, .right-section
     width: 100%
+    padding: 1rem !important
 
   .banner-container
     width: 90vw
+    margin: 1rem auto
 
   .queue-item
-    height: 120px
+    height: 110px
 
   .queue-number, .counter-number
-    font-size: 3em
+    font-size: 2.8em
 
   .counter-label
-    font-size: 1.2em
-
-
-@media (max-width: 768px)
-  .university-title
-    font-size: 2em
-    margin-left: 1rem
-
-  .logo-img
-    width: 100px
+    font-size: 1.1em
 
   .header-container
     margin-left: 1rem
 
+  .university-title
+    margin-left: 1.5rem
+    font-size: 2.5em
+
+@media (max-width: 768px)
+  .university-title
+    font-size: 1.8em
+    margin-left: 1rem
+
+  .campus-title
+    font-size: 1.2rem
+    margin-right: 1rem
+
+  .logo-img
+    width: 80px
+
+  .header-container
+    margin-left: 0.5rem
+
   .time-display
-    font-size: 2em
+    font-size: 1.8em
 
   .date-display
-    font-size: 1.5rem
+    font-size: 1.3rem
 
   .banner-img
-    height: 400px
+    height: 350px
+
+  .queue-item
+    height: 90px
+
+  .queue-number, .counter-number
+    font-size: 2.2em
+
+  .counter-label
+    font-size: 1em
 
 @media (max-width: 480px)
   .university-title
-    font-size: 1.5em
+    font-size: 1.2em
 
   .campus-title
-    font-size: 1rem
+    font-size: 0.9rem
 
   .banner-img
-    height: 300px
+    height: 250px
 
   .queue-item
-    height: 100px
+    height: 80px
 
   .queue-number, .counter-number
-    font-size: 2em
+    font-size: 1.8em
+
   .counter-label
+    font-size: 0.9em
+
+  .time-display
+    font-size: 1.5em
+
+  .date-display
+    font-size: 1.1rem
+
+@media (max-width: 360px)
+  .university-title
     font-size: 1em
+
+  .campus-title
+    font-size: 0.8rem
+
+  .logo-img
+    width: 60px
+
+  .queue-item
+    height: 70px
+
+  .queue-number, .counter-number
+    font-size: 1.5em
+
+  .counter-label
+    font-size: 0.8em
+
+  .time-display
+    font-size: 1.3em
+
+  .date-display
+    font-size: 1rem
 </style>

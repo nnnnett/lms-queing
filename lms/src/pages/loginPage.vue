@@ -31,7 +31,13 @@
               </q-card-section>
               <q-card-section style="display: flex; justify-content: space-between; width: 100%">
                 <div>Create New Account?</div>
-                <div style="cursor: pointer;text-decoration: underline;color: #4A28C5;" clickable @click="router.push('/studentRegister')">Sign up</div>
+                <div
+                  style="cursor: pointer; text-decoration: underline; color: #4a28c5"
+                  clickable
+                  @click="router.push('/studentRegister')"
+                >
+                  Sign up
+                </div>
               </q-card-section>
               <q-card-section class="flex flex-center">
                 <q-btn
@@ -45,6 +51,11 @@
                 />
               </q-card-section>
             </q-form>
+            <q-card-section style="display: flex;justify-content: space-around;">
+              <q-btn label="Admin Login" flat style="border: 1px solid #606060" no-caps @click="router.push('/adminLogin')" />
+
+              <q-btn label="Public Monitor" flat style="border: 1px solid #606060" no-caps @click="router.push('/publicMonitor')" />
+            </q-card-section>
           </q-card-section>
         </div>
       </div>
