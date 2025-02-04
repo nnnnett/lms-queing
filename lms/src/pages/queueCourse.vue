@@ -1,21 +1,18 @@
 <template>
   <q-page>
-    <div>
+    <div class="full-height">
       <div
+        class="bg-container"
         style="
           background: url('https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617278/assets/queing/q5xrh22iplhm2bndvvru.jpg')
             no-repeat center center;
           background-size: cover;
-          width: 100%;
-          height: 100vh;
           border: 3px solid #606060;
         "
       >
-        <!-- Main Content -->
-
-        <q-card-section class="flex flex-center">
-          <div style="width: 80%">
-            <q-card-section class="text-center" style="margin-top: 40px">
+        <q-card-section class="flex flex-center q-pa-md">
+          <div class="content-wrapper">
+            <q-card-section class="text-center q-pt-lg">
               <div class="text-h4 text-weight-bold text-uppercase">Course to Take</div>
             </q-card-section>
             <q-card-section class="container-courseInfo">
@@ -70,10 +67,10 @@
                       :loading="loading"
                       type="submit"
                       icon="arrow_forward"
-                      size="24px"
+                      size="19px"
                       style="
-                        width: 100px;
-                        height: 100px;
+                        width: 70px;
+                        height: 70px;
                         color: #ffffff;
                         background-color: #31562d;
                         border-radius: 50%;
@@ -297,13 +294,38 @@ onMounted(() => {
 </script>
 
 <style lang="sass" scoped>
+.bg-container
+  min-height: 100vh
+  width: 100%
+  overflow-y: auto
+  padding: 1rem
+
+.content-wrapper
+  width: 95%
+  max-width: 1200px
+  margin: 0 auto
+
 .container-courseInfo
   background-color: #fcfedf
   width: 100%
   height: auto
+  padding: 1rem
+  overflow-x: auto
+
 .courseTable
   background-color: #fcfedf
   box-shadow: none
-  height: 350px
+  min-height: 350px
+  max-height: 60vh
   text-align: left
+
+@media (max-width: 600px)
+  .content-wrapper
+    width: 100%
+
+  .container-courseInfo
+    padding: 0.5rem
+
+  .text-h4
+    font-size: 1.5rem !important
 </style>

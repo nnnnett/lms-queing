@@ -7,19 +7,20 @@
             no-repeat center center;
           background-size: cover;
           width: 100%;
-          height: 100vh;
+          min-height: 100vh;
           border: 3px solid #606060;
+          overflow-y: auto;
         "
       >
         <q-card-section class="flex flex-center">
-          <div style="width: 80%">
+          <div class="content-width">
             <q-card-section class="text-center" style="margin-top: 40px; color: #333332">
-              <div class="text-h4 text-weight-bold text-uppercase">queue summary</div>
+              <div class="page-title text-weight-bold text-uppercase">queue summary</div>
             </q-card-section>
-            <q-card-section class="container-queuing" v-if="queueDetails">
+            <q-card-section class="container-queuing q-pa-sm" v-if="queueDetails">
               <!-- queue number -->
               <q-card-section class="flex flex-center">
-                <q-card style=" width: 400px">
+                <q-card style="width: 90%; max-width: 400px">
                   <q-card-section class="text-center">
                     <div class="text-h5 text-weight-bold">QUEUE NUMBER</div>
                     <div
@@ -35,8 +36,8 @@
               </q-card-section>
               <!-- Student Information -->
               <q-card-section
-                style="border: 3px solid #323e2f; height: auto"
-                class="q-mx-xl q-pa-none"
+                style="border: 3px solid #323e2f;"
+                class="q-mx-sm q-mx-md-xl q-pa-none"
               >
                 <div style="height: 100%">
                   <div
@@ -51,56 +52,34 @@
                     Student Information
                   </div>
 
-                  <div>
-                    <div
-                      class="text-weight-bold"
-                      style="
-                        background-color: #fefeff;
-                        display: flex;
-                        justify-content: space-around;
-                        text-align: center;
-                        padding-top: 30px;
-                      "
-                    >
-                      <div style="width: 200px">Username</div>
-                      <div style="width: 200px">Email</div>
-                      <div style="width: 200px">First Name</div>
-                      <div style="width: 200px">Middle Name</div>
-                      <div style="width: 200px">Last Name</div>
-                      <div style="width: 200px">Course</div>
-                      <div style="width: 200px">Year</div>
-                      <div style="width: 200px">Section</div>
-                      <div style="width: 200px">Regular</div>
+                  <div class="scroll-container">
+                    <div class="info-grid text-weight-bold">
+                      <div class="info-cell">Username</div>
+                      <div class="info-cell">Email</div>
+                      <div class="info-cell">First Name</div>
+                      <div class="info-cell">Middle Name</div>
+                      <div class="info-cell">Last Name</div>
+                      <div class="info-cell">Course</div>
+                      <div class="info-cell">Year</div>
+                      <div class="info-cell">Section</div>
+                      <div class="info-cell">Regular</div>
                     </div>
                     <div
-                      class="q-pb-lg"
-                      style="
-                        background-color: #fefeff;
-                        display: flex;
-                        justify-content: space-around;
-                        text-align: center;
-                        height: 150;
-                        padding-top: 30px;
-                      "
+                      class="info-grid q-pb-lg"
                     >
-                      <div style="width: 200px">{{ queueDetails.student.username }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.email }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.firstName }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.middleName }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.lastName }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.course }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.year }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.section }}</div>
-                      <div style="width: 200px">{{ queueDetails.student.regular }}</div>
+                      <div class="info-cell">{{ queueDetails.student.username }}</div>
+                      <div class="info-cell">{{ queueDetails.student.email }}</div>
+                      <div class="info-cell">{{ queueDetails.student.firstName }}</div>
+                      <div class="info-cell">{{ queueDetails.student.middleName }}</div>
+                      <div class="info-cell">{{ queueDetails.student.lastName }}</div>
+                      <div class="info-cell">{{ queueDetails.student.course }}</div>
+                      <div class="info-cell">{{ queueDetails.student.year }}</div>
+                      <div class="info-cell">{{ queueDetails.student.section }}</div>
+                      <div class="info-cell">{{ queueDetails.student.regular }}</div>
                     </div>
                   </div>
                 </div>
-              </q-card-section>
-              <!-- course to take and status -->
-              <q-card-section
-                style="border: 3px solid #323e2f; height: auto; margin-top: 20px"
-                class="q-mx-xl q-pa-none"
-              >
+                <!-- course to take and status -->
                 <div style="height: 100%">
                   <div
                     class="text-weight-bold q-pa-md"
@@ -114,28 +93,24 @@
                     COURSE Information
                   </div>
 
-                  <div>
-                    <div style="width: 100%">
-                      <div
-                        class="text-weight-bold"
-                        style="background-color: #fefeff; display: flex; padding-top: 30px"
-                      >
-                        <div style="width: 200px">Course To take</div>
-                      </div>
-                      <div
+                  <div class="scroll-container">
+                    <div class="course-grid text-weight-bold">
+                      <div class="course-cell">Course Code</div>
+                      <div class="course-cell">Course Name</div>
+                      <div class="course-cell">Course</div>
+                      <div class="course-cell">Course unit</div>
+                      <div class="course-cell">Course Description</div>
+                    </div>
+                    <div
                       v-for="course in queueDetails.courseToTake"
                       :key="course._id"
-                        class="q-pb-lg"
-                        style="
-                          background-color: #fefeff;
-                          display: flex;
-                          max-height: 150px;
-                          height: auto;
-                          padding-top: 30px;
-                        "
-                      >
-                        {{ course.name}}
-                      </div>
+                      class="course-grid q-pb-md"
+                    >
+                      <div class="course-cell">{{ course.code }}</div>
+                      <div class="course-cell">{{ course.name }}</div>
+                      <div class="course-cell">{{ course.course }}</div>
+                      <div class="course-cell">{{ course.unit }}</div>
+                      <div class="course-cell">{{ course.description }}</div>
                     </div>
                   </div>
                 </div>
@@ -161,6 +136,7 @@ async function queueSummary() {
   try {
     const response = await axios.get(`${process.env.api_host}/queues?query=${queueId}`)
     queueDetails.value = response.data[0]
+    console.log(queueDetails.value, 'wew')
   } catch (err) {
     console.error(err)
   }
@@ -176,4 +152,62 @@ onMounted(() => {
   background-color: #fcfedf
   width: 100%
   height: auto
+
+.content-width
+  width: 95%
+  max-width: 1200px
+
+.page-title
+  font-size: 2rem
+  @media (max-width: 600px)
+    font-size: 1.5rem
+
+.scroll-container
+  overflow-x: auto
+  width: 100%
+  background-color: #fefeff
+  padding: 16px 0
+
+.info-grid
+  display: grid
+  grid-template-columns: repeat(9, minmax(150px, 1fr))
+  gap: 10px
+  padding: 20px
+  text-align: center
+  min-width: 900px
+  background-color: #fefeff
+  width: 100%
+
+.info-cell
+  padding: 8px
+  word-break: break-word
+  display: flex
+  align-items: center
+  justify-content: center
+  min-height: 50px
+
+.course-grid
+  display: grid
+  grid-template-columns: repeat(5, minmax(150px, 1fr))
+  gap: 10px
+  padding: 20px
+  text-align: center
+  min-width: 750px
+  background-color: #fefeff
+  width: 100%
+
+.course-cell
+  padding: 8px
+  word-break: break-word
+  display: flex
+  align-items: center
+  justify-content: center
+  min-height: 50px
+
+@media (max-width: 600px)
+  .q-card-section
+    padding: 8px
+
+  .info-cell, .course-cell
+    font-size: 0.9rem
 </style>

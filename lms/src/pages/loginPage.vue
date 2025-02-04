@@ -7,7 +7,7 @@
             no-repeat center center;
           background-size: cover;
           width: 100%;
-          height: 100vh;
+          min-height: 100vh;
           border: 3px solid #606060;
         "
       >
@@ -29,9 +29,13 @@
                   <q-input type="password" outlined v-model="password" />
                 </div>
               </q-card-section>
+              <q-card-section style="display: flex; justify-content: space-between; width: 100%">
+                <div>Create New Account?</div>
+                <div style="cursor: pointer;text-decoration: underline;color: #4A28C5;" clickable @click="router.push('/studentRegister')">Sign up</div>
+              </q-card-section>
               <q-card-section class="flex flex-center">
                 <q-btn
-                class="q-py-md q-px-xl"
+                  class="q-py-md q-px-xl"
                   label="Sign In"
                   no-caps
                   type="submit"
@@ -105,9 +109,27 @@ async function login() {
   width: 100%
   height: auto
   padding: 20px
-  margin-top: 100px
+  margin-top: 50px
+  border-radius: 8px
+  max-width: 500px
+  margin-left: auto
+  margin-right: auto
+
 .main-container
   width: 90%
   max-width: 1200px
   margin: 0 auto
+  padding: 20px
+  min-height: 100vh
+  display: flex
+  align-items: center
+  justify-content: center
+
+@media (max-width: 600px)
+  .container-courseInfo
+    margin-top: 20px
+    padding: 15px
+
+  .text-h4
+    font-size: 1.5rem
 </style>

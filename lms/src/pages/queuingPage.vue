@@ -7,57 +7,47 @@
             no-repeat center center;
           background-size: cover;
           width: 100%;
-          height: 100vh;
+          min-height: 100vh;
           border: 3px solid #606060;
         "
       >
         <!-- Main Content -->
-
         <q-card-section class="flex flex-center">
-          <div style="width: 80%">
-            <q-card-section class="text-center" style="margin-top: 90px;color: #333332;">
+          <div class="content-width">
+            <q-card-section class="text-center q-mt-md" style="color: #333332;">
               <div class="text-h4 text-weight-bold text-uppercase">queuing</div>
             </q-card-section>
             <q-card-section class="container-queuing" v-if="queueData">
               <q-card-section class="flex flex-center column">
                 <div style="color: #333332;" class="qrContainer">
-                  <q-card-section  class="q-py-none">
-                    <div class="text-h5 text-uppercase text-center q-py-md text-weight-medium">
+                  <q-card-section class="q-py-none">
+                    <div class="queue-title text-uppercase text-center q-py-md text-weight-medium">
                       queuing number
                     </div>
                   </q-card-section>
                   <q-card-section class="q-py-none">
-                    <div class="text-h5 text-uppercase text-center text-weight-bold" style="color: green;">
+                    <div class="queue-number text-uppercase text-center text-weight-bold" style="color: green;">
                       {{queueData.queueNumber}}
                     </div>
                   </q-card-section>
-                  <q-card-section  class="q-py-none">
-                    <div class="text-h6 text-center q-py-md text-weight-medium">
+                  <q-card-section class="q-py-none">
+                    <div class="certificate-text text-center q-py-md text-weight-medium">
                       Release of Certificate <br> of Registration
                     </div>
                   </q-card-section>
-                  <q-card-section  class="q-py-none flex flex-center">
-                    <div>
-                        <qrcode :value="qrValue" v-if="queueData" :size="150" />
+                  <q-card-section class="q-py-none flex flex-center">
+                    <div class="qr-wrapper">
+                        <qrcode :value="qrValue" v-if="queueData" :size="qrSize" />
                     </div>
                   </q-card-section>
-                  <q-card-section  class="q-py-none">
-                    <div class="text-subtitle1 text-center q-py-md text-weight-medium">
+                  <q-card-section class="q-py-none">
+                    <div class="scan-text text-center q-py-md text-weight-medium">
                       Scan the QR Code to monitor the queue flow
                     </div>
                   </q-card-section>
                 </div>
 
-                <div
-                  class="q-mt-lg"
-                  style="
-                    width: 120px;
-                    background-color: #31562d;
-                    color: #ffffff;
-                    height: 50px;
-                    border-radius: 5px;
-                  "
-                >
+                <div class="done-btn q-mt-lg">
                   <q-btn style="width: 100%; height: 100%" flat label="Done" @click="handleLogout"/>
                 </div>
               </q-card-section>
@@ -83,6 +73,9 @@ const queueId =  route.params.queueId
 const queueData = ref(null)
 
 const qrValue = ref(`https://queing.vercel.app/#/queueSummary/${queueId}`)
+
+// Add responsive QR code size
+const qrSize = ref(150)
 
 async function getQueue() {
   try{
@@ -115,22 +108,78 @@ const handleLogout = async () => {
   }
 };
 
-
-
+// Update QR size based on screen width
 onMounted(() => {
   getQueue()
+
+  const updateQrSize = () => {
+    qrSize.value = window.innerWidth < 600 ? 120 : 150
+  }
+
+  updateQrSize()
+  window.addEventListener('resize', updateQrSize)
 })
 
 </script>
 
 <style lang="sass" scoped>
+.content-width
+  width: 90%
+  max-width: 1200px
+  margin: 0 auto
+
 .container-queuing
   background-color: #fcfedf
   width: 100%
-  height: 600px
+  min-height: 600px
+  padding: 1rem
+  display: flex
+  align-items: center
+  justify-content: center
+
 .qrContainer
   border: 1px solid black
   background-color: #FFFFFF
-  width: 350px
-  height: 450px
+  width: min(350px, 90%)
+  min-height: 450px
+  padding: 1rem
+  display: flex
+  flex-direction: column
+  justify-content: space-between
+
+.queue-title
+  font-size: clamp(1.2rem, 3vw, 1.5rem)
+
+.queue-number
+  font-size: clamp(1.2rem, 3vw, 1.5rem)
+
+.certificate-text
+  font-size: clamp(1rem, 2.5vw, 1.25rem)
+
+.scan-text
+  font-size: clamp(0.875rem, 2vw, 1rem)
+
+.qr-wrapper
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 100%
+
+.done-btn
+  width: 120px
+  background-color: #31562d
+  color: #ffffff
+  height: 50px
+  border-radius: 5px
+  @media (max-width: 600px)
+    width: 100px
+    height: 40px
+
+@media (max-width: 600px)
+  .container-queuing
+    padding: 0.5rem
+
+  .qrContainer
+    padding: 0.5rem
+    min-height: 400px
 </style>
