@@ -15,7 +15,10 @@
             "
           >
             <div class="text-h5 text-weight-medium">DEPARTMENT</div>
-            <div class="text-h3 text-weight-medium">REGISTRAR</div>
+            <div v-if="queueInfo" class="text-h5 text-weight-bold text-uppercase">
+              {{ queueInfo.role }}
+            </div>
+            <div style="height: 50px"></div>
           </q-card>
           <q-card
             class="info-box q-py-md ellipsis"
@@ -29,9 +32,9 @@
             "
           >
             <div class="text-h5 text-weight-medium">WINDOW</div>
-            <div class="text-h3 text-weight-medium">1</div>
+            <div v-if="queueInfo" class="text-h5 text-weight-bold">{{ queueInfo.window }}</div>
             <div align="right" class="q-mr-md">
-              <q-btn label="set" style="background-color: #fffeb8;" />
+              <q-btn label="set" style="background-color: #fffeb8" />
             </div>
           </q-card>
           <q-card
@@ -46,24 +49,34 @@
             "
           >
             <div class="text-h5 text-weight-medium">CURRENT QUEUE</div>
-            <div class="text-h3 text-weight-medium">R0001</div>
+            <div v-if="currentQueue" class="text-h5 text-weight-bold">
+              {{ currentQueue.queueNumber }}
+            </div>
             <div align="right" class="q-mr-md">
-              <q-btn label="LIST" style="background-color: #fffeb8;" @click="queueListPage" />
+              <q-btn label="LIST" style="background-color: #fffeb8" @click="queueListPage" />
             </div>
           </q-card>
         </q-card-section>
         <!-- buttons -->
         <q-card-section class="row justify-around q-col-gutter-md">
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #b7faff">
+            <q-btn
+              @click="queueDetailsDialog = true"
+              class="action-button"
+              style="background-color: #b7faff"
+            >
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
-                <q-icon name="arrow_right_alt" size="80px" />
-                <div class="text-h4 text-weight-medium">NEXT</div>
+                <q-icon name="wysiwyg" size="80px" />
+                <div class="text-h4 text-weight-medium">VIEW</div>
               </div>
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #fcffc2">
+            <q-btn
+              @click="transferredQueue(currentQueue._id)"
+              class="action-button"
+              style="background-color: #fcffc2"
+            >
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="sync_alt" size="80px" />
                 <div class="text-h4 text-weight-medium">TRANSFER</div>
@@ -71,7 +84,11 @@
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #aafeab">
+            <q-btn
+              @click="doneQueue(currentQueue._id)"
+              class="action-button"
+              style="background-color: #aafeab"
+            >
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="check" size="80px" />
                 <div class="text-h4 text-weight-medium">DONE</div>
@@ -79,7 +96,11 @@
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #fe7e7f">
+            <q-btn
+              @click="cancelQueue(currentQueue._id)"
+              class="action-button"
+              style="background-color: #fe7e7f"
+            >
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="close" size="80px" />
                 <div class="text-h4 text-weight-medium">CANCEL</div>
@@ -87,7 +108,7 @@
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #b7d0ff">
+            <q-btn @click="refreshQueue" class="action-button" style="background-color: #b7d0ff">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="refresh" size="80px" />
                 <div class="text-h4 text-weight-medium">REFRESH</div>
@@ -95,7 +116,7 @@
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn class="action-button" style="background-color: #b7d0ff">
+            <q-btn @click="resetQueue" class="action-button" style="background-color: #b7d0ff">
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="restart_alt" size="80px" />
                 <div class="text-h4 text-weight-medium">RESET</div>
@@ -131,12 +152,10 @@
                 width: 100%;
                 text-align: center;
                 align-content: center;
-
               "
               class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1000</div>
-
+              <div>{{ waitingQueue }}</div>
             </div>
           </div>
           <div class="list-container" style="border: 2px solid #cbcdc7">
@@ -153,7 +172,7 @@
                 align-items: center;
               "
             >
-             # TRANSFERRED QUEUE
+              # TRANSFERRED QUEUE
             </div>
             <div
               style="
@@ -162,12 +181,10 @@
                 width: 100%;
                 text-align: center;
                 align-content: center;
-
               "
               class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1000</div>
-
+              <div v-if="queueInfo">{{ queueInfo.transferredQueue }}</div>
             </div>
           </div>
           <div class="list-container" style="border: 2px solid #cbcdc7">
@@ -196,8 +213,7 @@
               "
               class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1000</div>
-
+              <div v-if="queueInfo">{{ queueInfo.successfulQueue }}</div>
             </div>
           </div>
           <div class="list-container" style="border: 2px solid #cbcdc7">
@@ -214,7 +230,7 @@
                 align-items: center;
               "
             >
-             # MISSED QUEUE
+              # MISSED QUEUE
             </div>
             <div
               style="
@@ -226,24 +242,167 @@
               "
               class="text-h3 q-py-md text-weight-bold"
             >
-              <div>1000</div>
-
+              <div v-if="queueInfo">{{ queueInfo.missedQueue }}</div>
             </div>
           </div>
         </q-card-section>
+
+        <q-dialog v-model="queueDetailsDialog">
+          <q-card class="dialog-card">
+            <q-card-section v-if="queueInfo">
+              <div class="dialog-header">Queue Details</div>
+              <div class="dialog-content">
+                <q-card-section class="student-details">
+                  <div class="section-title">Student Details:</div>
+                  <div class="text-subtitle1">Username: {{ queueInfo.username }}</div>
+                  <div class="text-subtitle1">Student Number: {{ queueInfo.studentNumber }}</div>
+                  <div class="text-subtitle1">First Name: {{ queueInfo.firstName }}</div>
+                  <div class="text-subtitle1">Middle Name: {{ queueInfo.middleName }}</div>
+                  <div class="text-subtitle1">Last Name: {{ queueInfo.lastName }}</div>
+                  <div class="text-subtitle1">Email: {{ queueInfo.email }}</div>
+                  <div class="text-subtitle1">Regular: {{ queueInfo.isRegular }}</div>
+                  <div class="text-subtitle1">Year: {{ queueInfo.year }}</div>
+                  <div class="text-subtitle1">Section: {{ queueInfo.section }}</div>
+                </q-card-section>
+
+                <!-- v-for="course in queueInfo.courses"
+                :key="course.code" -->
+                <q-card-section class="courses-section">
+                  <div class="section-title">Courses to Take:</div>
+                  <div
+                    class="course-item"
+
+                  >
+                    <div>Information Technology (co12) - 12 Units</div>
+                  </div>
+                </q-card-section>
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </div>
     </div>
   </q-page>
 </template>
 
 <script setup>
+/* eslint-disable no-unused-vars */
 import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import axios from 'axios'
 
+const ws = ref(null)
+const queues = ref([])
+const queueInfo = ref(null)
+const waitingQueue = ref(null)
+const currentQueue = ref(null)
 const router = useRouter()
+
+const queueDetailsDialog = ref(true)
+
 async function queueListPage() {
   router.push('/new/queueList')
 }
 
+async function userInfo() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    queueInfo.value = response.data
+    console.log(queueInfo.value)
+    getCurrentQueue(response.data.role)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function getCurrentQueue(role) {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/queues/current/${role}`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    currentQueue.value = response.data.currentQueue[0]
+    console.log(queueInfo.value.courses)
+    waitingQueue.value = response.data.currentQueue.length
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function transferredQueue(queueId) {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.put(`${process.env.api_host}/queues/next/${queueId}`, null, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    getCurrentQueue(queueInfo.value.role)
+    userInfo()
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function doneQueue(queueId) {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.post(`${process.env.api_host}/queues/done/${queueId}`, null, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    getCurrentQueue(queueInfo.value.role)
+    userInfo()
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function resetQueue() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/resetQueue`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    getCurrentQueue(queueInfo.value.role)
+    userInfo()
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function refreshQueue() {
+  getCurrentQueue(queueInfo.value.role)
+  userInfo()
+}
+
+async function cancelQueue(queueId) {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.post(`${process.env.api_host}/queues/cancel/${queueId}`, null, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    getCurrentQueue(queueInfo.value.role)
+    userInfo()
+  } catch (err) {
+    console.error(err)
+  }
+}
+onMounted(() => {
+  userInfo()
+})
 </script>
 
 <style lang="sass" scoped>
@@ -262,6 +421,34 @@ async function queueListPage() {
 .list-container
   width: 300px
 
+
+.dialog-card
+  width: 70vw
+  max-width: 800px
+
+.dialog-header
+  background-color: #2e592d
+  color: white
+  text-align: center
+  font-size: 1.5em
+  padding: 16px
+
+.dialog-content
+  display: flex
+  gap: 16px
+
+.student-details, .courses-section
+  flex: 1
+  padding: 16px
+  border-right: 1px solid black
+
+.section-title
+  font-size: 1.2em
+  font-weight: bold
+  margin-bottom: 8px
+
+.details, .course-item
+  margin-bottom: 8px
 @media (max-width: 1440px)
   .info-box
     width: 300px

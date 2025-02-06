@@ -2,17 +2,14 @@
   <q-page style="height: 90vh">
     <div class="main-container q-pt-md">
       <div class="content-container">
-        <q-card-section
-          style="background-color: #2e592d; color: #ffffff; font-size: 2em"
-          class="q-mx-lg"
-        >
+        <q-card-section class="header-section">
           <div class="text-weight-medium text-center">Queue List</div>
         </q-card-section>
 
         <q-card-section class="q-mt-xl">
           <q-table
             :loading="loading"
-            :rows="row"
+            :rows="rows"
             :columns="columns"
             row-key="id"
             separator="cell"
@@ -21,28 +18,12 @@
             :filter="filter"
           >
             <template v-slot:top>
-              <div
-                class="q-pr-md q-py-sm"
-                style="
-                  display: flex;
-                  width: 100%;
-                  background-color: #2e592d;
-                  color: #ffffff;
-                  align-items: center;
-                "
-              >
-                <q-card-section style="flex: 1"> List of all Queues </q-card-section>
-                <div style="border: 1px solid white">
-                  <q-input
-                    color="white"
-                    v-model="filter"
-                    dense
-                    style="width: 300px; color: white"
-                    input-style="color: white;"
-                    borderless
-                  >
+              <div class="table-header">
+                <q-card-section class="header-title">List of all Queues</q-card-section>
+                <div class="search-box">
+                  <q-input v-model="filter" dense borderless>
                     <template v-slot:append>
-                      <q-icon name="search" color="white" class="q-pr-sm" />
+                      <q-icon name="search" />
                     </template>
                   </q-input>
                 </div>
@@ -55,13 +36,7 @@
                 <q-td>{{ props.row.destination }}</q-td>
                 <q-td>{{ props.row.status }}</q-td>
                 <q-td>
-                  <div>
-                    <q-btn
-                      label="view details"
-                      style="background-color: #ffd95b"
-                      @click="specificQueueDetails(props.row.id)"
-                    />
-                  </div>
+                  <q-btn label="View Details" class="details-btn" @click="specificQueueDetails(props.row.id)" />
                 </q-td>
               </q-tr>
             </template>
@@ -69,77 +44,21 @@
         </q-card-section>
 
         <q-dialog v-model="queueDetailsDialog">
-          <q-card style="width: 70vw; max-width: 800px">
+          <q-card class="dialog-card">
             <q-card-section v-if="queueSummary">
-              <div
-                class="text-center text-uppercase text-h4 text-weight-medium q-py-md"
-                style="
-                  background-color: #2e592d;
-                  display: flex;
-                  justify-content: center;
-                  color: white;
-                "
-              >
-                Queue Details
-              </div>
-              <div style="display: flex">
-                <!-- 1 -->
-                <q-card-section style="width: 70%" class="q-pt-none">
-                  <q-card-section class="q-pl-none text-h6 text-weight-medium q-pt-none">
-                    <div>Student Details:</div>
-                  </q-card-section>
-                  <div class="text-subtitle1 text-weight-bold q-py-sm">
-                    Queue Number: {{ queueSummary.queueNumber }}
-                  </div>
-                  <div class="text-subtitle1 q-py-sm">
-                    Username: {{ queueSummary.student.username }}
-                  </div>
-                  <div class="text-subtitle1 q-py-sm">Email: {{ queueSummary.student.email }}</div>
-                  <div class="text-subtitle1 q-py-sm">
-                    First Name: {{ queueSummary.student.firstName }}
-                  </div>
-                  <div class="text-subtitle1 q-py-sm">
-                    Middle Name: {{ queueSummary.student.middleName }}
-                  </div>
-                  <div class="text-subtitle1 q-py-sm">
-                    Last Name: {{ queueSummary.student.lastName }}
-                  </div>
-                  <div class="text-subtitle1 text-uppercase q-py-sm">
-                    Course: {{ queueSummary.student.course }}
-                  </div>
-                  <div class="text-subtitle1 text-uppercase q-py-sm">
-                    Year: {{ queueSummary.student.year }}
-                  </div>
-                  <div class="text-subtitle1 text-uppercase q-py-sm">
-                    Section: {{ queueSummary.student.section }}
-                  </div>
-                  <div class="text-subtitle1 text-uppercase q-py-sm">
-                    Is Regular: {{ queueSummary.student.isRegular }}
-                  </div>
-                  <div class="text-subtitle1 text-uppercase q-py-sm">
-                    Status: {{ queueSummary.status }}
-                  </div>
-                  <div class="text-subtitle1 text-uppercase q-py-sm">
-                    Destination: {{ queueSummary.destination }}
+              <div class="dialog-header">Queue Details</div>
+              <div class="dialog-content">
+                <q-card-section class="student-details">
+                  <div class="section-title">Student Details:</div>
+                  <div class="details" v-for="(value, key) in studentDetails" :key="key">
+                    <span class="label">{{ key }}:</span> {{ value }}
                   </div>
                 </q-card-section>
-                <!-- 2 -->
-                <q-card-section style="width: 100%; border-left: 1px solid black" class="q-pt-none">
-                  <q-card-section class="q-pl-none text-h6 text-weight-medium q-pt-none">
-                    <div>Courses to Take:</div>
-                  </q-card-section>
-                  <div v-for="course in queueSummary.courseToTake" :key="course">
-                    <div style="display: flex" class="q-mb-sm q-pa-sm">
-                      <div>
-                        <div>Course Name: {{ course.name }}</div>
-                        <div>Course: {{ course.course }}</div>
-                      </div>
-                      <q-space></q-space>
-                      <div>
-                        <div>Course Unit: {{ course.unit }}</div>
-                        <div>Course Code: {{ course.code }}</div>
-                      </div>
-                    </div>
+
+                <q-card-section class="courses-section">
+                  <div class="section-title">Courses to Take:</div>
+                  <div class="course-item" v-for="course in queueSummary.courseToTake" :key="course.code">
+                    <div>{{ course.name }} ({{ course.code }}) - {{ course.unit }} Units</div>
                   </div>
                 </q-card-section>
               </div>
@@ -152,27 +71,40 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 
 const queueDetailsDialog = ref(false)
 const loading = ref(false)
 const filter = ref('')
-const row = ref([])
+const rows = ref([])
+const queueSummary = ref(null)
+
 const columns = [
   { name: 'queueNumber', field: 'queueNumber', label: 'Queue Number', align: 'left' },
   { name: 'student', field: 'student', label: 'Student', align: 'left' },
-  {
-    name: 'destination',
-    field: 'destination',
-    label: 'Destination',
-    align: 'left',
-    sortable: true,
-  },
+  { name: 'destination', field: 'destination', label: 'Destination', align: 'left', sortable: true },
   { name: 'status', field: 'status', label: 'Status', align: 'left', sortable: true },
-  { name: 'action', field: 'action', label: 'Action', align: 'left' },
+  { name: 'action', field: 'action', label: 'Action', align: 'left' }
 ]
-const queueSummary = ref(null)
+
+const studentDetails = computed(() => {
+  if (!queueSummary.value) return {}
+  return {
+    'Queue Number': queueSummary.value.queueNumber,
+    'Username': queueSummary.value.student.username,
+    'Email': queueSummary.value.student.email,
+    'First Name': queueSummary.value.student.firstName,
+    'Middle Name': queueSummary.value.student.middleName,
+    'Last Name': queueSummary.value.student.lastName,
+    'Course': queueSummary.value.student.course,
+    'Year': queueSummary.value.student.year,
+    'Section': queueSummary.value.student.section,
+    'Is Regular': queueSummary.value.student.isRegular,
+    'Status': queueSummary.value.status,
+    'Destination': queueSummary.value.destination
+  }
+})
 
 async function specificQueueDetails(queueId) {
   queueDetailsDialog.value = true
@@ -188,37 +120,86 @@ async function getQueueList() {
   loading.value = true
   try {
     const response = await axios.get(`${process.env.api_host}/queues`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' }
     })
-
-    row.value = response.data.map((queue) => ({
+    rows.value = response.data.map(queue => ({
       id: queue._id,
       queueNumber: queue.queueNumber,
       student: formatStudentName(queue.student),
       destination: queue.destination,
-      status: queue.status,
+      status: queue.status
     }))
   } catch (error) {
-    console.log(error)
+    console.error(error)
   } finally {
     loading.value = false
   }
 }
+
 function formatStudentName(student) {
   if (!student) return ''
-  const middleName = student.middleName ? ` ${student.middleName} ` : ' '
-  return `${student.firstName}${middleName}${student.lastName}`
+  return `${student.firstName} ${student.middleName || ''} ${student.lastName}`.trim()
 }
 
-onMounted(() => {
-  getQueueList()
-})
+onMounted(getQueueList)
 </script>
 
 <style lang="sass" scoped>
 .main-container
   background-color: #dadada
   min-height: 100%
+
+.header-section
+  background-color: #2e592d
+  color: white
+  font-size: 2em
+  text-align: center
+  padding: 16px
+
+.table-header
+  display: flex
+  width: 100%
+  background-color: #2e592d
+  color: white
+  align-items: center
+  padding: 8px
+
+.header-title
+  flex: 1
+  font-weight: bold
+
+.search-box
+  border: 1px solid white
+  padding: 4px
+
+.details-btn
+  background-color: #ffd95b
+
+.dialog-card
+  width: 70vw
+  max-width: 800px
+
+.dialog-header
+  background-color: #2e592d
+  color: white
+  text-align: center
+  font-size: 1.5em
+  padding: 16px
+
+.dialog-content
+  display: flex
+  gap: 16px
+
+.student-details, .courses-section
+  flex: 1
+  padding: 16px
+  border-right: 1px solid black
+
+.section-title
+  font-size: 1.2em
+  font-weight: bold
+  margin-bottom: 8px
+
+.details, .course-item
+  margin-bottom: 8px
 </style>

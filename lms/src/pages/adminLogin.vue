@@ -71,7 +71,7 @@
                   </div>
                   <div>
                     <q-input
-                      type="text"
+                      type="password"
                       v-model="password"
                       label="Password"
                       input-style="color: #f6f8ed"
@@ -115,6 +115,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { Notify } from 'quasar'
 
 // imports
 const loading = ref(false)
@@ -131,9 +133,37 @@ async function backBtn() {
 async function login() {
   loading.value = true
   try {
-    router.replace(`/new/dashboardPage`)
+    const response = await axios.post(
+      `${process.env.api_host}/users/login`,
+      {
+        username: username.value,
+        password: password.value,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+    if (response.status === 200) {
+      const token = response.data.token // Adjust based on your response structure
+      localStorage.setItem('authToken', 'Bearer ' + token) // Save token to local storage
+      Notify.create({ type: 'positive', message: 'Login successful!' })
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      router.replace(`/new/dashboardPage`)
+      // Handle successful login (e.g., redirect or store user info)
+    } else {
+      Notify.create({
+        type: 'negative',
+        message: 'Unexpected response from server.',
+      })
+    }
   } catch (err) {
     console.error(err)
+    Notify.create({
+      message: 'Wrong username or password.',
+      type: 'negative',
+    })
   } finally {
     loading.value = false
   }

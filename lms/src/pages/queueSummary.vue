@@ -36,7 +36,7 @@
               </q-card-section>
               <!-- Student Information -->
               <q-card-section
-                style="border: 3px solid #323e2f;"
+                style="border: 3px solid #323e2f"
                 class="q-mx-sm q-mx-md-xl q-pa-none"
               >
                 <div style="height: 100%">
@@ -53,29 +53,28 @@
                   </div>
 
                   <div class="scroll-container">
-                    <div class="info-grid text-weight-bold">
-                      <div class="info-cell">Username</div>
-                      <div class="info-cell">Email</div>
-                      <div class="info-cell">First Name</div>
-                      <div class="info-cell">Middle Name</div>
-                      <div class="info-cell">Last Name</div>
-                      <div class="info-cell">Course</div>
-                      <div class="info-cell">Year</div>
-                      <div class="info-cell">Section</div>
-                      <div class="info-cell">Regular</div>
-                    </div>
-                    <div
-                      class="info-grid q-pb-lg"
-                    >
-                      <div class="info-cell">{{ queueDetails.student.username }}</div>
-                      <div class="info-cell">{{ queueDetails.student.email }}</div>
-                      <div class="info-cell">{{ queueDetails.student.firstName }}</div>
-                      <div class="info-cell">{{ queueDetails.student.middleName }}</div>
-                      <div class="info-cell">{{ queueDetails.student.lastName }}</div>
-                      <div class="info-cell">{{ queueDetails.student.course }}</div>
-                      <div class="info-cell">{{ queueDetails.student.year }}</div>
-                      <div class="info-cell">{{ queueDetails.student.section }}</div>
-                      <div class="info-cell">{{ queueDetails.student.regular }}</div>
+                    <div class="info-grid">
+                      <div class="info-cell text-h6">
+                        Username: {{ queueDetails.student.username }}
+                      </div>
+                      <div class="info-cell text-h6">Email: {{ queueDetails.student.email }}</div>
+                      <div class="info-cell text-h6">
+                        First Name: {{ queueDetails.student.firstName }}
+                      </div>
+                      <div class="info-cell text-h6">
+                        Middle Name: {{ queueDetails.student.middleName }}
+                      </div>
+                      <div class="info-cell text-h6">
+                        Last Name: {{ queueDetails.student.lastName }}
+                      </div>
+                      <div class="info-cell text-h6">Course: {{ queueDetails.student.course }}</div>
+                      <div class="info-cell text-h6">Year: {{ queueDetails.student.year }}</div>
+                      <div class="info-cell text-h6">
+                        Section: {{ queueDetails.student.section }}
+                      </div>
+                      <div class="info-cell text-h6">
+                        Regular: {{ queueDetails.student.isRegular }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -94,24 +93,18 @@
                   </div>
 
                   <div class="scroll-container">
-                    <div class="course-grid text-weight-bold">
-                      <div class="course-cell">Course Code</div>
-                      <div class="course-cell">Course Name</div>
-                      <div class="course-cell">Course</div>
-                      <div class="course-cell">Course unit</div>
-                      <div class="course-cell">Course Description</div>
-                    </div>
                     <div
+                      class="course-grid text-weight-bold"
                       v-for="course in queueDetails.courseToTake"
                       :key="course._id"
-                      class="course-grid q-pb-md"
                     >
-                      <div class="course-cell">{{ course.code }}</div>
-                      <div class="course-cell">{{ course.name }}</div>
-                      <div class="course-cell">{{ course.course }}</div>
-                      <div class="course-cell">{{ course.unit }}</div>
-                      <div class="course-cell">{{ course.description }}</div>
+                      <div class="course-cell">Course Code: {{ course.code }}</div>
+                      <div class="course-cell">Course Name: {{ course.name }}</div>
+                      <div class="course-cell">Course: {{ course.course }}</div>
+                      <div class="course-cell">Course unit: {{ course.unit }}</div>
+                      <div class="course-cell">Course Description: {{ course.description }}</div>
                     </div>
+
                   </div>
                 </div>
               </q-card-section>
@@ -167,27 +160,28 @@ onMounted(() => {
   width: 100%
   background-color: #fefeff
   padding: 16px 0
-
+  display: flex
 .info-grid
-  display: grid
+  display: flex
+  flex-direction: column
   grid-template-columns: repeat(9, minmax(150px, 1fr))
   gap: 10px
   padding: 20px
   text-align: center
-  min-width: 900px
+
   background-color: #fefeff
-  width: 100%
+
 
 .info-cell
   padding: 8px
   word-break: break-word
   display: flex
-  align-items: center
-  justify-content: center
+
   min-height: 50px
 
 .course-grid
-  display: grid
+  display: flex
+  flex-direction: column
   grid-template-columns: repeat(5, minmax(150px, 1fr))
   gap: 10px
   padding: 20px
@@ -200,8 +194,6 @@ onMounted(() => {
   padding: 8px
   word-break: break-word
   display: flex
-  align-items: center
-  justify-content: center
   min-height: 50px
 
 @media (max-width: 600px)

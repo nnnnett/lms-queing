@@ -197,7 +197,7 @@ async function updateCourses() {
       type: 'positive',
       message: 'Courses updated successfully'
     })
-    router.replace(`/loginPage`)
+    router.replace(`/`)
   } catch (err) {
     console.error(err)
     Notify.create({
