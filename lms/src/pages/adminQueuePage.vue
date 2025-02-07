@@ -74,6 +74,7 @@
           <div class="action-button-container ellipsis">
             <q-btn
               @click="transferredQueue(currentQueue._id)"
+              :loading="loading"
               class="action-button"
               style="background-color: #fcffc2"
             >
@@ -86,6 +87,7 @@
           <div class="action-button-container ellipsis">
             <q-btn
               @click="doneQueue(currentQueue._id)"
+              :loading="loading"
               class="action-button"
               style="background-color: #aafeab"
             >
@@ -98,6 +100,7 @@
           <div class="action-button-container ellipsis">
             <q-btn
               @click="cancelQueue(currentQueue._id)"
+              :loading="loading"
               class="action-button"
               style="background-color: #fe7e7f"
             >
@@ -108,7 +111,12 @@
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn @click="refreshQueue" class="action-button" style="background-color: #b7d0ff">
+            <q-btn
+              :loading="loading"
+              @click="refreshQueue"
+              class="action-button"
+              style="background-color: #b7d0ff"
+            >
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="refresh" size="80px" />
                 <div class="text-h4 text-weight-medium">REFRESH</div>
@@ -116,7 +124,12 @@
             </q-btn>
           </div>
           <div class="action-button-container ellipsis">
-            <q-btn @click="resetQueue" class="action-button" style="background-color: #b7d0ff">
+            <q-btn
+              :loading="loading"
+              @click="resetQueue"
+              class="action-button"
+              style="background-color: #b7d0ff"
+            >
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
                 <q-icon name="restart_alt" size="80px" />
                 <div class="text-h4 text-weight-medium">RESET</div>
@@ -269,11 +282,9 @@
                 :key="course.code" -->
                 <q-card-section class="courses-section">
                   <div class="section-title">Courses to Take:</div>
-                  <div
-                    class="course-item"
-
-                  >
+                  <div class="course-item">
                     <div>Information Technology (co12) - 12 Units</div>
+                    <div class="text-h5 text-weight-bold">Example doy ng course sa queue</div>
                   </div>
                 </q-card-section>
               </div>
@@ -290,15 +301,17 @@
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
+import { Notify } from 'quasar'
 
 const ws = ref(null)
 const queues = ref([])
+const loading = ref(false)
 const queueInfo = ref(null)
 const waitingQueue = ref(null)
 const currentQueue = ref(null)
 const router = useRouter()
 
-const queueDetailsDialog = ref(true)
+const queueDetailsDialog = ref(false)
 
 async function queueListPage() {
   router.push('/new/queueList')
@@ -337,6 +350,7 @@ async function getCurrentQueue(role) {
 }
 
 async function transferredQueue(queueId) {
+  loading.value = true
   const token = localStorage.getItem('authToken')
   try {
     const response = await axios.put(`${process.env.api_host}/queues/next/${queueId}`, null, {
@@ -346,12 +360,23 @@ async function transferredQueue(queueId) {
     })
     getCurrentQueue(queueInfo.value.role)
     userInfo()
+    Notify.create({
+      type: 'positive',
+      message: 'Queue has been transferred successfully',
+    })
   } catch (err) {
     console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Something went wrong',
+    })
+  } finally {
+    loading.value = false
   }
 }
 
 async function doneQueue(queueId) {
+  loading.value = true
   const token = localStorage.getItem('authToken')
   try {
     const response = await axios.post(`${process.env.api_host}/queues/done/${queueId}`, null, {
@@ -361,12 +386,23 @@ async function doneQueue(queueId) {
     })
     getCurrentQueue(queueInfo.value.role)
     userInfo()
+    Notify.create({
+      type: 'positive',
+      message: 'Queue has been marked as done successfully',
+    })
   } catch (err) {
     console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Something went wrong',
+    })
+  } finally {
+    loading.value = false
   }
 }
 
 async function resetQueue() {
+  loading.value = true
   const token = localStorage.getItem('authToken')
   try {
     const response = await axios.get(`${process.env.api_host}/users/resetQueue`, {
@@ -376,17 +412,43 @@ async function resetQueue() {
     })
     getCurrentQueue(queueInfo.value.role)
     userInfo()
+    Notify.create({
+      type: 'positive',
+      message: 'Reset queue successfully',
+    })
   } catch (err) {
     console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Something went wrong',
+    })
+  } finally {
+    loading.value = false
   }
 }
 
 async function refreshQueue() {
-  getCurrentQueue(queueInfo.value.role)
-  userInfo()
+  loading.value = true
+  try {
+    getCurrentQueue(queueInfo.value.role)
+    userInfo()
+    Notify.create({
+      type: 'positive',
+      message: 'Refreshed successfully',
+    })
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Something went wrong',
+    })
+  }finally{
+    loading.value = false
+  }
 }
 
 async function cancelQueue(queueId) {
+  loading.value = true
   const token = localStorage.getItem('authToken')
   try {
     const response = await axios.post(`${process.env.api_host}/queues/cancel/${queueId}`, null, {
@@ -396,8 +458,18 @@ async function cancelQueue(queueId) {
     })
     getCurrentQueue(queueInfo.value.role)
     userInfo()
+    Notify.create({
+      type: 'posotive',
+      message: 'Queue has been cancelled successfully',
+    })
   } catch (err) {
     console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Something went wrong',
+    })
+  }finally{
+    loading.value = false
   }
 }
 onMounted(() => {

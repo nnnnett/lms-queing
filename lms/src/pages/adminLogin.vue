@@ -53,7 +53,7 @@
                 <div>Welcome, Admin!</div>
                 <div>LOG IN</div>
               </q-card-section>
-              <q-card-section class="q-mt-xl">
+              <q-card-section class="q-mt-sm">
                 <!-- double check if email or username need pang login sa admin -->
                 <q-form @submit.prevent="login">
                   <div>
@@ -191,32 +191,19 @@ async function login() {
 @media (max-width: 1024px)
   .login-container
     width: 80%
-    height: auto
-    min-height: 450px
-
   .logo
     width: 250px
-
   .text-h3
     font-size: 2rem !important
-
   .text-h4
     font-size: 1.5rem !important
-
 @media (max-width: 768px)
   .login-container
-    width: 90%
-
+    width: 70%
+  .logo
+    width: 150px
   .sub-container
     flex-direction: column
-
-  .q-card-section
-    border-radius: 14px !important
-    padding-top: 40px !important
-
-  .logo
-    width: 200px
-
   .main-container
     padding-top: 100px
 

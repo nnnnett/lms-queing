@@ -105,7 +105,7 @@ async function login() {
   } catch (err) {
     console.error(err)
     Notify.create({
-      message: 'Something went wrong',
+      message: 'Incorrect username or password.',
       type: 'negative',
     })
   } finally {
