@@ -31,7 +31,7 @@
       </q-item>
     </div>
     <div class="q-py-sm">
-      <q-item @click="router.replace(`/new/`)">
+      <q-item clickable @click="router.replace(`/new/addCourses`)">
         <q-item-section avatar>
           <q-icon name="library_books" />
         </q-item-section>

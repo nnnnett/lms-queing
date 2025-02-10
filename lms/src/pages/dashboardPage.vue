@@ -90,6 +90,12 @@ const columns = ref([
     field: 'email',
   },
   {
+    name: 'username',
+    align: 'left',
+    label: 'Username',
+    field: 'username',
+  },
+  {
     name: 'program',
     align: 'left',
     label: 'Program',
@@ -127,6 +133,7 @@ async function getUsers() {
     rows.value = response.data.map(student => ({
       studentId: student.studentNumber,
       name: `${student.firstName} ${student.middleName ? student.middleName + ' ' : ''}${student.lastName}`.trim(),
+      username: student.username,
       email: student.email,
       program: student.course,
       year: student.year,
