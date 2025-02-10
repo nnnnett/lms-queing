@@ -14,30 +14,34 @@
         <!-- Main Content -->
         <q-card-section class="flex flex-center">
           <div class="content-width">
-            <q-card-section class="text-center q-mt-md" style="color: #333332;">
+            <q-card-section class="text-center q-mt-md" style="color: #333332">
               <div class="text-h4 text-weight-bold text-uppercase">queuing</div>
             </q-card-section>
             <q-card-section class="container-queuing" v-if="queueData">
               <q-card-section class="flex flex-center column">
-                <div style="color: #333332;" class="qrContainer">
+                <div style="color: #333332" class="qrContainer">
                   <q-card-section class="q-py-none">
                     <div class="queue-title text-uppercase text-center q-py-md text-weight-medium">
                       queuing number
                     </div>
                   </q-card-section>
                   <q-card-section class="q-py-none">
-                    <div class="queue-number text-uppercase text-center text-weight-bold" style="color: green;">
-                      {{queueData.queueNumber}}
+                    <div
+                      class="queue-number text-uppercase text-center text-weight-bold"
+                      style="color: green"
+                    >
+                      {{ queueData.queueNumber }}
                     </div>
                   </q-card-section>
                   <q-card-section class="q-py-none">
                     <div class="certificate-text text-center q-py-md text-weight-medium">
-                      Release of Certificate <br> of Registration
+                      Release of Certificate <br />
+                      of Registration
                     </div>
                   </q-card-section>
                   <q-card-section class="q-py-none flex flex-center">
                     <div class="qr-wrapper">
-                        <qrcode :value="qrValue" v-if="queueData" :size="qrSize" />
+                      <qrcode :value="qrValue" v-if="queueData" :size="qrSize" />
                     </div>
                   </q-card-section>
                   <q-card-section class="q-py-none">
@@ -46,9 +50,16 @@
                     </div>
                   </q-card-section>
                 </div>
-
+                <div class="print-btn q-mt-lg">
+                  <q-btn style="width: 100%; height: 100%" flat label="Print" @click="printQr"  />
+                </div>
                 <div class="done-btn q-mt-lg">
-                  <q-btn style="width: 100%; height: 100%" flat label="Done" @click="handleLogout"/>
+                  <q-btn
+                    style="width: 100%; height: 100%"
+                    flat
+                    label="Done"
+                    @click="handleLogout"
+                  />
                 </div>
               </q-card-section>
             </q-card-section>
@@ -60,7 +71,7 @@
 </template>
 
 <script setup>
-import Qrcode from "qrcode.vue";
+import Qrcode from 'qrcode.vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
@@ -68,7 +79,7 @@ import { Notify } from 'quasar'
 // router
 const route = useRoute()
 const router = useRouter()
-const queueId =  route.params.queueId
+const queueId = route.params.queueId
 
 const queueData = ref(null)
 
@@ -78,35 +89,70 @@ const qrValue = ref(`https://queing.vercel.app/#/queueSummary/${queueId}`)
 const qrSize = ref(150)
 
 async function getQueue() {
-  try{
+  try {
     const response = await axios.get(`${process.env.api_host}/queues?query=${queueId}`)
     queueData.value = response.data[0]
-  }catch(err){
+  } catch (err) {
     console.error(err)
   }
 }
 
-
 const clearLocalStorage = () => {
-  localStorage.clear();
-};
+  localStorage.clear()
+}
 const handleLogout = async () => {
   try {
     // Clear localStorage when logging out
-    clearLocalStorage();
+    clearLocalStorage()
     // Show a notification
-    Notify.create({ type: "positive", message: "Queuing number has been released" });
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    Notify.create({ type: 'positive', message: 'Queuing number has been released' })
+    await new Promise((resolve) => setTimeout(resolve, 500))
     // Redirect to the login page
-    router.replace("/");
+    router.replace('/')
   } catch (error) {
     // If an error occurs during logout
-    Notify.create({ type: "negative", message: "Error during logout" });
-    console.error(error);
+    Notify.create({ type: 'negative', message: 'Error during logout' })
+    console.error(error)
   } finally {
     // await isLogin();
   }
-};
+}
+
+async function printQr() {
+  const queueNumber = queueData.value.queueNumber;
+  const qrCanvas = document.querySelector('.qr-wrapper canvas');
+
+  if (!queueNumber || !qrCanvas) {
+    console.error('Queue number or QR code not found');
+    return;
+  }
+
+  const qrImage = qrCanvas.toDataURL(); // Capture the QR code as an image
+
+  const printWindow = window.print('', '_blank');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Queue Ticket</title>
+        <style>
+          body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+          .queue-number { font-size: 24px; font-weight: bold; color: green; margin-bottom: 20px; }
+          .qr-wrapper img { margin: 0 auto; }
+        </style>
+      </head>
+      <body>
+        <div class="queue-number">Q-${queueNumber}</div>
+        <div class="qr-wrapper">
+          <img src="${qrImage}" alt="QR Code">
+        </div>
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.print();
+}
+
 
 // Update QR size based on screen width
 onMounted(() => {
@@ -119,7 +165,6 @@ onMounted(() => {
   updateQrSize()
   window.addEventListener('resize', updateQrSize)
 })
-
 </script>
 
 <style lang="sass" scoped>
@@ -168,6 +213,15 @@ onMounted(() => {
 .done-btn
   width: 120px
   background-color: #31562d
+  color: #ffffff
+  height: 50px
+  border-radius: 5px
+  @media (max-width: 600px)
+    width: 100px
+    height: 40px
+.print-btn
+  width: 120px
+  background-color: #F2C037
   color: #ffffff
   height: 50px
   border-radius: 5px
