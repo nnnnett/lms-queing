@@ -43,18 +43,6 @@
                           <q-input v-model="ProgramCode" type="text" borderless />
                         </div>
                       </div>
-                      <div class="col-12 col-sm-4">
-                        <div class="text-subtitle2 q-mb-sm">Total No. of Courses</div>
-                        <div class="input-field">
-                          <q-input v-model="totalCourse" type="number" borderless />
-                        </div>
-                      </div>
-                      <div class="col-12 col-sm-4">
-                        <div class="text-subtitle2 q-mb-sm">Total Units</div>
-                        <div class="input-field">
-                          <q-input v-model="totalUnit" type="number" borderless />
-                        </div>
-                      </div>
                     </div>
                   </q-card-section>
                   <q-card-actions align="right">
@@ -108,9 +96,10 @@
                         flat
                         dense
                         size="sm"
+                        :loading="loading"
                         icon="delete"
                         color="negative"
-                        @click="deleteProgram(props.row.program)"
+                        @click="deleteProgram(props.row.action)"
                       >
                         <q-tooltip>Delete</q-tooltip>
                       </q-btn>
@@ -135,7 +124,7 @@
         <div>
           <q-dialog v-model="editProgramPopUp" persistent>
             <q-card style="width: 800px; max-width: 95vw">
-              <q-form @submit.prevent="editProgram">
+              <q-form @submit.prevent="editProgram(editForm.action)">
                 <div class="q-pa-md">
                   <q-card-section class="text-h6 text-weight-medium" style="color: #282726">
                     Edit Program
@@ -198,8 +187,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+/* eslint-disable no-unused-vars */
+import { ref, onMounted } from 'vue'
 import { Notify } from 'quasar'
+import axios from 'axios'
 
 // loading
 const loading = ref(false)
@@ -208,9 +199,6 @@ const editProgramPopUp = ref(false)
 // program input
 const programTitle = ref('')
 const ProgramCode = ref('')
-const totalCourse = ref('')
-const totalUnit = ref('')
-
 const addProgramPopUp = ref(false)
 // table
 const filter = ref('')
@@ -267,62 +255,6 @@ const columns = ref([
   },
 ])
 const rows = ref([
-  {
-    program: 'BSIT',
-    programTitle: 'Bachelor of Science in Information Technology',
-    numCourse: 50,
-    numUnits: 104,
-    numEnrolled: 30,
-  },
-  {
-    program: 'BSCS',
-    programTitle: 'Bachelor of Science in Computer Science',
-    numCourse: 48,
-    numUnits: 98,
-    numEnrolled: 25,
-  },
-  {
-    program: 'BSIS',
-    programTitle: 'Bachelor of Science in Information Systems',
-    numCourse: 45,
-    numUnits: 96,
-    numEnrolled: 20,
-  },
-  {
-    program: 'BSEMC',
-    programTitle: 'Bachelor of Science in Entertainment and Multimedia Computing',
-    numCourse: 52,
-    numUnits: 108,
-    numEnrolled: 15,
-  },
-  {
-    program: 'ACT',
-    programTitle: 'Associate in Computer Technology',
-    numCourse: 30,
-    numUnits: 68,
-    numEnrolled: 40,
-  },
-  {
-    program: 'BSECE',
-    programTitle: 'Bachelor of Science in Electronics and Communications Engineering',
-    numCourse: 55,
-    numUnits: 112,
-    numEnrolled: 35,
-  },
-  {
-    program: 'BSCE',
-    programTitle: 'Bachelor of Science in Computer Engineering',
-    numCourse: 53,
-    numUnits: 106,
-    numEnrolled: 28,
-  },
-  {
-    program: 'MIT',
-    programTitle: 'Master in Information Technology',
-    numCourse: 36,
-    numUnits: 72,
-    numEnrolled: 12,
-  },
 ])
 
 // Edit form state
@@ -335,35 +267,91 @@ const editForm = ref({
 })
 
 async function addProgram() {
-  loading.value = true
+  loading.value = true;
   try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(
+      `${process.env.api_host}/courses/createProgram`,
+      {
+        code: ProgramCode.value,
+        name: programTitle.value,
+      },
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
     Notify.create({
-      type: 'positive',
-      message: 'program added',
-    })
+      type: "positive",
+      message: "Program added successfully!",
+    });
+
+    // Reset input fields
+    programTitle.value = "";
+    ProgramCode.value = "";
+
+    // Refresh table data
+    fetchPrograms();
   } catch (err) {
-    console.error(err)
+    console.error(err);
   } finally {
-    loading.value = false
-    addProgramPopUp.value = false
+    loading.value = false;
+    addProgramPopUp.value = false;
   }
 }
 
-// Function to open edit dialog
+async function fetchPrograms() {
+  try {
+    const token = localStorage.getItem("authToken");
+    const response = await axios.get(`${process.env.api_host}/courses/getProgram?isArchived=false`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    rows.value = response.data.map((program, index) => ({
+      index: index + 1,
+      program: program.code,
+      programTitle: program.name,
+      numCourse: program.numCourse || 0,
+      numUnits: program.numUnits || 0,
+      numEnrolled: program.numEnrolled || 0,
+      action: program._id,
+    }));
+  } catch (err) {
+    console.error("Error fetching programs:", err);
+  }
+}
 function openEditDialog(program) {
   editForm.value = {
     programTitle: program.programTitle,
     program: program.program,
-    numCourse: program.numCourse,
-    numUnits: program.numUnits,
-    numEnrolled: program.numEnrolled,
+    action: program.action,
   }
   editProgramPopUp.value = true
 }
-async function editProgram() {
+
+
+
+async function editProgram(program_id) {
+  console.log('Editing program:', program_id)
   loading.value = true
   try {
-    console.log('Editing program:', editForm.value)
+    const token  = localStorage.getItem("authToken");
+    const response = await axios.post(`${process.env.api_host}/courses/updateProgram/${program_id}`,
+    {
+      code: editForm.value.program,
+      name: editForm.value.programTitle,
+    },
+    {
+      headers:{
+        Authorization: token,
+        "Content-Type": "application/json",
+      }
+    }
+    )
     Notify.create({
       type: 'positive',
       message: 'program edited',
@@ -372,27 +360,53 @@ async function editProgram() {
   } catch (err) {
     console.error(err)
   } finally {
+    fetchPrograms()
     loading.value = false
   }
 }
 
 // Function to handle program deletion
-function deleteProgram(programCode) {
-  console.log('Deleting program:', programCode)
+async function deleteProgram(program_id) {
+  console.log('Deleting program:', program_id)
+  loading.value = true
+  try{
+    const token = localStorage.getItem("authToken");
+    const response = await axios.post(`${process.env.api_host}/courses/updateProgram/${program_id}`,
+    {
+      isArchived: true,
+    },
+    {
+      headers:{
+           Authorization: token,
+        "Content-Type": "application/json",
+      }
+    }
+  )
   Notify.create({
     type: 'positive',
     message: 'program deleted',
   })
-  // TODO: Implement delete functionality
-}
+  }catch(err){
+    console.error(err)
+    Notify.create({
+    type: 'negative',
+    message: 'Something Went Wrong',
+  })
+  }finally{
+    fetchPrograms()
+    loading.value = false
+  }
 
+}
 async function cancelAdd() {
   ;(programTitle.value = ''),
     (ProgramCode.value = ''),
-    (totalCourse.value = ''),
-    (totalUnit.value = ''),
     (addProgramPopUp.value = false)
 }
+
+onMounted(() => {
+  fetchPrograms();
+});
 </script>
 
 <style lang="sass" scoped>
