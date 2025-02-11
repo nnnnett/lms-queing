@@ -645,7 +645,6 @@ async function getAllStudents() {
         message: 'Invalid data format received from server',
       })
     }
-    console.log(response)
   } catch (err) {
     console.error(err)
     rows.value = []
@@ -762,7 +761,6 @@ async function confirmDelete() {
 }
 
 async function resetPassword(studentId) {
-  console.log(studentId)
   loading.value = true
   try {
     const token = localStorage.getItem('authToken')
@@ -778,7 +776,7 @@ async function resetPassword(studentId) {
         },
       },
     )
-    console.log(response)
+
     Notify.create({
       type: 'positive',
       message: 'Password reset successfully',

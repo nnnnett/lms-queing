@@ -39,13 +39,13 @@
                         <q-btn-dropdown flat dropdown-icon="more_vert">
                           <q-list>
                             <div>
-                              <q-btn label="Edit" no-caps flat style="width: 100%;" @click="openEditDialog(props.row)"/>
+                              <q-btn label="Edit" no-caps flat style="width: 100%;" color="primary" @click="openEditDialog(props.row)"/>
                             </div>
                             <div>
-                              <q-btn label="Delete" no-caps flat style="width: 100%;"/>
+                              <q-btn label="Delete" no-caps flat style="width: 100%;color: red;" @click="deleteUserDialog(props.row.id)"/>
                             </div>
                             <div>
-                              <q-btn :loading="loading" label="Send Email" no-caps flat style="width: 100%;" />
+                              <q-btn :loading="loading" label="Send Email"  no-caps flat style="width: 100%;color: green;" />
                             </div>
                           </q-list>
                         </q-btn-dropdown>
@@ -75,6 +75,20 @@
             </div>
           </q-card-section>
         </q-card-section>
+        <!-- delete user dialog -->
+        <q-dialog v-model="deleteUserDialogPopup" persistent>
+          <q-card>
+            <q-card-section>
+              <div class="text-h6 text-weight-medium q-py-md">Delete User</div>
+              <div class="text-subtitle1 q-pb-md">Are you sure you want to delete this user?</div>
+              <div align="right">
+                <q-btn flat v-close-popup label="Cancel" color="primary" />
+                <q-btn flat v-close-popup label="Delete" style="color: red;" @click="deleteUser" :loading="deleteLoading" />
+              </div>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+        <!-- create user dialog -->
         <q-dialog v-model="createAccountDialog" persistent>
           <q-card style="width: 1000px; max-width: 1200px">
             <q-card-section style="width: 100%" class="flex flex-center">
@@ -365,10 +379,11 @@ import axios from 'axios'
 
 const createAccountDialog = ref(false)
 const loading = ref(false)
+const deleteLoading = ref(false)
 const tableLoading = ref(false)
 const editDialog = ref(false)
 const selectedUser = ref(null)
-
+const deleteUserDialogPopup = ref(false)
 // Form data
 
 const firstName = ref('')
@@ -379,6 +394,7 @@ const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const role = ref(null)
+
 // Select options
 const roleOptions = ['registrar', 'osas', 'cashier', 'admin ']
 
@@ -484,6 +500,7 @@ async function createAccount() {
         },
       },
     )
+    getusers()
     Notify.create({
       type: 'positive',
       message: 'Account Created Successfully',
@@ -511,7 +528,7 @@ async function createAccount() {
 async function getusers() {
   tableLoading.value = true
   try {
-    const response = await axios.get(`${process.env.api_host}/users`)
+    const response = await axios.get(`${process.env.api_host}/users?isArchived=false`)
     // Filter out students and map to required fields
     rows.value = response.data
       .filter(user => user.role !== 'student')
@@ -521,10 +538,11 @@ async function getusers() {
         role: user.role,
         name: `${user.firstName} ${user.middleName || ''} ${user.lastName}`.trim(),
         email: user.email,
-        // Store full user data for editing
+     // Store full user data for editing
         fullData: user
       }))
-      getusers()
+
+      console.log(rows.value)
   } catch (err) {
     console.error(err)
     Notify.create({
@@ -547,12 +565,48 @@ function openEditDialog(user) {
   editDialog.value = true
 }
 
+async function deleteUserDialog(studentId) {
+  selectedUser.value = studentId
+  deleteUserDialogPopup.value = true
+}
+
+async function deleteUser() {
+  deleteLoading.value = true
+  try{
+    const token = localStorage.getItem('authToken')
+    const response = await axios.post(`${process.env.api_host}/users/update/${selectedUser.value}`,
+      {
+        isArchived: true,
+      },{
+        headers:{
+          'Content-Type': 'application/json',
+          authorization: token,
+        }
+      }
+    )
+    Notify.create({
+      type: 'positive',
+      message: 'User deleted successfully',
+    })
+    getusers()
+  }catch(err){
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Error deleting user',
+    })
+  }finally{
+    deleteUserDialogPopup.value = false
+    deleteLoading.value = false
+  }
+}
+
 async function updateUser() {
   loading.value = true
   const token = localStorage.getItem('authToken')
   try {
-    const response = await axios.put(
-      `${process.env.api_host}/users/${selectedUser.value._id}`,
+    const response = await axios.post(
+      `${process.env.api_host}/users/update/${selectedUser.value._id}`,
       {
         firstName: firstName.value,
         middleName: middleName.value,
