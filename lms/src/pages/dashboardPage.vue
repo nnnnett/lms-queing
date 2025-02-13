@@ -60,6 +60,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+
 const columns = ref([
   {
     name: '#',
@@ -129,7 +130,7 @@ const rows = ref([])
 
 async function getUsers() {
   try {
-    const response = await axios.get(`${process.env.api_host}/users?role=student`)
+    const response = await axios.get(`${process.env.api_host}/users?role=student&&isArchived=false`)
     rows.value = response.data.map(student => ({
       studentId: student.studentNumber,
       name: `${student.firstName} ${student.middleName ? student.middleName + ' ' : ''}${student.lastName}`.trim(),
@@ -144,6 +145,9 @@ async function getUsers() {
     console.error('Error fetching users:', error)
   }
 }
+
+
+
 
 onMounted(() => {
   getUsers()

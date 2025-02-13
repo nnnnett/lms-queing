@@ -14,53 +14,12 @@
               no-caps
               flat
               class="action-button"
-              @click="addProgramPopUp = true"
+              @click="router.push('/new/addProgramPage')"
             />
           </q-card-section>
         </div>
         <!-- add Program -->
-        <div>
-          <q-dialog v-model="addProgramPopUp" persistent>
-            <q-card style="width: 800px; max-width: 95vw">
-              <q-form @submit.prevent="addProgram">
-                <div class="q-pa-md">
-                  <q-card-section class="text-h6 text-weight-medium" style="color: #282726">
-                    Add Program
-                  </q-card-section>
-                  <q-card-section>
-                    <div class="row q-col-gutter-md">
-                      <div class="col-12">
-                        <div class="text-subtitle2 q-mb-sm">Program Title</div>
-                        <div class="input-field">
-                          <q-input v-model="programTitle" type="text" borderless />
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row q-col-gutter-md">
-                      <div class="col-12 col-sm-4">
-                        <div class="text-subtitle2 q-mb-sm">Program Code</div>
-                        <div class="input-field">
-                          <q-input v-model="ProgramCode" type="text" borderless />
-                        </div>
-                      </div>
-                    </div>
-                  </q-card-section>
-                  <q-card-actions align="right">
-                    <q-btn flat label="Close" @click="cancelAdd" color="red-8" class="q-px-md" />
-                    <q-btn
-                      :loading="loading"
-                      type="submit"
-                      flat
-                      label="Add"
-                      class="q-px-md"
-                      style="background-color: #306b30; color: #ffffff; width: 100px"
-                    />
-                  </q-card-actions>
-                </div>
-              </q-form>
-            </q-card>
-          </q-dialog>
-        </div>
+
         <!-- table -->
         <div class="q-mt-lg">
           <q-table
@@ -106,7 +65,13 @@
                     </div>
                   </template>
                   <template v-else>
-                    {{ props.row[col.name] }}
+                    <span :title="props.row[col.name]">
+                      {{
+                        props.row[col.name]?.length > 50
+                          ? props.row[col.name].slice(0, 50) + '...'
+                          : props.row[col.name]
+                      }}
+                    </span>
                   </template>
                 </q-td>
               </q-tr>
@@ -120,7 +85,7 @@
             </template>
           </q-table>
         </div>
-        <!-- edit program -->
+        <!-- edit course -->
         <div>
           <q-dialog v-model="editProgramPopUp" persistent>
             <q-card style="width: 800px; max-width: 95vw">
@@ -132,23 +97,23 @@
                   <q-card-section>
                     <div class="row q-col-gutter-md">
                       <div class="col-12">
-                        <div class="text-subtitle2 q-mb-sm">Program Title</div>
+                        <div class="text-subtitle2 q-mb-sm">Course Name</div>
                         <div class="input-field">
-                          <q-input v-model="editForm.programTitle" type="text" borderless />
+                          <q-input v-model="editForm.courseName" type="text" borderless />
                         </div>
                       </div>
                     </div>
                     <div class="row q-col-gutter-md">
                       <div class="col-12 col-sm-4">
-                        <div class="text-subtitle2 q-mb-sm">Program Code</div>
+                        <div class="text-subtitle2 q-mb-sm">Program</div>
                         <div class="input-field">
-                          <q-input v-model="editForm.program" type="text" borderless />
+                          <q-input v-model="editForm.courseTitle" type="text" borderless />
                         </div>
                       </div>
                       <div class="col-12 col-sm-4">
-                        <div class="text-subtitle2 q-mb-sm">Total No. of Courses</div>
+                        <div class="text-subtitle2 q-mb-sm">Course Code</div>
                         <div class="input-field">
-                          <q-input v-model="editForm.numCourse" type="number" borderless />
+                          <q-input v-model="editForm.courseCode" type="text" borderless />
                         </div>
                       </div>
                       <div class="col-12 col-sm-4">
@@ -158,6 +123,15 @@
                         </div>
                       </div>
                     </div>
+                    <div class="row q-col-gutter-md">
+                      <div class="col-12">
+                        <div class="text-subtitle2 q-mb-sm">Course Description</div>
+                        <div class="input-field">
+                          <q-input v-model="editForm.description" type="textarea" borderless />
+                        </div>
+                      </div>
+                    </div>
+
                   </q-card-section>
                   <q-card-actions align="right">
                     <q-btn
@@ -191,17 +165,26 @@
 import { ref, onMounted } from 'vue'
 import { Notify } from 'quasar'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 // loading
 const loading = ref(false)
-
+const router = useRouter()
 const editProgramPopUp = ref(false)
-// program input
-const programTitle = ref('')
-const ProgramCode = ref('')
+// course input
+const courseTitle = ref('')
+const courseCode = ref('')
+const courseProgram = ref('')
+const totalUnits = ref('')
+const courseDescription = ref('')
+const coursePrerequisite = ref('')
+const optionPrerequisite = ref({
+  option: ['sdass', 'asdsd'],
+})
 const addProgramPopUp = ref(false)
 // table
 const filter = ref('')
+
 const columns = ref([
   {
     name: '#',
@@ -212,25 +195,25 @@ const columns = ref([
     sortable: true,
   },
   {
-    name: 'program',
+    name: 'courseCode',
     required: true,
-    label: 'Program Code',
+    label: 'Course Code',
     align: 'left',
-    field: 'program',
+    field: 'courseCode',
     sortable: true,
   },
   {
-    name: 'programTitle',
+    name: 'courseName',
     align: 'left',
-    label: 'Program Title',
-    field: 'programTitle',
+    label: 'Course Name',
+    field: 'courseName',
     sortable: true,
   },
   {
-    name: 'numCourse',
+    name: 'courseTitle',
     align: 'left',
-    label: 'Total Number of Course',
-    field: 'numCourse',
+    label: 'Program',
+    field: 'courseTitle',
     sortable: true,
   },
   {
@@ -241,10 +224,17 @@ const columns = ref([
     sortable: true,
   },
   {
-    name: 'numEnrolled',
+    name: 'description',
     align: 'left',
-    label: 'Total Number of Enrolled',
-    field: 'numEnrolled',
+    label: 'Description',
+    field: 'description',
+    sortable: true,
+  },
+  {
+    name: 'prerequisite',
+    align: 'left',
+    label: 'Prerequisite',
+    field: 'prerequisite',
     sortable: true,
   },
   {
@@ -254,107 +244,112 @@ const columns = ref([
     field: 'action',
   },
 ])
-const rows = ref([
+const rows = ref([])
+const selectedPrerequisites = ref([]);
+const prerequisiteFilter = ref('')
+const prerequisiteColumns = [
+  { name: 'select', label: 'Select', align: 'left', field: 'select' },
+  { name: 'name', label: 'Course Name', align: 'left', field: (row) => row.name || 'N/A' },
+  { name: 'code', label: 'Course Code', align: 'left', field: (row) => row.code || 'N/A' },
+  { name: 'unit', label: 'Units', align: 'left', field: (row) => row.unit || 'N/A' },
+]
+// Course list (Make sure this is populated)
+
+const prerequisiteRows = ref([
+  {
+    id: 1,
+    course: 'None',
+  },
+  {
+    id: 2,
+    course: 'DCIT1',
+  },
 ])
+
+async function getCourses() {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: token,
+      },
+    })
+    console.log(response.data)
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 // Edit form state
 const editForm = ref({
-  programTitle: '',
-  program: '',
-  numCourse: '',
+  courseTitle: '',
+  courseCode: '',
   numUnits: '',
-  numEnrolled: '',
+  description: '',
 })
 
-async function addProgram() {
-  loading.value = true;
-  try {
-    const token = localStorage.getItem("authToken");
-    const response = await axios.post(
-      `${process.env.api_host}/courses/createProgram`,
-      {
-        code: ProgramCode.value,
-        name: programTitle.value,
-      },
-      {
-        headers: {
-          Authorization: token,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    Notify.create({
-      type: "positive",
-      message: "Program added successfully!",
-    });
-
-    // Reset input fields
-    programTitle.value = "";
-    ProgramCode.value = "";
-
-    // Refresh table data
-    fetchPrograms();
-  } catch (err) {
-    console.error(err);
-  } finally {
-    loading.value = false;
-    addProgramPopUp.value = false;
-  }
-}
 
 async function fetchPrograms() {
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axios.get(`${process.env.api_host}/courses/getProgram?isArchived=false`, {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
       headers: {
         Authorization: token,
       },
-    });
-    rows.value = response.data.map((program, index) => ({
+    })
+    rows.value = response.data.map((course, index) => ({
       index: index + 1,
-      program: program.code,
-      programTitle: program.name,
-      numCourse: program.numCourse || 0,
-      numUnits: program.numUnits || 0,
-      numEnrolled: program.numEnrolled || 0,
-      action: program._id,
-    }));
+      courseCode: course.code,
+      courseTitle: course.course,
+      courseName: course.name,
+      description: course.description,
+      prerequisite: course.prerequisite.length
+        ? course.prerequisite.map((prereq) => prereq.name).join(', ')
+        : '',
+      numUnits: course.unit || 0,
+      action: course._id,
+    }))
   } catch (err) {
-    console.error("Error fetching programs:", err);
+    console.error('Error fetching programs:', err)
   }
 }
-function openEditDialog(program) {
+
+function openEditDialog(course) {
   editForm.value = {
-    programTitle: program.programTitle,
-    program: program.program,
-    action: program.action,
+    courseTitle: course.courseTitle,
+    courseName: course.courseName,
+    courseCode: course.courseCode,
+    numUnits: course.numUnits,
+    description: course.description,
+    action: course.action,
   }
   editProgramPopUp.value = true
 }
 
-
-
-async function editProgram(program_id) {
-  console.log('Editing program:', program_id)
+async function editProgram(course_id) {
   loading.value = true
   try {
-    const token  = localStorage.getItem("authToken");
-    const response = await axios.post(`${process.env.api_host}/courses/updateProgram/${program_id}`,
-    {
-      code: editForm.value.program,
-      name: editForm.value.programTitle,
-    },
-    {
-      headers:{
-        Authorization: token,
-        "Content-Type": "application/json",
-      }
-    }
+    const token = localStorage.getItem('authToken')
+    const response = await axios.post(
+      `${process.env.api_host}/courses/updateCourse/${course_id}`,
+      {
+        code: editForm.value.courseCode,
+        course: editForm.value.courseName,
+        name: editForm.value.courseTitle,
+        description: editForm.value.description,
+        unit: editForm.value.numUnits,
+      },
+      {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
+      },
     )
     Notify.create({
       type: 'positive',
-      message: 'program edited',
+      message: 'course edited',
     })
     editProgramPopUp.value = false
   } catch (err) {
@@ -365,48 +360,48 @@ async function editProgram(program_id) {
   }
 }
 
-// Function to handle program deletion
-async function deleteProgram(program_id) {
-  console.log('Deleting program:', program_id)
+// Function to handle course deletion
+async function deleteProgram(course_id) {
+
   loading.value = true
-  try{
-    const token = localStorage.getItem("authToken");
-    const response = await axios.post(`${process.env.api_host}/courses/updateProgram/${program_id}`,
-    {
-      isArchived: true,
-    },
-    {
-      headers:{
-           Authorization: token,
-        "Content-Type": "application/json",
-      }
-    }
-  )
-  Notify.create({
-    type: 'positive',
-    message: 'program deleted',
-  })
-  }catch(err){
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.post(
+      `${process.env.api_host}/courses/updateCourse/${course_id}`,
+      {
+        isArchived: true,
+      },
+      {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+    Notify.create({
+      type: 'positive',
+      message: 'course deleted',
+    })
+    fetchPrograms()
+  } catch (err) {
     console.error(err)
     Notify.create({
-    type: 'negative',
-    message: 'Something Went Wrong',
-  })
-  }finally{
-    fetchPrograms()
+      type: 'negative',
+      message: 'Something Went Wrong',
+    })
+  } finally {
+    // fetchPrograms()
     loading.value = false
   }
-
 }
 async function cancelAdd() {
-  ;(programTitle.value = ''),
-    (ProgramCode.value = ''),
-    (addProgramPopUp.value = false)
+  ;(courseTitle.value = ''), (courseCode.value = ''), (addProgramPopUp.value = false)
 }
 
 onMounted(() => {
-  fetchPrograms();
-});
+  getCourses()
+  fetchPrograms()
+})
 </script>
 
 <style lang="sass" scoped>

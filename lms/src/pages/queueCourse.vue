@@ -55,7 +55,17 @@
                       <q-td>{{ props.row.name }}</q-td>
                       <q-td>{{ props.row.unit }}</q-td>
                       <q-td>{{ props.row.course }}</q-td>
-                      <q-td>{{ props.row.description }}</q-td>
+                      <q-td>{{ props.row.prerequisites }}</q-td>
+                      <q-td>
+                        <q-tooltip v-if="props.row.description.length > 50">
+                          {{ props.row.description }}
+                        </q-tooltip>
+                        {{
+                          props.row.description.length > 50
+                            ? props.row.description.substring(0, 50) + '...'
+                            : props.row.description
+                        }}
+                      </q-td>
                     </q-tr>
                   </template>
                 </q-table>
@@ -158,12 +168,20 @@ const columns = ref([
     field: 'course',
   },
   {
+    name: 'prerequisites',
+    label: 'Prerequisites',
+    align: 'left',
+    field: 'prerequisites', // This will now show prerequisite names
+  },
+  {
     name: 'description',
     label: 'Description',
     align: 'left',
-    field: 'description',
+    field: (row) =>
+      row.description.length > 50 ? row.description.substring(0, 50) + '...' : row.description,
   },
 ])
+
 const prerequisitesRow = ref([])
 const prerequisitesColumn = ref([
   {
@@ -190,8 +208,15 @@ async function getCourses() {
         authorization: token,
       },
     })
+
     if (response.data && Array.isArray(response.data)) {
-      rows.value = response.data
+      rows.value = response.data.map((course) => ({
+        ...course,
+        prerequisites:
+          course.prerequisite && course.prerequisite.length > 0
+            ? course.prerequisite.map((prereq) => prereq.name).join(', ')
+            : 'None', // Display "None" if no prerequisites
+      }))
     } else {
       console.error('Invalid response format:', response)
       rows.value = []
@@ -205,7 +230,7 @@ async function getCourses() {
     rows.value = []
     Notify.create({
       type: 'negative',
-      message: 'Failed to fetch students data',
+      message: 'Failed to fetch courses data',
     })
   } finally {
     tableLoading.value = false
@@ -236,12 +261,11 @@ async function checkCourse() {
       },
     )
     if (response.data.missing) {
-      // Transform the missingPrerequisites data for the table
       prerequisitesRow.value = Object.entries(response.data.missingPrerequisites).map(
         ([course, prerequisites]) => ({
           id: course,
           course: course,
-          prerequisites: prerequisites.map((prereq) => prereq.name).join(', '),
+          prerequisites: prerequisites.map((prereq) => prereq.name).join(', '), // Extract only the names
         }),
       )
       Notify.create({
@@ -255,15 +279,18 @@ async function checkCourse() {
         message: response.data.message,
       })
 
-      const createQueueResponse = await axios.post(`${process.env.api_host}/queues/createQueue`,
-      {
-        selectedCourses: selectedCourseIds.value,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: token,
+      const createQueueResponse = await axios.post(
+        `${process.env.api_host}/queues/createQueue`,
+        {
+          selectedCourses: selectedCourseIds.value,
         },
-      })
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token,
+          },
+        },
+      )
       router.replace(`/queuingPage/` + `${createQueueResponse.data.queue._id}`)
     }
     prerequisitesMessage.value = response.data

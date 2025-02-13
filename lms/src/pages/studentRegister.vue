@@ -61,7 +61,7 @@
                           type="text"
                           outlined
                           v-model="course"
-                          :options="courseOption.options"
+                          :options="courseOption.option"
                         />
                       </div>
                     </q-card-section>
@@ -140,7 +140,7 @@
 <script setup>
 
 import { useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Notify } from 'quasar'
 import axios from 'axios'
 // import
@@ -163,12 +163,7 @@ const yearOption = ref({
 
 const course = ref('')
 const courseOption = ref({
-  options: [
-    'Bachelor of Elementary Education',
-    'Bachelor of Secondary Education',
-    'BS Business Management',
-    'BS Information Technology',
-  ],
+
 })
 const sectionOption = ref({
   options: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
@@ -256,9 +251,34 @@ async function registerStudent() {
     loading.value = false
   }
 }
+
+async function getPrograms() {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(
+      `${process.env.api_host}/courses/getProgram?isArchived=false`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    )
+    courseOption.value = {
+      option: response.data.map((program) => program.name),
+    }
+    console.log(response.data)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 async function backBtn() {
   router.replace(`/`)
 }
+
+onMounted(() => {
+  getPrograms()
+})
 </script>
 
 <style lang="sass" scoped>
