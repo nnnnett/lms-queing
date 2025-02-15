@@ -3,30 +3,30 @@
     <div class="main-container">
       <div class="content-container q-px-md q-px-sm-xl">
         <q-card-section class="q-pt-md">
-          <div class="text-h4 text-weight-medium" style="color: #282726">Hi, Admin_Name!</div>
+          <div class="text-h4 text-weight-medium" style="color: #282726">Hi, {{ firstName }}</div>
         </q-card-section>
         <div class="stats-container">
           <div class="stat-card">
             <q-card-section>
-              <div class="text-h4 text-weight-bold">10</div>
+              <div class="text-h4 text-weight-bold">{{ totalStudents }}</div>
               <div class="text-h6">Enrolled Students</div>
             </q-card-section>
           </div>
           <div class="stat-card">
             <q-card-section>
-              <div class="text-h4 text-weight-bold">20</div>
+              <div class="text-h4 text-weight-bold">{{ totalCourses }}</div>
               <div class="text-h6">Total Courses</div>
             </q-card-section>
           </div>
           <div class="stat-card">
             <q-card-section>
-              <div class="text-h4 text-weight-bold">12</div>
+              <div class="text-h4 text-weight-bold">{{ totalPrograms }}</div>
               <div class="text-h6">Total Programs</div>
             </q-card-section>
           </div>
           <div class="stat-card">
             <q-card-section>
-              <div class="text-h4 text-weight-bold">45</div>
+              <div class="text-h4 text-weight-bold">{{ totalQueue }}</div>
               <div class="text-h6">Total Queue</div>
             </q-card-section>
           </div>
@@ -61,6 +61,12 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
+
+const firstName = ref('')
+const totalStudents = ref(0)
+const totalPrograms = ref(0)
+const totalCourses = ref(0)
+const totalQueue = ref(0)
 const columns = ref([
   {
     name: '#',
@@ -141,16 +147,77 @@ async function getUsers() {
       section: student.section,
       status: student.isRegular ? 'Regular' : 'Irregular'
     }))
+    totalStudents.value = response.data.length
   } catch (error) {
     console.error('Error fetching users:', error)
   }
 }
 
+async function userInfo() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    firstName.value = response.data.firstName
+  } catch (err) {
+    console.error(err)
+  }
+}
+async function getPrograms() {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(
+      `${process.env.api_host}/courses/getProgram?isArchived=false`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    )
+      totalPrograms.value = response.data.length
+  } catch (err) {
+    console.error(err)
+  }
+}
+async function getCourses() {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    totalCourses.value = response.data.length
+  } catch (err) {
+    console.error('Error fetching programs:', err)
+  }
+}
 
+async function getCurrentQueue() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/queues`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    totalQueue.value = response.data.length
+
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 
 onMounted(() => {
   getUsers()
+  userInfo()
+  getPrograms()
+  getCourses()
+  getCurrentQueue()
 })
 </script>
 

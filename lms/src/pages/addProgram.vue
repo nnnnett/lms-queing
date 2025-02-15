@@ -99,7 +99,7 @@
                         :loading="loading"
                         icon="delete"
                         color="negative"
-                        @click="deleteProgram(props.row.action)"
+                        @click="openDeleteDialog(props.row.action)"
                       >
                         <q-tooltip>Delete</q-tooltip>
                       </q-btn>
@@ -181,81 +181,68 @@
             </q-card>
           </q-dialog>
         </div>
+        <!-- Delete Confirmation Dialog -->
+        <q-dialog v-model="deleteConfirmation" persistent>
+          <q-card>
+            <q-card-section>
+              <q-card-title class="row items-center">
+                <q-icon name="warning" color="negative" class="q-mr-sm" />
+                <span class="text-h6">Delete Program?</span>
+              </q-card-title>
+              <q-card-main>
+                <div class="text-subtitle1">
+                  Are you sure you want to delete this program?
+                </div>
+              </q-card-main>
+              <q-card-actions align="right">
+                <q-btn flat label="Cancel" color="red-8" @click="deleteConfirmation = false" class="q-px-md" />
+                <q-btn
+                  flat
+                  label="Delete"
+                  color="negative"
+                  :loading="loading"
+                  @click="confirmDeleteProgram"
+                  class="q-px-md"
+                />
+              </q-card-actions>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </div>
     </div>
   </q-page>
 </template>
 
 <script setup>
-/* eslint-disable no-unused-vars */
+
 import { ref, onMounted } from 'vue'
 import { Notify } from 'quasar'
 import axios from 'axios'
 
-// loading
+// loading state
 const loading = ref(false)
 
+// Dialogs and popups
 const editProgramPopUp = ref(false)
-// program input
+const addProgramPopUp = ref(false)
+const deleteConfirmation = ref(false)
+
+// Program input fields
 const programTitle = ref('')
 const ProgramCode = ref('')
-const addProgramPopUp = ref(false)
-// table
+
+// Table filtering and columns
 const filter = ref('')
 const columns = ref([
-  {
-    name: '#',
-    required: true,
-    label: '#',
-    align: 'center',
-    field: 'index',
-    sortable: true,
-  },
-  {
-    name: 'program',
-    required: true,
-    label: 'Program Code',
-    align: 'left',
-    field: 'program',
-    sortable: true,
-  },
-  {
-    name: 'programTitle',
-    align: 'left',
-    label: 'Program Title',
-    field: 'programTitle',
-    sortable: true,
-  },
-  {
-    name: 'numCourse',
-    align: 'left',
-    label: 'Total Number of Course',
-    field: 'numCourse',
-    sortable: true,
-  },
-  {
-    name: 'numUnits',
-    align: 'left',
-    label: 'Total Number of Units',
-    field: 'numUnits',
-    sortable: true,
-  },
-  {
-    name: 'numEnrolled',
-    align: 'left',
-    label: 'Total Number of Enrolled',
-    field: 'numEnrolled',
-    sortable: true,
-  },
-  {
-    name: 'action',
-    align: 'center',
-    label: 'Action',
-    field: 'action',
-  },
+  { name: '#', required: true, label: '#', align: 'center', field: 'index', sortable: true },
+  { name: 'program', required: true, label: 'Program Code', align: 'left', field: 'program', sortable: true },
+  { name: 'programTitle', align: 'left', label: 'Program Title', field: 'programTitle', sortable: true },
+  { name: 'numCourse', align: 'left', label: 'Total Number of Course', field: 'numCourse', sortable: true },
+  { name: 'numUnits', align: 'left', label: 'Total Number of Units', field: 'numUnits', sortable: true },
+  { name: 'numEnrolled', align: 'left', label: 'Total Number of Enrolled', field: 'numEnrolled', sortable: true },
+  { name: 'action', align: 'center', label: 'Action', field: 'action' },
 ])
-const rows = ref([
-])
+const rows = ref([])
 
 // Edit form state
 const editForm = ref({
@@ -264,13 +251,30 @@ const editForm = ref({
   numCourse: '',
   numUnits: '',
   numEnrolled: '',
+  action: '',
 })
 
+// Reactive variable to store the ID of the program to be deleted
+const selectedProgramId = ref(null)
+
+// Function to open delete confirmation dialog and store selected program ID
+function openDeleteDialog(programId) {
+  selectedProgramId.value = programId
+  deleteConfirmation.value = true
+}
+
+// Called when user confirms deletion
+async function confirmDeleteProgram() {
+  await deleteProgram(selectedProgramId.value)
+  deleteConfirmation.value = false
+}
+
+// Function to add a program
 async function addProgram() {
-  loading.value = true;
+  loading.value = true
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axios.post(
+    const token = localStorage.getItem("authToken")
+    await axios.post(
       `${process.env.api_host}/courses/createProgram`,
       {
         code: ProgramCode.value,
@@ -282,35 +286,35 @@ async function addProgram() {
           "Content-Type": "application/json",
         },
       }
-    );
-
+    )
     Notify.create({
       type: "positive",
       message: "Program added successfully!",
-    });
-
-    // Reset input fields
-    programTitle.value = "";
-    ProgramCode.value = "";
-
-    // Refresh table data
-    fetchPrograms();
+    })
+    // Reset input fields and refresh table data
+    programTitle.value = ""
+    ProgramCode.value = ""
+    fetchPrograms()
   } catch (err) {
-    console.error(err);
+    console.error(err)
   } finally {
-    loading.value = false;
-    addProgramPopUp.value = false;
+    loading.value = false
+    addProgramPopUp.value = false
   }
 }
 
+// Fetch programs and update table rows
 async function fetchPrograms() {
   try {
-    const token = localStorage.getItem("authToken");
-    const response = await axios.get(`${process.env.api_host}/courses/getProgram?isArchived=false`, {
-      headers: {
-        Authorization: token,
-      },
-    });
+    const token = localStorage.getItem("authToken")
+    const response = await axios.get(
+      `${process.env.api_host}/courses/getProgram?isArchived=false`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    )
     rows.value = response.data.map((program, index) => ({
       index: index + 1,
       program: program.code,
@@ -319,11 +323,13 @@ async function fetchPrograms() {
       numUnits: program.numUnits || 0,
       numEnrolled: program.numEnrolled || 0,
       action: program._id,
-    }));
+    }))
   } catch (err) {
-    console.error("Error fetching programs:", err);
+    console.error("Error fetching programs:", err)
   }
 }
+
+// Open edit dialog and populate form
 function openEditDialog(program) {
   editForm.value = {
     programTitle: program.programTitle,
@@ -333,28 +339,27 @@ function openEditDialog(program) {
   editProgramPopUp.value = true
 }
 
-
-
+// Function to edit a program
 async function editProgram(program_id) {
-  console.log('Editing program:', program_id)
   loading.value = true
   try {
-    const token  = localStorage.getItem("authToken");
-    const response = await axios.post(`${process.env.api_host}/courses/updateProgram/${program_id}`,
-    {
-      code: editForm.value.program,
-      name: editForm.value.programTitle,
-    },
-    {
-      headers:{
-        Authorization: token,
-        "Content-Type": "application/json",
+    const token = localStorage.getItem("authToken")
+    await axios.post(
+      `${process.env.api_host}/courses/updateProgram/${program_id}`,
+      {
+        code: editForm.value.program,
+        name: editForm.value.programTitle,
+      },
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
       }
-    }
     )
     Notify.create({
-      type: 'positive',
-      message: 'program edited',
+      type: "positive",
+      message: "Program edited",
     })
     editProgramPopUp.value = false
   } catch (err) {
@@ -367,46 +372,45 @@ async function editProgram(program_id) {
 
 // Function to handle program deletion
 async function deleteProgram(program_id) {
-  console.log('Deleting program:', program_id)
   loading.value = true
-  try{
-    const token = localStorage.getItem("authToken");
-    const response = await axios.post(`${process.env.api_host}/courses/updateProgram/${program_id}`,
-    {
-      isArchived: true,
-    },
-    {
-      headers:{
-           Authorization: token,
-        "Content-Type": "application/json",
+  try {
+    const token = localStorage.getItem("authToken")
+    await axios.post(
+      `${process.env.api_host}/courses/updateProgram/${program_id}`,
+      { isArchived: true },
+      {
+        headers: {
+          Authorization: token,
+          "Content-Type": "application/json",
+        },
       }
-    }
-  )
-  Notify.create({
-    type: 'positive',
-    message: 'program deleted',
-  })
-  }catch(err){
+    )
+    Notify.create({
+      type: "positive",
+      message: "Program deleted",
+    })
+  } catch (err) {
     console.error(err)
     Notify.create({
-    type: 'negative',
-    message: 'Something Went Wrong',
-  })
-  }finally{
+      type: "negative",
+      message: "Something Went Wrong",
+    })
+  } finally {
     fetchPrograms()
     loading.value = false
   }
-
 }
+
+// Reset add program fields
 async function cancelAdd() {
-  ;(programTitle.value = ''),
-    (ProgramCode.value = ''),
-    (addProgramPopUp.value = false)
+  programTitle.value = ""
+  ProgramCode.value = ""
+  addProgramPopUp.value = false
 }
 
 onMounted(() => {
-  fetchPrograms();
-});
+  fetchPrograms()
+})
 </script>
 
 <style lang="sass" scoped>

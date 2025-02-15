@@ -58,7 +58,7 @@
                         :loading="loading"
                         icon="delete"
                         color="negative"
-                        @click="deleteProgram(props.row.action)"
+                        @click="openDeleteDialog(props.row.action)"
                       >
                         <q-tooltip>Delete</q-tooltip>
                       </q-btn>
@@ -107,7 +107,12 @@
                       <div class="col-12 col-sm-4">
                         <div class="text-subtitle2 q-mb-sm">Program</div>
                         <div class="input-field">
-                          <q-input v-model="editForm.courseTitle" type="text" borderless />
+                          <q-select
+                            v-model="editForm.courseTitle"
+                            type="text"
+                            borderless
+                            :options="programOptions"
+                          />
                         </div>
                       </div>
                       <div class="col-12 col-sm-4">
@@ -131,7 +136,6 @@
                         </div>
                       </div>
                     </div>
-
                   </q-card-section>
                   <q-card-actions align="right">
                     <q-btn
@@ -155,6 +159,41 @@
             </q-card>
           </q-dialog>
         </div>
+        <!-- delete confirmation -->
+        <div>
+          <q-dialog v-model="deleteConfirmation" persistent>
+            <q-card>
+              <q-form @submit.prevent="deleteProgram(selectedCourseId)">
+                <q-card-section>
+                  <q-card-title>
+                    <q-icon name="warning" color="negative" />
+                    <div class="text-h6">Delete Program?</div>
+                  </q-card-title>
+                  <q-card-main>
+                    <div class="text-subtitle1">Are you sure you want to delete this Course?</div>
+                  </q-card-main>
+                  <q-card-actions align="right">
+                    <q-btn
+                      flat
+                      label="Cancel"
+                      @click="deleteConfirmation = false"
+                      color="red-8"
+                      class="q-px-md"
+                    />
+                    <q-btn
+                      :loading="loading"
+                      flat
+                      label="Delete"
+                      color="negative"
+                      type="submit"
+                      class="q-px-md"
+                    />
+                  </q-card-actions>
+                </q-card-section>
+              </q-form>
+            </q-card>
+          </q-dialog>
+        </div>
       </div>
     </div>
   </q-page>
@@ -172,6 +211,8 @@ const loading = ref(false)
 const router = useRouter()
 const editProgramPopUp = ref(false)
 // course input
+const deleteConfirmation = ref(false)
+const selectedCourseId = ref(null)
 const courseTitle = ref('')
 const courseCode = ref('')
 const courseProgram = ref('')
@@ -244,8 +285,11 @@ const columns = ref([
     field: 'action',
   },
 ])
+
 const rows = ref([])
-const selectedPrerequisites = ref([]);
+
+const programOptions = ref({})
+const selectedPrerequisites = ref([])
 const prerequisiteFilter = ref('')
 const prerequisiteColumns = [
   { name: 'select', label: 'Select', align: 'left', field: 'select' },
@@ -255,49 +299,44 @@ const prerequisiteColumns = [
 ]
 // Course list (Make sure this is populated)
 
-const prerequisiteRows = ref([
-  {
-    id: 1,
-    course: 'None',
-  },
-  {
-    id: 2,
-    course: 'DCIT1',
-  },
-])
+const prerequisiteRows = ref([])
+
+
+
+// Edit form state
+const editForm = ref({
+  courseTitle: null,
+  courseCode: '',
+  numUnits: '',
+  description: '',
+})
+
+async function getPrograms() {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(
+      `${process.env.api_host}/courses/getProgram?isArchived=false`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    )
+    programOptions.value = response.data.map((program) => program.name)
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 async function getCourses() {
   try {
     const token = localStorage.getItem('authToken')
     const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
       headers: {
-        'Content-Type': 'application/json',
         Authorization: token,
       },
     })
-    console.log(response.data)
-  } catch (err) {
-    console.error(err)
-  }
-}
 
-// Edit form state
-const editForm = ref({
-  courseTitle: '',
-  courseCode: '',
-  numUnits: '',
-  description: '',
-})
-
-
-async function fetchPrograms() {
-  try {
-    const token = localStorage.getItem('authToken')
-    const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
-      headers: {
-        Authorization: token,
-      },
-    })
     rows.value = response.data.map((course, index) => ({
       index: index + 1,
       courseCode: course.code,
@@ -335,8 +374,8 @@ async function editProgram(course_id) {
       `${process.env.api_host}/courses/updateCourse/${course_id}`,
       {
         code: editForm.value.courseCode,
-        course: editForm.value.courseName,
-        name: editForm.value.courseTitle,
+        course: editForm.value.courseTitle,
+        name: editForm.value.courseName,
         description: editForm.value.description,
         unit: editForm.value.numUnits,
       },
@@ -355,22 +394,25 @@ async function editProgram(course_id) {
   } catch (err) {
     console.error(err)
   } finally {
-    fetchPrograms()
+    getCourses()
     loading.value = false
   }
 }
 
 // Function to handle course deletion
-async function deleteProgram(course_id) {
+function openDeleteDialog(courseId) {
+  selectedCourseId.value = courseId
+  deleteConfirmation.value = true
+}
 
+// Updated delete function
+async function deleteProgram(course_id) {
   loading.value = true
   try {
     const token = localStorage.getItem('authToken')
-    const response = await axios.post(
+    await axios.post(
       `${process.env.api_host}/courses/updateCourse/${course_id}`,
-      {
-        isArchived: true,
-      },
+      { isArchived: true },
       {
         headers: {
           Authorization: token,
@@ -380,9 +422,10 @@ async function deleteProgram(course_id) {
     )
     Notify.create({
       type: 'positive',
-      message: 'course deleted',
+      message: 'Course deleted',
     })
-    fetchPrograms()
+    getCourses()
+    deleteConfirmation.value = false // Close the dialog after deletion
   } catch (err) {
     console.error(err)
     Notify.create({
@@ -390,7 +433,6 @@ async function deleteProgram(course_id) {
       message: 'Something Went Wrong',
     })
   } finally {
-    // fetchPrograms()
     loading.value = false
   }
 }
@@ -400,7 +442,7 @@ async function cancelAdd() {
 
 onMounted(() => {
   getCourses()
-  fetchPrograms()
+  getPrograms()
 })
 </script>
 

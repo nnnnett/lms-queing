@@ -6,106 +6,107 @@
           Admin/<span style="color: #b1b2b4">Admin Profile</span>
         </div>
       </q-card-section>
-      <q-card-section style="width: 100%" class="flex flex-center">
-        <div
-          class="q-pa-md q-pa-sm-xl"
-          style="
-            display: flex;
-            flex-direction: column;
-            width: 95%;
-            max-width: 1200px;
-            background-color: #fbfedf;
-            border-radius: 14px;
-          "
-        >
-          <div
-          class="q-mb-xl"
-            style="
-              display: flex;
-              align-items: center;
-              flex-direction: column;
-            "
-          >
-            <div
-              class="profile-image-container"
-              style="
-                width: 200px;
-                height: 200px;
-                border: 4px solid black;
-                border-radius: 50%;
-                display: flex;
-                justify-content: center;
-                justify-self: center;
-                align-items: center;
-              "
-            >
+      <q-card-section class="flex flex-center" style="width: 100%">
+        <q-card class="profile-card q-pa-md">
+          <!-- Profile Header -->
+          <div class="profile-header q-mb-xl flex flex-center column">
+            <div class="profile-image-container">
               <q-img
-                img-class="rounded-image"
-                style="border-radius: 50%; width: 180px; height: 180px; object-fit: cover"
+                class="rounded-image"
                 src="https://res.cloudinary.com/dqaw6ndtn/image/upload/v1738071000/assets/queing/jqhuylsgaqof1hgmczhj.png"
-              ></q-img>
+                style="border-radius: 50%; width: 180px; height: 180px; object-fit: cover"
+              />
             </div>
-            <div style="color: #193018" class="text-h5 text-weight-bold text-center q-mt-md">
+            <div class="text-h5 text-weight-bold text-center q-mt-md" style="color: #193018">
               Sample Admin
             </div>
           </div>
-          <div style="width: 100%">
-            <q-form class="row q-col-gutter-md justify-center">
-              <q-card-section class="col-12 col-sm-5" style="min-width: 280px">
-                <div>USERNAME</div>
-                <div
-                  style="border: 2px solid #adb2a6; background-color: #f1f0f1; border-radius: 14px"
-                >
-                  <q-input disable label="username" borderless />
+          <!-- Profile Form -->
+          <q-form @submit.prevent="changePass">
+            <!-- Profile Information Section -->
+            <div class="q-mb-md">
+              <div class="text-subtitle1 q-mb-sm">Profile Information</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-6">
+                  <q-input v-model="username" label="Username" outlined />
                 </div>
-              </q-card-section>
-              <q-card-section class="col-12 col-sm-5" style="min-width: 280px">
-                <div>DESIGNATION</div>
-                <div
-                  style="border: 2px solid #adb2a6; background-color: #f1f0f1; border-radius: 14px"
-                >
-                  <q-input disable label="designation" borderless />
+                <div class="col-12 col-sm-6">
+                  <q-input v-model="designation" label="Designation" outlined />
                 </div>
-              </q-card-section>
-            </q-form>
-          </div>
-          <div class="flex flex-center">
-            <div
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-              "
-            >
-              <q-card-section>
-                <q-btn
-                  label="Change Password"
-                  flat
-                  :loading="loading"
-                  @click="changePass"
-                  style="background-color: #13260f; color: #ffffff"
-                />
-              </q-card-section>
+              </div>
             </div>
-          </div>
-        </div>
+            <!-- Password Change Section -->
+            <div class="q-mb-md">
+              <div class="text-subtitle1 q-mb-sm">Change Password</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-6">
+                  <q-input v-model="newPassword" type="password" label="New Password" outlined />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-input v-model="confirmPassword" type="password" label="Confirm Password" outlined />
+                </div>
+              </div>
+            </div>
+            <!-- Save Button -->
+            <div class="flex flex-center">
+              <q-btn
+                label="Save"
+                type="submit"
+                :loading="loading"
+                color="primary"
+                style="background-color: #13260f; color: #ffffff"
+              />
+            </div>
+          </q-form>
+        </q-card>
       </q-card-section>
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { Notify } from 'quasar'
 import { ref } from 'vue'
+import { Notify } from 'quasar'
 
 const loading = ref(false)
+const username = ref('')
+const designation = ref('')
+const newPassword = ref('')
+const confirmPassword = ref('')
 
 async function changePass() {
-  Notify.create({
-    type: 'positive',
-    message: 'password Change Succesfully',
-  })
+  loading.value = true
+  try {
+    // Validate that the new password has at least 6 characters and contains a special character.
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/
+    if (newPassword.value.length < 6 || !specialCharRegex.test(newPassword.value)) {
+      Notify.create({
+        type: 'negative',
+        message: 'New Password must be at least 6 characters and include a special character.'
+      })
+      return
+    }
+    if (newPassword.value !== confirmPassword.value) {
+      Notify.create({
+        type: 'negative',
+        message: 'New Password and Confirm Password do not match.'
+      })
+      return
+    }
+    // Here, insert your API call to update the profile and/or change the password.
+    Notify.create({
+      type: 'positive',
+      message: 'Profile updated successfully!'
+    })
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Error updating profile.'
+    })
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -114,12 +115,27 @@ async function changePass() {
   background-color: #dadada
   min-height: 100vh
 
+.profile-card
+  width: 95%
+  max-width: 1200px
+  background-color: #fbfedf
+  border-radius: 14px
+
+.profile-header
+  .profile-image-container
+    width: 200px
+    height: 200px
+    border: 4px solid black
+    border-radius: 50%
+    display: flex
+    justify-content: center
+    align-items: center
+
 @media (max-width: 599px)
   .profile-image-container
     width: 150px !important
     height: 150px !important
-
-    .q-img
-      width: 130px !important
-      height: 130px !important
+  .rounded-image
+    width: 130px !important
+    height: 130px !important
 </style>
