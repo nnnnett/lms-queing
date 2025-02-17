@@ -81,8 +81,20 @@
             <div v-if="currentQueue" class="text-h5 text-weight-bold">
               {{ currentQueue.queueNumber }}
             </div>
-            <div align="right" class="q-mr-md">
-              <q-btn label="LIST" style="background-color: #fffeb8" @click="queueListPage" />
+            <div class="q-mr-md">
+              <q-btn
+                label="CALL"
+                style="background-color: #b7faff; margin-left: 8px"
+                @click="speakCurrentQueue"
+                icon="record_voice_over"
+              />
+              <q-btn
+                label="STOP"
+                style="background-color: #fe7e7f; margin-left: 8px"
+                @click="stopSpeech"
+                icon="stop"
+              />
+              <q-btn label="LIST" style="background-color: #fffeb8;margin-left: 8px;" @click="queueListPage" />
             </div>
           </q-card>
         </q-card-section>
@@ -329,7 +341,7 @@
 <script setup>
 /* eslint-disable no-unused-vars */
 import { useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 import { Notify } from 'quasar'
 
@@ -345,6 +357,7 @@ const currentQueue = ref(null)
 const router = useRouter()
 const userId = ref(null)
 const queueDetailsDialog = ref(false)
+const synth = window.speechSynthesis
 
 async function queueListPage() {
   router.push('/new/queueList')
@@ -377,7 +390,6 @@ async function getCurrentQueue(role) {
     })
 
     currentQueue.value = response.data.currentQueue[0]
-    console.log(currentQueue.value, 'dito')
     waitingQueue.value = response.data.currentQueue.length
   } catch (err) {
     console.error(err)
@@ -538,6 +550,25 @@ async function setWindow() {
   } finally {
     loadingWindow.value = false
     inputWindowDialog.value = false
+  }
+}
+
+const speakCurrentQueue = () => {
+  if (synth.speaking) {
+    console.warn('Speech already in progress...')
+    return
+  }
+  if (currentQueue.value && currentQueue.value.queueNumber) {
+    const textToSpeak = `${queueInfo.value.role} Window, ${queueInfo.value.window}. Now serving number ${currentQueue.value.queueNumber}`
+    const utterance = new SpeechSynthesisUtterance(textToSpeak)
+    utterance.rate = 0.8
+    synth.speak(utterance)
+  }
+}
+
+const stopSpeech = () => {
+  if (synth.speaking) {
+    synth.cancel()
   }
 }
 

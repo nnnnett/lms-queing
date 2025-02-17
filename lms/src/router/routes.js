@@ -16,6 +16,7 @@ const routes = [
       { path: 'publicMonitor', component: () => import('src/pages/publicMonitor.vue') },
       { path: 'queueCourse', component: () => import('src/pages/queueCourse.vue') },
       { path: 'queueSummary/:queueId', component: () => import('src/pages/queueSummary.vue') },
+      { path: 'textToSpeechPage', component: () => import('src/pages/textToSpeechPage.vue') },
     ],
   },
   {
