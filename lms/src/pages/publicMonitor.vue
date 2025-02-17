@@ -68,7 +68,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted,onBeforeUnmount } from 'vue'
 
 const currentQueue = ref({})
 const router = useRouter()
@@ -95,6 +95,9 @@ async function getCurrentQueue() {
     if(registrarQueue.data.currentQueue.length > 0){
       currentRegistrar.value = registrarQueue.data.currentQueue[0].queueNumber
     }
+    else{
+      currentRegistrar.value = "None"
+    }
     const osasQueue = await axios.get(`${process.env.api_host}/queues/current/osas`, {
       headers: {
         Authorization: token,
@@ -102,6 +105,8 @@ async function getCurrentQueue() {
     })
     if(osasQueue.data.currentQueue.length > 0){
       currentOsas.value = osasQueue.data.currentQueue[0].queueNumber
+    }else{
+      currentOsas.value = "None"
     }
     const cashierQueue = await axios.get(`${process.env.api_host}/queues/current/cashier`, {
       headers: {
@@ -110,8 +115,11 @@ async function getCurrentQueue() {
     })
     if(cashierQueue.data.currentQueue.length > 0){
       currentCashier.value = cashierQueue.data.currentQueue[0].queueNumber
+    } else{
+      currentCashier.value = "None"
     }
     console.log(currentQueue.value)
+
   } catch (err) {
     console.error(err)
   }
@@ -141,11 +149,19 @@ function updateDateTime() {
   currentDate.value = `${date} ${month} ${year}`
 }
 
+
 onMounted(() => {
   getCurrentQueue()
   updateDateTime()
   setInterval(updateDateTime, 1000)
+
+  const interval = setInterval(getCurrentQueue, 10000);
+  onBeforeUnmount(() => {
+    clearInterval(interval);
+  });
 })
+
+
 </script>
 
 <style lang="sass" scoped>

@@ -341,7 +341,7 @@
 <script setup>
 /* eslint-disable no-unused-vars */
 import { useRouter } from 'vue-router'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import { Notify } from 'quasar'
 
@@ -373,7 +373,6 @@ async function userInfo() {
     })
     userId.value = response.data._id
     queueInfo.value = response.data
-    console.log(queueInfo.value, 'dito')
     getCurrentQueue(response.data.role)
   } catch (err) {
     console.error(err)
@@ -381,6 +380,8 @@ async function userInfo() {
 }
 
 async function getCurrentQueue(role) {
+  if (!role) return
+
   const token = localStorage.getItem('authToken')
   try {
     const response = await axios.get(`${process.env.api_host}/queues/current/${role}`, {
@@ -388,7 +389,6 @@ async function getCurrentQueue(role) {
         Authorization: token,
       },
     })
-
     currentQueue.value = response.data.currentQueue[0]
     waitingQueue.value = response.data.currentQueue.length
   } catch (err) {
@@ -572,9 +572,20 @@ const stopSpeech = () => {
   }
 }
 
-onMounted(() => {
-  userInfo()
+onMounted(async () => {
+  await userInfo()
+
+  const interval = setInterval(() => {
+    if (queueInfo.value?.role) {
+      getCurrentQueue(queueInfo.value.role)
+    }
+  }, 5000)
+
+  onBeforeUnmount(() => {
+    clearInterval(interval)
+  })
 })
+
 </script>
 
 <style lang="sass" scoped>
