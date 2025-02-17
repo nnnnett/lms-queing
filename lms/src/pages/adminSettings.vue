@@ -13,16 +13,16 @@
             <div class="profile-image-container">
               <q-img
                 class="rounded-image"
-                src="https://res.cloudinary.com/dqaw6ndtn/image/upload/v1738071000/assets/queing/jqhuylsgaqof1hgmczhj.png"
+                src="https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617283/assets/queing/ja3s742lgdzsca55fu1w.png"
                 style="border-radius: 50%; width: 180px; height: 180px; object-fit: cover"
               />
             </div>
-            <div class="text-h5 text-weight-bold text-center q-mt-md" style="color: #193018">
-              Sample Admin
-            </div>
+            <!-- <div class="text-h5 text-weight-bold text-center q-mt-md" style="color: #193018">
+              {{ userFullName }}
+            </div> -->
           </div>
           <!-- Profile Form -->
-          <q-form @submit.prevent="changePass">
+          <q-form @submit.prevent="editInfo">
             <!-- Profile Information Section -->
             <div class="q-mb-md">
               <div class="text-subtitle1 q-mb-sm">Profile Information</div>
@@ -65,35 +65,59 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Notify } from 'quasar'
+import axios from 'axios'
 
 const loading = ref(false)
 const username = ref('')
 const designation = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
+const userFullName = ref('')
+const userId = ref('')
 
-async function changePass() {
+async function editInfo() {
   loading.value = true
   try {
-    // Validate that the new password has at least 6 characters and contains a special character.
-    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/
-    if (newPassword.value.length < 6 || !specialCharRegex.test(newPassword.value)) {
+    if (!username.value || !designation.value) {
       Notify.create({
         type: 'negative',
-        message: 'New Password must be at least 6 characters and include a special character.'
+        message: 'Username and Designation cannot be empty'
       })
       return
     }
-    if (newPassword.value !== confirmPassword.value) {
-      Notify.create({
-        type: 'negative',
-        message: 'New Password and Confirm Password do not match.'
-      })
-      return
+    if (newPassword.value || confirmPassword.value) {
+      const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/
+      if (newPassword.value.length < 6 || !specialCharRegex.test(newPassword.value)) {
+        Notify.create({
+          type: 'negative',
+          message: 'New Password must be at least 6 characters and include a special character.'
+        })
+        return
+      }
+      if (newPassword.value !== confirmPassword.value) {
+        Notify.create({
+          type: 'negative',
+          message: 'Password do not match.'
+        })
+        return
+      }
     }
-    // Here, insert your API call to update the profile and/or change the password.
+    const token = localStorage.getItem('authToken')
+    const updateData = {
+      username: username.value,
+      role: designation.value
+    }
+    if (newPassword.value) {
+      updateData.password = newPassword.value
+    }
+    await axios.post(`${process.env.api_host}/users/update/${userId.value}`, updateData, {
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+    })
     Notify.create({
       type: 'positive',
       message: 'Profile updated successfully!'
@@ -108,6 +132,33 @@ async function changePass() {
     loading.value = false
   }
 }
+
+async function userInfo() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    console.log(response.data)
+    userId.value = response.data._id
+    const userData = response.data
+    username.value = userData.username
+    designation.value = userData.role
+    userFullName.value = `${userData.firstName} ${userData.middleName} ${userData.lastName}`
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Error fetching user information'
+    })
+  }
+}
+
+onMounted(() => {
+  userInfo()
+})
 </script>
 
 <style lang="sass" scoped>

@@ -81,7 +81,7 @@
                     {{ props.rowIndex + 1 }}
                   </template>
                   <template v-else-if="col.name === 'action'">
-                    <div class="row q-gutter-x-sm">
+                    <div class="row q-gutter-x-sm" v-if="isAdmin">
                       <q-btn
                         flat
                         dense
@@ -143,18 +143,6 @@
                         <div class="text-subtitle2 q-mb-sm">Program Code</div>
                         <div class="input-field">
                           <q-input v-model="editForm.program" type="text" borderless />
-                        </div>
-                      </div>
-                      <div class="col-12 col-sm-4">
-                        <div class="text-subtitle2 q-mb-sm">Total No. of Courses</div>
-                        <div class="input-field">
-                          <q-input v-model="editForm.numCourse" type="number" borderless />
-                        </div>
-                      </div>
-                      <div class="col-12 col-sm-4">
-                        <div class="text-subtitle2 q-mb-sm">Total Units</div>
-                        <div class="input-field">
-                          <q-input v-model="editForm.numUnits" type="number" borderless />
                         </div>
                       </div>
                     </div>
@@ -237,39 +225,31 @@ const columns = ref([
   { name: '#', required: true, label: '#', align: 'center', field: 'index', sortable: true },
   { name: 'program', required: true, label: 'Program Code', align: 'left', field: 'program', sortable: true },
   { name: 'programTitle', align: 'left', label: 'Program Title', field: 'programTitle', sortable: true },
-  { name: 'numCourse', align: 'left', label: 'Total Number of Course', field: 'numCourse', sortable: true },
-  { name: 'numUnits', align: 'left', label: 'Total Number of Units', field: 'numUnits', sortable: true },
-  { name: 'numEnrolled', align: 'left', label: 'Total Number of Enrolled', field: 'numEnrolled', sortable: true },
   { name: 'action', align: 'center', label: 'Action', field: 'action' },
 ])
 const rows = ref([])
 
-// Edit form state
 const editForm = ref({
   programTitle: '',
   program: '',
-  numCourse: '',
-  numUnits: '',
-  numEnrolled: '',
   action: '',
 })
 
-// Reactive variable to store the ID of the program to be deleted
+const roleValidation = ref('')
+const isAdmin = ref('')
+const notAdmin = ref('')
 const selectedProgramId = ref(null)
 
-// Function to open delete confirmation dialog and store selected program ID
 function openDeleteDialog(programId) {
   selectedProgramId.value = programId
   deleteConfirmation.value = true
 }
 
-// Called when user confirms deletion
 async function confirmDeleteProgram() {
   await deleteProgram(selectedProgramId.value)
   deleteConfirmation.value = false
 }
 
-// Function to add a program
 async function addProgram() {
   loading.value = true
   try {
@@ -291,7 +271,7 @@ async function addProgram() {
       type: "positive",
       message: "Program added successfully!",
     })
-    // Reset input fields and refresh table data
+
     programTitle.value = ""
     ProgramCode.value = ""
     fetchPrograms()
@@ -302,8 +282,6 @@ async function addProgram() {
     addProgramPopUp.value = false
   }
 }
-
-// Fetch programs and update table rows
 async function fetchPrograms() {
   try {
     const token = localStorage.getItem("authToken")
@@ -319,9 +297,6 @@ async function fetchPrograms() {
       index: index + 1,
       program: program.code,
       programTitle: program.name,
-      numCourse: program.numCourse || 0,
-      numUnits: program.numUnits || 0,
-      numEnrolled: program.numEnrolled || 0,
       action: program._id,
     }))
   } catch (err) {
@@ -329,7 +304,6 @@ async function fetchPrograms() {
   }
 }
 
-// Open edit dialog and populate form
 function openEditDialog(program) {
   editForm.value = {
     programTitle: program.programTitle,
@@ -339,7 +313,6 @@ function openEditDialog(program) {
   editProgramPopUp.value = true
 }
 
-// Function to edit a program
 async function editProgram(program_id) {
   loading.value = true
   try {
@@ -370,7 +343,6 @@ async function editProgram(program_id) {
   }
 }
 
-// Function to handle program deletion
 async function deleteProgram(program_id) {
   loading.value = true
   try {
@@ -401,14 +373,37 @@ async function deleteProgram(program_id) {
   }
 }
 
-// Reset add program fields
 async function cancelAdd() {
   programTitle.value = ""
   ProgramCode.value = ""
   addProgramPopUp.value = false
 }
 
+async function userInfo() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    roleValidation.value = response.data.role
+    if (roleValidation.value === 'admin') {
+      return (isAdmin.value = true)
+    } else {
+      return (notAdmin.value = true)
+    }
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Error fetching user information',
+    })
+  }
+}
+
 onMounted(() => {
+  userInfo()
   fetchPrograms()
 })
 </script>

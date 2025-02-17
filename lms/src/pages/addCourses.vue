@@ -40,7 +40,7 @@
                     {{ props.rowIndex + 1 }}
                   </template>
                   <template v-else-if="col.name === 'action'">
-                    <div class="row q-gutter-x-sm">
+                    <div class="row q-gutter-x-sm" v-if="isAdmin">
                       <q-btn
                         flat
                         dense
@@ -202,7 +202,7 @@
 <script setup>
 /* eslint-disable no-unused-vars */
 import { ref, onMounted } from 'vue'
-import { Notify } from 'quasar'
+import { is, Notify } from 'quasar'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
@@ -215,17 +215,9 @@ const deleteConfirmation = ref(false)
 const selectedCourseId = ref(null)
 const courseTitle = ref('')
 const courseCode = ref('')
-const courseProgram = ref('')
-const totalUnits = ref('')
-const courseDescription = ref('')
-const coursePrerequisite = ref('')
-const optionPrerequisite = ref({
-  option: ['sdass', 'asdsd'],
-})
 const addProgramPopUp = ref(false)
 // table
 const filter = ref('')
-
 const columns = ref([
   {
     name: '#',
@@ -285,31 +277,17 @@ const columns = ref([
     field: 'action',
   },
 ])
-
 const rows = ref([])
-
 const programOptions = ref({})
-const selectedPrerequisites = ref([])
-const prerequisiteFilter = ref('')
-const prerequisiteColumns = [
-  { name: 'select', label: 'Select', align: 'left', field: 'select' },
-  { name: 'name', label: 'Course Name', align: 'left', field: (row) => row.name || 'N/A' },
-  { name: 'code', label: 'Course Code', align: 'left', field: (row) => row.code || 'N/A' },
-  { name: 'unit', label: 'Units', align: 'left', field: (row) => row.unit || 'N/A' },
-]
-// Course list (Make sure this is populated)
-
-const prerequisiteRows = ref([])
-
-
-
-// Edit form state
 const editForm = ref({
   courseTitle: null,
   courseCode: '',
   numUnits: '',
   description: '',
 })
+const roleValidation = ref('')
+const isAdmin = ref('')
+const notAdmin = ref('')
 
 async function getPrograms() {
   try {
@@ -399,13 +377,11 @@ async function editProgram(course_id) {
   }
 }
 
-// Function to handle course deletion
 function openDeleteDialog(courseId) {
   selectedCourseId.value = courseId
   deleteConfirmation.value = true
 }
 
-// Updated delete function
 async function deleteProgram(course_id) {
   loading.value = true
   try {
@@ -425,7 +401,7 @@ async function deleteProgram(course_id) {
       message: 'Course deleted',
     })
     getCourses()
-    deleteConfirmation.value = false // Close the dialog after deletion
+    deleteConfirmation.value = false
   } catch (err) {
     console.error(err)
     Notify.create({
@@ -436,13 +412,33 @@ async function deleteProgram(course_id) {
     loading.value = false
   }
 }
-async function cancelAdd() {
-  ;(courseTitle.value = ''), (courseCode.value = ''), (addProgramPopUp.value = false)
+async function userInfo() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    roleValidation.value = response.data.role
+    if (roleValidation.value === 'admin') {
+      return (isAdmin.value = true)
+    } else {
+      return (notAdmin.value = true)
+    }
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Error fetching user information',
+    })
+  }
 }
 
 onMounted(() => {
   getCourses()
   getPrograms()
+  userInfo()
 })
 </script>
 

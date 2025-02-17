@@ -137,7 +137,7 @@
                               border-radius: 14px;
                             "
                           >
-                            <q-input type="text" v-model="middleName" borderless />
+                            <q-input type="text" v-model="middleName" borderless label="optional"/>
                           </div>
                         </q-card-section>
                       </div>
@@ -395,8 +395,7 @@ const password = ref('')
 const confirmPassword = ref('')
 const role = ref(null)
 
-// Select options
-const roleOptions = ['registrar', 'osas', 'cashier', 'admin ']
+const roleOptions = ['registrar', 'osas', 'cashier', 'admin']
 
 const statusOptions = ['Active', 'Inactive']
 
@@ -461,7 +460,6 @@ async function createAccount() {
   try {
     if (
       !firstName.value ||
-      !middleName.value ||
       !lastName.value ||
       !userName.value ||
       !email.value ||
@@ -529,7 +527,7 @@ async function getusers() {
   tableLoading.value = true
   try {
     const response = await axios.get(`${process.env.api_host}/users?isArchived=false`)
-    // Filter out students and map to required fields
+
     rows.value = response.data
       .filter(user => user.role !== 'student')
       .map(user => ({
@@ -538,11 +536,8 @@ async function getusers() {
         role: user.role,
         name: `${user.firstName} ${user.middleName || ''} ${user.lastName}`.trim(),
         email: user.email,
-     // Store full user data for editing
         fullData: user
       }))
-
-      console.log(rows.value)
   } catch (err) {
     console.error(err)
     Notify.create({
@@ -627,7 +622,7 @@ async function updateUser() {
       message: 'User Updated Successfully',
     })
     editDialog.value = false
-    getusers() // Refresh the table
+    getusers()
   } catch (err) {
     console.error(err)
     Notify.create({

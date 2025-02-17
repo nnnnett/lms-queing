@@ -271,10 +271,10 @@ const onSelectAllClick = (val) => {
   selected.value = val ? [...myGradesRow.value] : []
 }
 
-// Update the watch to also handle selectAll state
+
 watch(selected, (newVal) => {
   console.log('Selected rows:', newVal)
-  // Update selectAll checkbox state based on selection
+
   selectAll.value = newVal.length === myGradesRow.value.length
 })
 

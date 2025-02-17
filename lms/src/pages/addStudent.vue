@@ -90,7 +90,9 @@
                             v-model="program"
                             type="text"
                             borderless
-                            :options="programOption.options"
+                            :options="programOption.option"
+                            option-value="value"
+                            option-label="label"
                           />
                         </div>
                       </div>
@@ -173,7 +175,7 @@
                     {{ props.rowIndex + 1 }}
                   </template>
                   <template v-else-if="col.name === 'action'">
-                    <div class="row q-gutter-x-sm">
+                    <div class="row q-gutter-x-sm" v-if="isAdmin">
                       <q-btn-dropdown flat dropdown-icon="more_vert">
                         <q-list>
                           <div>
@@ -316,7 +318,9 @@
                       v-model="editForm.program"
                       type="text"
                       borderless
-                      :options="editProgramOption.options"
+                      :options="programOption.option"
+                      option-value="value"
+                      option-label="label"
                     />
                   </div>
                 </div>
@@ -378,7 +382,7 @@
 <script setup>
 /* eslint-disable no-unused-vars */
 import { ref, onMounted } from 'vue'
-import { Notify, exportFile } from 'quasar'
+import { Notify, exportFile, is } from 'quasar'
 import axios from 'axios'
 
 // loading
@@ -398,14 +402,7 @@ const lastName = ref('')
 const studentId = ref('')
 const email = ref('')
 const program = ref('')
-const programOption = ref({
-  options: [
-    'Bachelor of Elementary Education',
-    'Bachelor of Secondary Education',
-    'BS Business Management',
-    'BS Information Technology',
-  ],
-})
+const programOption = ref({})
 const year = ref('')
 const yearOption = ref({
   options: ['First', 'Second', 'Third', 'Fourth'],
@@ -428,15 +425,9 @@ const editForm = ref({
   section: '',
   status: '',
 })
-const editProgramOption = ref({
-  options: [
-    'Bachelor of Elementary Education',
-    'Bachelor of Secondary Education',
-    'BS Business Management',
-    'BS Information Technology',
-  ],
-})
-
+const roleValidation = ref('')
+const isAdmin = ref('')
+const notAdmin = ref('')
 const editYearOption = ref({
   options: ['First', 'Second', 'Third', 'Fourth'],
 })
@@ -444,13 +435,12 @@ const editSectionOption = ref({
   options: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
 })
 const editStatusOption = ref(['Regular', 'Irregular'])
-// Add this with your other refs
+
 const tableLoading = ref(false)
 
-// Add selectedStudentId ref
+
 const selectedStudentId = ref(null)
 
-// cancel add
 async function cancelAdd() {
   ;(firstName.value = ''),
     (middleName.value = ''),
@@ -528,11 +518,24 @@ async function addStudent() {
         },
       },
     )
+    console.log(response.data)
     getAllStudents()
     Notify.create({
       type: 'positive',
       message: 'Register Successfully',
     })
+    ;(firstName.value = ''),
+      (middleName.value = ''),
+      (lastName.value = ''),
+      (studentId.value = ''),
+      (email.value = ''),
+      (program.value = ''),
+      (year.value = ''),
+      (section.value = ''),
+      (status.value = ''),
+      (username.value = ''),
+      (password.value = ''),
+      (confirmPassword.value = '')
   } catch (err) {
     console.error(err)
     Notify.create({
@@ -657,7 +660,7 @@ async function getAllStudents() {
   }
 }
 
-// Function to open edit dialog with student data
+
 function openEditDialog(student) {
   editForm.value = {
     firstName: student.firstName || '',
@@ -665,16 +668,15 @@ function openEditDialog(student) {
     lastName: student.lastName || '',
     studentId: student.studentNumber || student.username || '',
     email: student.email || '',
-    program: student.course || '',
+    program: student.course,
     year: student.year || '',
     section: student.section || '',
     status: student.isRegular ? 'Regular' : 'Irregular',
-    _id: student._id, // Store the ID for updating
+    _id: student._id,
   }
   editStudentInfo.value = true
 }
 
-// Update the edit submission function
 async function editStudent() {
   loading.value = true
   try {
@@ -705,7 +707,7 @@ async function editStudent() {
         type: 'positive',
         message: 'Student information updated successfully',
       })
-      getAllStudents() // Refresh the table
+      getAllStudents()
     }
   } catch (err) {
     console.error(err)
@@ -791,7 +793,7 @@ async function resetPassword(studentId) {
     loading.value = false
   }
 }
-// Update send email function
+
 async function sendEmail(studentId) {
   loading.value = true
   try {
@@ -854,6 +856,54 @@ async function rejectEmail(studentId) {
   }
 }
 
+async function fetchPrograms() {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(
+      `${process.env.api_host}/courses/getProgram?isArchived=false`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    )
+
+    programOption.value = {
+      option: response.data.map((program) => program.name),
+    }
+  } catch (err) {
+    console.error('Error fetching programs:', err)
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to fetch programs',
+    })
+  }
+}
+
+async function userInfo() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    roleValidation.value = response.data.role
+    if (roleValidation.value === 'admin') {
+      return (isAdmin.value = true)
+    } else {
+      return (notAdmin.value = true)
+    }
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Error fetching user information',
+    })
+  }
+}
+
+
 // export button
 function wrapCsvValue(val, formatFn, row) {
   let formatted = formatFn !== void 0 ? formatFn(val, row) : val
@@ -909,7 +959,9 @@ function exportTable() {
 }
 
 onMounted(() => {
+  userInfo()
   getAllStudents()
+  fetchPrograms()
 })
 </script>
 

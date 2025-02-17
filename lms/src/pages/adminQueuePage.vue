@@ -34,9 +34,38 @@
             <div class="text-h5 text-weight-medium">WINDOW</div>
             <div v-if="queueInfo" class="text-h5 text-weight-bold">{{ queueInfo.window }}</div>
             <div align="right" class="q-mr-md">
-              <q-btn label="set" style="background-color: #fffeb8" />
+              <q-btn
+                label="set"
+                style="background-color: #fffeb8"
+                @click="inputWindowDialog = true"
+              />
             </div>
           </q-card>
+          <!-- input dialog -->
+          <q-dialog v-model="inputWindowDialog" persistent>
+            <q-card style="width: 500px">
+              <q-form @submit.prevent="setWindow">
+                <q-card-section style="background-color: #132a13; color: #ffffff">
+                  <div class="text-h6">Set new Window</div>
+                </q-card-section>
+                <q-card-section>
+                  <div>
+                    <q-input v-model="inputWindow" type="number" outlined />
+                  </div>
+                </q-card-section>
+                <q-card-section align="right">
+                  <q-btn label="Cancel" v-close-popup flat style="color: red" />
+                  <q-btn
+                    label="Submit"
+                    type="submit"
+                    flat
+                    style="color: green"
+                    :loading="loadingWindow"
+                  />
+                </q-card-section>
+              </q-form>
+            </q-card>
+          </q-dialog>
           <q-card
             class="info-box q-py-md ellipsis"
             style="
@@ -137,7 +166,6 @@
             </q-btn>
           </div>
         </q-card-section>
-
         <q-card-section
           class="row justify-around q-py-md q-mt-md"
           style="background-color: #fafedd; border: 2px solid #cbcdc7; height: auto"
@@ -262,29 +290,31 @@
 
         <q-dialog v-model="queueDetailsDialog">
           <q-card class="dialog-card">
-            <q-card-section v-if="queueInfo">
+            <q-card-section v-if="currentQueue">
               <div class="dialog-header">Queue Details</div>
               <div class="dialog-content">
                 <q-card-section class="student-details">
                   <div class="section-title">Student Details:</div>
-                  <div class="text-subtitle1">Username: {{ queueInfo.username }}</div>
-                  <div class="text-subtitle1">Student Number: {{ queueInfo.studentNumber }}</div>
-                  <div class="text-subtitle1">First Name: {{ queueInfo.firstName }}</div>
-                  <div class="text-subtitle1">Middle Name: {{ queueInfo.middleName }}</div>
-                  <div class="text-subtitle1">Last Name: {{ queueInfo.lastName }}</div>
-                  <div class="text-subtitle1">Email: {{ queueInfo.email }}</div>
-                  <div class="text-subtitle1">Regular: {{ queueInfo.isRegular }}</div>
-                  <div class="text-subtitle1">Year: {{ queueInfo.year }}</div>
-                  <div class="text-subtitle1">Section: {{ queueInfo.section }}</div>
+                  <div class="text-subtitle1">Username: {{ currentQueue.student.username }}</div>
+                  <div class="text-subtitle1">Student Number: {{ currentQueue.studentNumber }}</div>
+                  <div class="text-subtitle1">First Name: {{ currentQueue.student.firstName }}</div>
+                  <div class="text-subtitle1">
+                    Middle Name: {{ currentQueue.student.middleName }}
+                  </div>
+                  <div class="text-subtitle1">Last Name: {{ currentQueue.student.lastName }}</div>
+                  <div class="text-subtitle1">Email: {{ currentQueue.student.email }}</div>
+                  <div class="text-subtitle1">Regular: {{ currentQueue.student.isRegular }}</div>
+                  <div class="text-subtitle1">Year: {{ currentQueue.student.year }}</div>
+                  <div class="text-subtitle1">Section: {{ currentQueue.student.section }}</div>
                 </q-card-section>
-
-                <!-- v-for="course in queueInfo.courses"
-                :key="course.code" -->
-                <q-card-section class="courses-section">
+                <q-card-section
+                  class="courses-section"
+                  v-for="course in currentQueue.courseToTake"
+                  :key="course"
+                >
                   <div class="section-title">Courses to Take:</div>
                   <div class="course-item">
-                    <div>Information Technology (co12) - 12 Units</div>
-                    <div class="text-h5 text-weight-bold">Example doy ng course sa queue</div>
+                    <div>{{ course.course }} ({{ course.code }}) - {{ course.unit }} Units</div>
                   </div>
                 </q-card-section>
               </div>
@@ -306,11 +336,14 @@ import { Notify } from 'quasar'
 const ws = ref(null)
 const queues = ref([])
 const loading = ref(false)
+const loadingWindow = ref(false)
+const inputWindow = ref('')
+const inputWindowDialog = ref(false)
 const queueInfo = ref(null)
 const waitingQueue = ref(null)
 const currentQueue = ref(null)
 const router = useRouter()
-
+const userId = ref(null)
 const queueDetailsDialog = ref(false)
 
 async function queueListPage() {
@@ -325,8 +358,9 @@ async function userInfo() {
         Authorization: token,
       },
     })
+    userId.value = response.data._id
     queueInfo.value = response.data
-    console.log(queueInfo.value)
+    console.log(queueInfo.value, 'dito')
     getCurrentQueue(response.data.role)
   } catch (err) {
     console.error(err)
@@ -341,8 +375,9 @@ async function getCurrentQueue(role) {
         Authorization: token,
       },
     })
+
     currentQueue.value = response.data.currentQueue[0]
-    console.log(queueInfo.value.courses)
+    console.log(currentQueue.value, 'dito')
     waitingQueue.value = response.data.currentQueue.length
   } catch (err) {
     console.error(err)
@@ -442,7 +477,7 @@ async function refreshQueue() {
       type: 'negative',
       message: 'Something went wrong',
     })
-  }finally{
+  } finally {
     loading.value = false
   }
 }
@@ -456,7 +491,7 @@ async function cancelQueue(queueId) {
         Authorization: token,
       },
     })
-    getCurrentQueue(queueInfo.value.role)
+    getCurrentQueue(currentQueue.value.role)
     userInfo()
     Notify.create({
       type: 'posotive',
@@ -468,10 +503,44 @@ async function cancelQueue(queueId) {
       type: 'negative',
       message: 'Something went wrong',
     })
-  }finally{
+  } finally {
     loading.value = false
   }
 }
+
+async function setWindow() {
+  loadingWindow.value = true
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.post(
+      `${process.env.api_host}/users/update/${userId.value}`,
+      {
+        window: inputWindow.value,
+      },
+      {
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json',
+        },
+      },
+    )
+    userInfo()
+    Notify.create({
+      type: 'positive',
+      message: 'Window has been set successfully',
+    })
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Something went wrong',
+    })
+  } finally {
+    loadingWindow.value = false
+    inputWindowDialog.value = false
+  }
+}
+
 onMounted(() => {
   userInfo()
 })

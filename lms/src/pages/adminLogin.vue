@@ -129,7 +129,6 @@ async function backBtn() {
   router.replace(`/`)
 }
 
-
 async function login() {
   loading.value = true
   try {
@@ -146,12 +145,12 @@ async function login() {
       },
     )
     if (response.status === 200) {
-      const token = response.data.token // Adjust based on your response structure
-      localStorage.setItem('authToken', 'Bearer ' + token) // Save token to local storage
+      const token = response.data.token
+      localStorage.setItem('authToken', 'Bearer ' + token)
       Notify.create({ type: 'positive', message: 'Login successful!' })
       await new Promise((resolve) => setTimeout(resolve, 500))
       router.replace(`/new/dashboardPage`)
-      // Handle successful login (e.g., redirect or store user info)
+
     } else {
       Notify.create({
         type: 'negative',
@@ -187,7 +186,7 @@ async function login() {
   justify-content: center
   padding-top: 150px
 
-// Add responsive styles
+
 @media (max-width: 1024px)
   .login-container
     width: 80%

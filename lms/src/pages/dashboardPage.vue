@@ -60,8 +60,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { Notify } from 'quasar'
+import { useRouter } from 'vue-router'
 
-
+const router = useRouter()
+const userRole = ref()
 const firstName = ref('')
 const totalStudents = ref(0)
 const totalPrograms = ref(0)
@@ -131,9 +134,10 @@ const columns = ref([
     sortable: true,
   },
 ])
-
 const rows = ref([])
-
+const clearLocalStorage = () => {
+  localStorage.clear();
+};
 async function getUsers() {
   try {
     const response = await axios.get(`${process.env.api_host}/users?role=student&&isArchived=false`)
@@ -153,6 +157,7 @@ async function getUsers() {
   }
 }
 
+
 async function userInfo() {
   const token = localStorage.getItem('authToken')
   try {
@@ -162,6 +167,16 @@ async function userInfo() {
       },
     })
     firstName.value = response.data.firstName
+    userRole.value = response.data.role
+    if(userRole.value ==='student'){
+      Notify.create({
+        type: 'warning',
+        message: 'You are not authorized to access this page',
+      })
+      router.replace('/')
+      clearLocalStorage();
+    }
+    return
   } catch (err) {
     console.error(err)
   }
@@ -196,16 +211,15 @@ async function getCourses() {
   }
 }
 
-async function getCurrentQueue() {
+async function getQeueue() {
   const token = localStorage.getItem('authToken')
   try {
-    const response = await axios.get(`${process.env.api_host}/queues`, {
+    const response = await axios.get(`${process.env.api_host}/queues?query=Waiting`, {
       headers: {
         Authorization: token,
       },
     })
     totalQueue.value = response.data.length
-
   } catch (err) {
     console.error(err)
   }
@@ -217,7 +231,7 @@ onMounted(() => {
   userInfo()
   getPrograms()
   getCourses()
-  getCurrentQueue()
+  getQeueue()
 })
 </script>
 

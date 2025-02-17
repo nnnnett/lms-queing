@@ -200,7 +200,7 @@ async function backBtn() {
   justify-self: flex-end
   color: #31582c
 
-/* Responsive Styles */
+
 @media (max-width: 1440px)
   .university-title
     font-size: 2.8em

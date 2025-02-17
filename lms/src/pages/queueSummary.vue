@@ -211,5 +211,5 @@ onMounted(() => {
   width: 100%
   padding: 16px 0
   display: flex
-  height: calc(100% - 60px)  // Subtract header height
+  height: calc(100% - 60px)
 </style>

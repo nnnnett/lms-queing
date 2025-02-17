@@ -171,7 +171,7 @@ const columns = ref([
     name: 'prerequisites',
     label: 'Prerequisites',
     align: 'left',
-    field: 'prerequisites', // This will now show prerequisite names
+    field: 'prerequisites',
   },
   {
     name: 'description',
@@ -215,7 +215,7 @@ async function getCourses() {
         prerequisites:
           course.prerequisite && course.prerequisite.length > 0
             ? course.prerequisite.map((prereq) => prereq.name).join(', ')
-            : 'None', // Display "None" if no prerequisites
+            : 'None',
       }))
     } else {
       console.error('Invalid response format:', response)
@@ -265,7 +265,7 @@ async function checkCourse() {
         ([course, prerequisites]) => ({
           id: course,
           course: course,
-          prerequisites: prerequisites.map((prereq) => prereq.name).join(', '), // Extract only the names
+          prerequisites: prerequisites.map((prereq) => prereq.name).join(', '),
         }),
       )
       Notify.create({
@@ -273,7 +273,7 @@ async function checkCourse() {
         message: response.data.message,
       })
     } else {
-      prerequisitesRow.value = [] // Clear the prerequisites table
+      prerequisitesRow.value = []
       Notify.create({
         type: 'positive',
         message: response.data.message,
@@ -309,7 +309,7 @@ const onSelectAllClick = (val) => {
   selected.value = val ? [...rows.value] : []
 }
 
-// Update the watch to handle selected courses and return _id
+
 watch(selected, (newVal) => {
   selectedCourseIds.value = newVal.map((course) => course._id)
   selectAll.value = newVal.length === rows.value.length

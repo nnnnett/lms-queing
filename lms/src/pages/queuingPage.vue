@@ -102,15 +102,15 @@ const clearLocalStorage = () => {
 }
 const handleLogout = async () => {
   try {
-    // Clear localStorage when logging out
+
     clearLocalStorage()
-    // Show a notification
+
     Notify.create({ type: 'positive', message: 'Queuing number has been released' })
     await new Promise((resolve) => setTimeout(resolve, 500))
-    // Redirect to the login page
+
     router.replace('/')
   } catch (error) {
-    // If an error occurs during logout
+
     Notify.create({ type: 'negative', message: 'Error during logout' })
     console.error(error)
   } finally {
@@ -153,11 +153,8 @@ async function printQr() {
   printWindow.print();
 }
 
-
-// Update QR size based on screen width
 onMounted(() => {
   getQueue()
-
   const updateQrSize = () => {
     qrSize.value = window.innerWidth < 600 ? 120 : 150
   }

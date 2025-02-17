@@ -212,7 +212,7 @@ const onSelectAllClick = (val) => {
   selected.value = val ? [...rows.value] : []
 }
 
-// Update the watch to handle selected courses and return _id
+
 watch(selected, (newVal) => {
   selectedCourseIds.value = newVal.map((course) => course._id)
   console.log('Selected course IDs:', selectedCourseIds.value)
