@@ -35,7 +35,7 @@
                     <q-td>{{ props.row.email }}</q-td>
 
                     <q-td>
-                      <div class="row q-gutter-x-sm">
+                      <div class="row q-gutter-x-sm" v-if="isAdmin">
                         <q-btn-dropdown flat dropdown-icon="more_vert">
                           <q-list>
                             <div>
@@ -60,7 +60,7 @@
                     </template>
                   </q-input>
                 </template>
-                <template v-slot:top-right>
+                <template v-slot:top-right v-if="isAdmin">
                   <q-card-section class="button-section">
                     <q-btn
                       label="Add User"
@@ -395,6 +395,10 @@ const password = ref('')
 const confirmPassword = ref('')
 const role = ref(null)
 
+const roleValidation = ref('')
+const isAdmin = ref('')
+const notAdmin = ref('')
+
 const roleOptions = ['registrar', 'osas', 'cashier', 'admin']
 
 const statusOptions = ['Active', 'Inactive']
@@ -634,7 +638,32 @@ async function updateUser() {
   }
 }
 
+async function userInfo() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const response = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    roleValidation.value = response.data.role
+    if (roleValidation.value === 'admin') {
+      return (isAdmin.value = true)
+    } else {
+      return (notAdmin.value = true)
+    }
+  } catch (err) {
+    console.error(err)
+    Notify.create({
+      type: 'negative',
+      message: 'Error fetching user information',
+    })
+  }
+}
+
+
 onMounted(() => {
+  userInfo()
   getusers()
 })
 </script>

@@ -58,7 +58,7 @@
                       <q-td>{{ props.row.name }}</q-td>
                       <q-td>{{ props.row.unit }}</q-td>
                       <q-td>{{ props.row.course }}</q-td>
-                      <q-td>{{ props.row.description }}</q-td>
+                      <q-td>{{ formatPrerequisites(props.row.prerequisite) }}</q-td>
                     </q-tr>
                   </template>
                 </q-table>
@@ -138,10 +138,10 @@ const columns = ref([
     field: 'course',
   },
   {
-    name: 'description',
-    label: 'Description',
+    name: 'prerequisite',
+    label: 'Prerequisite',
     align: 'left',
-    field: 'description',
+    field: 'prerequisite',
   },
 ])
 
@@ -219,6 +219,14 @@ watch(selected, (newVal) => {
   selectAll.value = newVal.length === rows.value.length
 })
 
+const formatPrerequisites = (prerequisites) => {
+  if (!prerequisites) return 'None'
+  if (Array.isArray(prerequisites)) {
+    return prerequisites.map(pre => pre.code).join(', ')
+  }
+  return prerequisites.code || 'None'
+}
+
 onMounted(() => {
   getCourses()
 })
@@ -232,6 +240,6 @@ onMounted(() => {
 .courseTable
   background-color: #fcfedf
   box-shadow: none
-  height: 350px
+  height: 450px
   text-align: left
 </style>

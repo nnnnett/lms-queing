@@ -1,9 +1,9 @@
 <template>
   <q-page>
     <div>
-      <div class="q-ml-xl q-pt-md" style="float: left; position: absolute; z-index: 100">
+      <!-- <div class="q-ml-xl q-pt-md" style="float: left; position: absolute; z-index: 100">
         <q-btn icon="arrow_back_ios" size="20px" flat @click="backBtn" />
-      </div>
+      </div> -->
       <div
         class="main-container"
         style="
@@ -125,9 +125,9 @@ const router = useRouter()
 const username = ref('')
 const password = ref('')
 
-async function backBtn() {
-  router.replace(`/`)
-}
+// async function backBtn() {
+//   router.replace(`/`)
+// }
 
 async function login() {
   loading.value = true

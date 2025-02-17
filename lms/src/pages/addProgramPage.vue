@@ -45,7 +45,12 @@
                 <div class="col-12">
                   <div class="text-subtitle2 q-mb-sm">Course Description</div>
                   <div class="input-field">
-                    <q-input v-model="courseDescription" type="textarea" borderless />
+                    <q-input
+                      v-model="courseDescription"
+                      type="textarea"
+                      borderless
+                      label="optional"
+                    />
                   </div>
                 </div>
               </div>
@@ -53,11 +58,29 @@
                 <div class="col-12">
                   <div class="text-subtitle2 q-mb-sm">Select Prerequisites</div>
                   <div class="responsive-table">
-                    <q-table :rows="prerequisiteRows" :columns="prerequisiteColumns" row-key="action">
+                    <q-table
+                      :filter="filter"
+                      :rows="prerequisiteRows"
+                      :columns="prerequisiteColumns"
+                      row-key="action"
+                    >
                       <template v-slot:body-cell-select="props">
                         <q-td :props="props">
                           <q-checkbox v-model="selectedPrerequisites" :val="props.row.action" />
                         </q-td>
+                      </template>
+                      <template v-slot:top-left>
+                        <q-input
+                          borderless
+                          dense
+                          debounce="300"
+                          v-model="filter"
+                          placeholder="Search"
+                        >
+                          <template v-slot:append>
+                            <q-icon name="search" />
+                          </template>
+                        </q-input>
                       </template>
                     </q-table>
                   </div>
@@ -102,6 +125,7 @@ const totalUnits = ref(0)
 
 const loading = ref(false)
 const selectedPrerequisites = ref([])
+const filter = ref('')
 
 const prerequisiteRows = ref([])
 const prerequisiteColumns = [
@@ -141,7 +165,6 @@ async function getPrograms() {
     optionPrograms.value = {
       option: response.data.map((program) => program.name),
     }
-
   } catch (err) {
     console.error(err)
   }
@@ -212,14 +235,13 @@ async function addCourse() {
 
 async function cancelAdd() {
   courseTitle.value = ''
-    courseCode.value = ''
-    courseProgram.value = ''
-    courseDescription.value = ''
-    selectedPrerequisites.value = []
-    totalUnits.value = ''
-    router.push('/new/addCourses')
+  courseCode.value = ''
+  courseProgram.value = ''
+  courseDescription.value = ''
+  selectedPrerequisites.value = []
+  totalUnits.value = ''
+  router.push('/new/addCourses')
 }
-
 
 onMounted(() => {
   fetchPrerequisites()

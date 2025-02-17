@@ -30,29 +30,29 @@
         <q-card-section class="right-section">
           <div class="datetime-container">
             <div class="datetime-wrapper">
-              <div class="time-display">08:00 AM | THURS</div>
+              <div class="time-display">{{ currentTime }}</div>
               <div>
-                <div class="date-display">06 June 2024</div>
+                <div class="date-display">{{ currentDate }}</div>
               </div>
             </div>
           </div>
           <q-card-section class="queue-section">
             <div class="queue-item">
-              <div class="queue-number">R0001</div>
+              <div class="queue-number">{{ currentRegistrar }}</div>
               <div class="counter-container">
                 <div class="counter-label">COUNTER</div>
                 <div class="counter-number">01</div>
               </div>
             </div>
             <div class="queue-item">
-              <div class="queue-number">C0001</div>
+              <div class="queue-number">{{ currentOsas }}</div>
               <div class="counter-container">
                 <div class="counter-label">COUNTER</div>
                 <div class="counter-number">02</div>
               </div>
             </div>
             <div class="queue-item">
-              <div class="queue-number">S0001</div>
+              <div class="queue-number">{{ currentCashier }}</div>
               <div class="counter-container">
                 <div class="counter-label">COUNTER</div>
                 <div class="counter-number">03</div>
@@ -67,11 +67,85 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import axios from 'axios'
+import { ref, onMounted } from 'vue'
 
+const currentQueue = ref({})
 const router = useRouter()
+
+const currentRegistrar = ref('')
+const currentOsas = ref('')
+const currentCashier = ref('')
+
+const currentTime = ref('')
+const currentDate = ref('')
+
 async function backBtn() {
   router.replace(`/`)
 }
+
+async function getCurrentQueue() {
+  const token = localStorage.getItem('authToken')
+  try {
+    const registrarQueue = await axios.get(`${process.env.api_host}/queues/current/registrar`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    if(registrarQueue.data.currentQueue.length > 0){
+      currentRegistrar.value = registrarQueue.data.currentQueue[0].queueNumber
+    }
+    const osasQueue = await axios.get(`${process.env.api_host}/queues/current/osas`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    if(osasQueue.data.currentQueue.length > 0){
+      currentOsas.value = osasQueue.data.currentQueue[0].queueNumber
+    }
+    const cashierQueue = await axios.get(`${process.env.api_host}/queues/current/cashier`, {
+      headers: {
+        Authorization: token,
+      },
+    })
+    if(cashierQueue.data.currentQueue.length > 0){
+      currentCashier.value = cashierQueue.data.currentQueue[0].queueNumber
+    }
+    console.log(currentQueue.value)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+function updateDateTime() {
+  const now = new Date()
+
+
+  const hours = now.getHours()
+  const minutes = now.getMinutes()
+  const ampm = hours >= 12 ? 'PM' : 'AM'
+  const formattedHours = hours % 12 || 12
+  const formattedMinutes = minutes.toString().padStart(2, '0')
+  const days = ['SUN', 'MON', 'TUES', 'WED', 'THURS', 'FRI', 'SAT']
+  const dayName = days[now.getDay()]
+
+  currentTime.value = `${formattedHours}:${formattedMinutes} ${ampm} | ${dayName}`
+
+
+  const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December']
+  const date = now.getDate().toString().padStart(2, '0')
+  const month = months[now.getMonth()]
+  const year = now.getFullYear()
+
+  currentDate.value = `${date} ${month} ${year}`
+}
+
+onMounted(() => {
+  getCurrentQueue()
+  updateDateTime()
+  setInterval(updateDateTime, 1000)
+})
 </script>
 
 <style lang="sass" scoped>
@@ -177,9 +251,9 @@ async function backBtn() {
 .queue-number
   background-color: #31582c
   width: 60%
-  color: #f30601
-  font-size: 6em
-  font-weight: 500
+  color: white
+  font-size: 2em
+  font-weight: 700
   display: flex
   justify-content: center
   align-items: center
@@ -210,7 +284,7 @@ async function backBtn() {
     font-size: 2.8em
 
   .queue-number, .counter-number
-    font-size: 3.5em
+    font-size: 1.5em
 
   .counter-label
     font-size: 1.4em
@@ -240,7 +314,7 @@ async function backBtn() {
     height: 110px
 
   .queue-number, .counter-number
-    font-size: 2.8em
+    font-size: 3em
 
   .counter-label
     font-size: 1.1em
@@ -280,7 +354,7 @@ async function backBtn() {
     height: 90px
 
   .queue-number, .counter-number
-    font-size: 2.2em
+    font-size: 2em
 
   .counter-label
     font-size: 1em
@@ -299,7 +373,7 @@ async function backBtn() {
     height: 80px
 
   .queue-number, .counter-number
-    font-size: 1.8em
+    font-size: 1.5em
 
   .counter-label
     font-size: 0.9em
@@ -324,7 +398,7 @@ async function backBtn() {
     height: 70px
 
   .queue-number, .counter-number
-    font-size: 1.5em
+    font-size: 1em
 
   .counter-label
     font-size: 0.8em

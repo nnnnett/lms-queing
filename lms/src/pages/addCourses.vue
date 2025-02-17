@@ -7,10 +7,10 @@
             Admin/<span style="color: #b1b2b4">Courses</span>
           </div>
         </q-card-section>
-        <div class="button-container">
+        <div class="button-container" v-if="isAdmin">
           <q-card-section class="button-section">
             <q-btn
-              label="Add Program"
+              label="Add Course"
               no-caps
               flat
               class="action-button"
@@ -322,7 +322,7 @@ async function getCourses() {
       courseName: course.name,
       description: course.description,
       prerequisite: course.prerequisite.length
-        ? course.prerequisite.map((prereq) => prereq.name).join(', ')
+        ? course.prerequisite.map((prereq) => prereq.code).join(', ')
         : '',
       numUnits: course.unit || 0,
       action: course._id,

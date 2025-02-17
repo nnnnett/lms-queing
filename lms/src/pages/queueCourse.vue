@@ -214,7 +214,7 @@ async function getCourses() {
         ...course,
         prerequisites:
           course.prerequisite && course.prerequisite.length > 0
-            ? course.prerequisite.map((prereq) => prereq.name).join(', ')
+            ? course.prerequisite.map((prereq) => prereq.code).join(', ')
             : 'None',
       }))
     } else {

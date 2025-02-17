@@ -11,9 +11,9 @@
           border: 3px solid #606060;
         "
       >
-        <div class="q-ml-xl q-pt-xl" style="float: left; position: absolute; z-index: 100">
+        <!-- <div class="q-ml-xl q-pt-xl" style="float: left; position: absolute; z-index: 100">
           <q-btn icon="arrow_back_ios" size="20px" flat @click="backBtn" />
-        </div>
+        </div> -->
 
         <q-card-section>
           <div class="main-container">
@@ -55,7 +55,7 @@
                     </q-card-section>
 
                     <q-card-section style="width: 100%">
-                      Course:
+                      Program:
                       <div style="width: 100%">
                         <q-select
                           type="text"
@@ -272,9 +272,9 @@ async function getPrograms() {
   }
 }
 
-async function backBtn() {
-  router.replace(`/`)
-}
+// async function backBtn() {
+//   router.replace(`/`)
+// }
 
 onMounted(() => {
   getPrograms()

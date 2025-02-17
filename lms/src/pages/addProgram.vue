@@ -7,7 +7,7 @@
             Admin/<span style="color: #b1b2b4">Program</span>
           </div>
         </q-card-section>
-        <div class="button-container">
+        <div class="button-container" v-if="isAdmin">
           <q-card-section class="button-section">
             <q-btn
               label="Add Program"

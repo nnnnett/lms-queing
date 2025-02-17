@@ -31,7 +31,7 @@
                   <q-input v-model="username" label="Username" outlined />
                 </div>
                 <div class="col-12 col-sm-6">
-                  <q-input v-model="designation" label="Designation" outlined />
+                  <q-input v-model="designation" label="Department" outlined disable />
                 </div>
               </div>
             </div>

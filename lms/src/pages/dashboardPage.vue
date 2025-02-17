@@ -50,6 +50,13 @@
                 </q-td>
               </q-tr>
             </template>
+            <template v-slot:top-left>
+             <q-btn label="Signup Link" @click="copySignUp" no-caps>
+              <q-tooltip>
+                Registration Link for student
+              </q-tooltip>
+             </q-btn>
+            </template>
           </q-table>
         </div>
       </div>
@@ -225,6 +232,24 @@ async function getQeueue() {
   }
 }
 
+async function copySignUp() {
+  const registrationLink = `https://queing.vercel.app/#/studentRegister`
+  try {
+    await navigator.clipboard.writeText(registrationLink)
+    Notify.create({
+      type: 'positive',
+      message: 'Registration link copied to clipboard!',
+      position: 'top'
+    })
+  } catch (err) {
+    console.error('Failed to copy:', err)
+    Notify.create({
+      type: 'negative',
+      message: 'Failed to copy link',
+      position: 'top'
+    })
+  }
+}
 
 onMounted(() => {
   getUsers()

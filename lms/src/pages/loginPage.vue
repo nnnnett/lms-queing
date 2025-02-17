@@ -29,7 +29,7 @@
                   <q-input type="password" outlined v-model="password" />
                 </div>
               </q-card-section>
-              <q-card-section style="display: flex; justify-content: space-between; width: 100%">
+              <!-- <q-card-section style="display: flex; justify-content: space-between; width: 100%">
                 <div>Create New Account?</div>
                 <div
                   style="cursor: pointer; text-decoration: underline; color: #4a28c5"
@@ -38,7 +38,7 @@
                 >
                   Sign up
                 </div>
-              </q-card-section>
+              </q-card-section> -->
               <q-card-section class="flex flex-center">
                 <q-btn
                   class="q-py-md q-px-xl"
@@ -52,7 +52,7 @@
               </q-card-section>
             </q-form>
             <q-card-section style="display: flex;justify-content: space-around;">
-              <q-btn label="Admin Login" flat style="border: 1px solid #606060" no-caps @click="router.push('/adminLogin')" />
+              <!-- <q-btn label="Admin Login" flat style="border: 1px solid #606060" no-caps @click="router.push('/adminLogin')" /> -->
 
               <q-btn label="Public Monitor" flat style="border: 1px solid #606060" no-caps @click="router.push('/publicMonitor')" />
             </q-card-section>
