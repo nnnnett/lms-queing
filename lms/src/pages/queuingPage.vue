@@ -127,71 +127,30 @@ async function printQr() {
     return;
   }
 
-  const qrImage = qrCanvas.toDataURL();
+  const qrImage = qrCanvas.toDataURL(); // Capture the QR code as an image
 
-  // Create a new window with specific dimensions for POS-58 printer (58mm width)
-  const printContent = `
+  const printWindow = window.print('', '_blank');
+  printWindow.document.write(`
     <html>
       <head>
-        <title>Queue Ticket</title>
+        <title>Print Queue Ticket</title>
         <style>
-          @page {
-            margin: 0;
-            size: 58mm auto;  /* Width: 58mm, Height: auto */
-          }
-          body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            width: 58mm;
-            padding: 5px;
-            margin: 0;
-          }
-          .queue-number {
-            font-size: 18px;
-            font-weight: bold;
-            color: green;
-            margin: 5px 0;
-          }
-          .certificate-text {
-            font-size: 12px;
-            margin: 5px 0;
-          }
-          .qr-code {
-            width: 120px;
-            height: 120px;
-            margin: 5px auto;
-          }
-          .scan-text {
-            font-size: 10px;
-            margin: 5px 0;
-          }
+          body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+          .queue-number { font-size: 24px; font-weight: bold; color: green; margin-bottom: 20px; }
+          .qr-wrapper img { margin: 0 auto; }
         </style>
       </head>
       <body>
-        <div class="queue-number">${queueNumber}</div>
-        <div class="certificate-text">
-          Release of Certificate<br>
-          of Registration
-        </div>
-        <div class="qr-code">
-          <img src="${qrImage}" alt="QR Code" style="width: 100%; height: 100%;">
-        </div>
-        <div class="scan-text">
-          Scan the QR Code to monitor<br>the queue flow
+        <div class="queue-number">Q-${queueNumber}</div>
+        <div class="qr-wrapper">
+          <img src="${qrImage}" alt="QR Code">
         </div>
       </body>
     </html>
-  `;
+  `);
 
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(printContent);
   printWindow.document.close();
-
-  // Wait for images to load before printing
-  printWindow.onload = function() {
-    printWindow.print();
-    printWindow.close();
-  };
+  printWindow.print();
 }
 
 onMounted(() => {
