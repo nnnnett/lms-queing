@@ -46,16 +46,19 @@
             <template #body="props">
               <q-tr :props="props">
                 <q-td v-for="col in columns" :key="col.name" :props="props">
-                  {{ col.name === '#' ? props.rowIndex + 1 : props.row[col.name] }}
+                  <template v-if="col.name === '#'">
+                    {{ props.rowIndex + 1 }}
+                  </template>
+                  <template v-else>
+                    {{ props.row[col.name] }}
+                  </template>
                 </q-td>
               </q-tr>
             </template>
             <template v-slot:top-left>
-             <q-btn label="Signup Link" @click="copySignUp" no-caps>
-              <q-tooltip>
-                Registration Link for student
-              </q-tooltip>
-             </q-btn>
+              <q-btn label="Signup Link" @click="copySignUp" no-caps>
+                <q-tooltip> Registration Link for student </q-tooltip>
+              </q-btn>
             </template>
           </q-table>
         </div>
@@ -134,6 +137,12 @@ const columns = ref([
     sortable: true,
   },
   {
+    name: 'courses',
+    align: 'left',
+    label: 'Prerequisite',
+    field: 'courses',
+  },
+  {
     name: 'status',
     align: 'left',
     label: 'Status',
@@ -143,12 +152,12 @@ const columns = ref([
 ])
 const rows = ref([])
 const clearLocalStorage = () => {
-  localStorage.clear();
-};
+  localStorage.clear()
+}
 async function getUsers() {
   try {
     const response = await axios.get(`${process.env.api_host}/users?role=student&&isArchived=false`)
-    rows.value = response.data.map(student => ({
+    rows.value = response.data.map((student) => ({
       studentId: student.studentNumber,
       name: `${student.firstName} ${student.middleName ? student.middleName + ' ' : ''}${student.lastName}`.trim(),
       username: student.username,
@@ -156,14 +165,14 @@ async function getUsers() {
       program: student.course,
       year: student.year,
       section: student.section,
-      status: student.isRegular ? 'Regular' : 'Irregular'
+      courses: student.courses?.map((course) => course.code).join(', '),
+      status: student.isRegular ? 'Regular' : 'Irregular',
     }))
     totalStudents.value = response.data.length
   } catch (error) {
     console.error('Error fetching users:', error)
   }
 }
-
 
 async function userInfo() {
   const token = localStorage.getItem('authToken')
@@ -175,13 +184,13 @@ async function userInfo() {
     })
     firstName.value = response.data.firstName
     userRole.value = response.data.role
-    if(userRole.value ==='student'){
+    if (userRole.value === 'student') {
       Notify.create({
         type: 'warning',
         message: 'You are not authorized to access this page',
       })
       router.replace('/')
-      clearLocalStorage();
+      clearLocalStorage()
     }
     return
   } catch (err) {
@@ -199,7 +208,7 @@ async function getPrograms() {
         },
       },
     )
-      totalPrograms.value = response.data.length
+    totalPrograms.value = response.data.length
   } catch (err) {
     console.error(err)
   }
@@ -239,14 +248,14 @@ async function copySignUp() {
     Notify.create({
       type: 'positive',
       message: 'Registration link copied to clipboard!',
-      position: 'top'
+      position: 'top',
     })
   } catch (err) {
     console.error('Failed to copy:', err)
     Notify.create({
       type: 'negative',
       message: 'Failed to copy link',
-      position: 'top'
+      position: 'top',
     })
   }
 }

@@ -2,89 +2,56 @@
   <q-page>
     <div>
       <div
-        style="
-          background: url('https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617278/assets/queing/q5xrh22iplhm2bndvvru.jpg')
-            no-repeat center center;
-          background-size: cover;
-          width: 100%;
-          min-height: 100vh;
-          border: 3px solid #606060;
-          overflow-y: auto;
-        "
+        class="background-container"
       >
         <q-card-section class="flex flex-center">
           <div class="content-width">
-            <q-card-section class="text-center" style="margin-top: 40px; color: #333332">
+            <q-card-section class="text-center page-header">
               <div class="page-title text-weight-bold text-uppercase">queue summary</div>
             </q-card-section>
             <q-card-section class="container-queuing q-pa-sm" v-if="queueDetails">
               <!-- queue number -->
               <q-card-section class="flex flex-center">
-                <q-card style="width: 90%; max-width: 400px">
+                <q-card class="queue-card">
                   <q-card-section class="text-center">
                     <div class="text-h5 text-weight-bold">QUEUE NUMBER</div>
-                    <div
-                      class="text-h6 text-uppercase text-center text-weight-bold"
-                      style="color: green"
-                    >
-                      {{ queueDetails.queueNumber }}
-                    </div>
+                    <div class="queue-number">{{ queueDetails.queueNumber }}</div>
                     <div>Status: {{ queueDetails.status }}</div>
                     <div>Destination: {{ queueDetails.destination }}</div>
                   </q-card-section>
                 </q-card>
               </q-card-section>
               <!-- Student and Course Information Container -->
-              <q-card-section
-                class="info-container q-mx-sm q-mx-md-xl q-pa-none"
-                style="border: 3px solid #323e2f"
-              >
+              <q-card-section class="info-container">
                 <div class="info-sections">
                   <!-- Student Information Section -->
                   <div class="info-section">
-                    <div class="section-header text-weight-bold q-pa-md">Student Information</div>
-
+                    <div class="section-header">Student Information</div>
                     <div class="scroll-container">
-                      <div class="info-grid">
-                        <div class="info-cell">Username: {{ queueDetails.student.username }}</div>
-                        <div class="info-cell">Email: {{ queueDetails.student.email }}</div>
-                        <div class="info-cell">
-                          First Name: {{ queueDetails.student.firstName }}
-                        </div>
-                        <div class="info-cell">
-                          Middle Name: {{ queueDetails.student.middleName }}
-                        </div>
-                        <div class="info-cell">Last Name: {{ queueDetails.student.lastName }}</div>
-                        <div class="info-cell">
-                          Course: {{ queueDetails.student.course }}
-                        </div>
-                        <div class="info-cell">Year: {{ queueDetails.student.year }}</div>
-                        <div class="info-cell">
-                          Section: {{ queueDetails.student.section }}
-                        </div>
-                        <div class="info-cell">
-                          Regular: {{ queueDetails.student.isRegular }}
-                        </div>
+                      <div class="info-grid student-info">
+                        <div class="info-cell"><strong>Username:</strong> {{ queueDetails.student.username }}</div>
+                        <div class="info-cell"><strong>Email:</strong> {{ queueDetails.student.email }}</div>
+                        <div class="info-cell"><strong>First Name:</strong> {{ queueDetails.student.firstName }}</div>
+                        <div class="info-cell"><strong>Middle Name:</strong> {{ queueDetails.student.middleName }}</div>
+                        <div class="info-cell"><strong>Last Name:</strong> {{ queueDetails.student.lastName }}</div>
+                        <div class="info-cell"><strong>Course:</strong> {{ queueDetails.student.course }}</div>
+                        <div class="info-cell"><strong>Year:</strong> {{ queueDetails.student.year }}</div>
+                        <div class="info-cell"><strong>Section:</strong> {{ queueDetails.student.section }}</div>
+                        <div class="info-cell"><strong>Regular:</strong> {{ queueDetails.student.isRegular }}</div>
                       </div>
                     </div>
                   </div>
-
-                  <!-- Course Information Section -->
-                  <div class="info-section">
-                    <div class="section-header text-weight-bold q-pa-md">Course Information</div>
-
-                    <div class="scroll-container">
-                      <div
-                        class="course-grid"
-                        v-for="course in queueDetails.courseToTake"
-                        :key="course._id"
-                      >
-                        <div class="course-cell">Course Code: {{ course.code }}</div>
-                        <div class="course-cell">Course Name: {{ course.name }}</div>
-                        <div class="course-cell">Course: {{ course.course }}</div>
-                        <div class="course-cell">Course unit: {{ course.unit }}</div>
-                        <div class="course-cell">Course Description: {{ course.description }}</div>
-                      </div>
+                </div>
+                <!-- Course Information Section -->
+                <div class="course-container">
+                  <div class="section-header">Courses to Take</div>
+                  <div class="course-grid">
+                    <div v-for="course in queueDetails.courseToTake" :key="course._id" class="course-cell">
+                      <div><strong>Course Code:</strong> {{ course.code }}</div>
+                      <div><strong>Course Name:</strong> {{ course.name }}</div>
+                      <div><strong>Course:</strong> {{ course.course }}</div>
+                      <div><strong>Course Unit:</strong> {{ course.unit }}</div>
+                      <div><strong>Course Description:</strong> {{ course.description }}</div>
                     </div>
                   </div>
                 </div>
@@ -122,6 +89,14 @@ onMounted(() => {
 </script>
 
 <style lang="sass" scoped>
+.background-container
+  background: url('https://res.cloudinary.com/dqaw6ndtn/image/upload/v1737617278/assets/queing/q5xrh22iplhm2bndvvru.jpg') no-repeat center center
+  background-size: cover
+  width: 100%
+  min-height: 100vh
+  border: 3px solid #606060
+  overflow-y: auto
+
 .container-queuing
   background-color: #fcfedf
   width: 100%
@@ -131,85 +106,77 @@ onMounted(() => {
   width: 95%
   max-width: 1200px
 
+.page-header
+  margin-top: 40px
+  color: #333332
+
 .page-title
   font-size: 2rem
   @media (max-width: 600px)
     font-size: 1.5rem
 
-.scroll-container
-  overflow-x: auto
-  width: 100%
-  background-color: #fefeff
-  padding: 16px 0
-  display: flex
-  height: 100%
+.queue-card
+  width: 90%
+  max-width: 400px
 
-.info-grid
-  display: flex
-  flex-direction: column
-  grid-template-columns: repeat(9, minmax(150px, 1fr))
-  gap: 10px
-  padding: 20px
-  background-color: #fefeff
-  height: 100%
-
-.info-cell
-  padding: 8px
-  word-break: break-word
-  display: flex
-  min-height: 50px
-  font-size: 1rem
-  font-weight: 500
-.course-grid
-  display: flex
-  flex-direction: column
-  grid-template-columns: repeat(5, minmax(150px, 1fr))
-  gap: 10px
-  padding: 20px
-  background-color: #fefeff
-  width: 100%
-  height: 100%
-  border-left: 3px solid #333e2e
-  @media (max-width: 768px)
-    border-left: none
-
-.course-cell
-  padding: 8px
-  word-break: break-word
-  display: flex
-  min-height: 50px
-  font-size: 1rem
-  font-weight: 500
-@media (max-width: 600px)
-  .q-card-section
-    padding: 8px
-  .info-cell, .course-cell
-    font-size: 0.9rem
+.queue-number
+  font-size: 1.8rem
+  font-weight: bold
+  color: green
 
 .info-container
   background-color: #fefeff
-
-.info-sections
-  display: flex
-  @media (max-width: 768px)
-    flex-direction: column
+  border: 3px solid #323e2f
+  padding: 20px
+  border-radius: 10px
+  overflow-x: hidden
 
 .info-section
-  width: 50%
-  @media (max-width: 768px)
-    width: 100%
+  width: 100%
 
+.student-info
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
+  gap: 12px
+  padding: 15px
+
+.info-cell
+  padding: 10px
+  background: #ffffff
+  border-radius: 8px
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1)
+  word-wrap: break-word
 
 .section-header
   font-size: 1.5em
   background-color: #30572d
   text-transform: uppercase
   color: #ffffff
+  padding: 10px
+  text-align: center
+  border-radius: 8px
 
-.scroll-container
-  overflow-x: auto
-  width: 100%
-  padding: 16px 0
-  display: flex
-  height: calc(100% - 60px)
+.course-container
+  margin-top: 20px
+  text-align: center
+
+.course-grid
+  display: grid
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))
+  gap: 15px
+  padding: 20px
+
+.course-cell
+  padding: 10px
+  background: #fff
+  border-radius: 8px
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1)
+  border: 2px solid #ccc
+  word-wrap: break-word
+
+@media (max-width: 400px)
+  .content-width
+    width: 100%
+  .student-info, .course-grid
+    grid-template-columns: 1fr
 </style>

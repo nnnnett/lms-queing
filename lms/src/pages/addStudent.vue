@@ -168,7 +168,7 @@
                 <q-spinner-dots size="50px" />
               </q-inner-loading>
             </template>
-            <template #body="props">
+            <template v-slot:body="props">
               <q-tr :props="props">
                 <q-td v-for="col in columns" :key="col.name" :props="props">
                   <template v-if="col.name === '#'">
@@ -230,6 +230,10 @@
                         </q-list>
                       </q-btn-dropdown>
                     </div>
+                  </template>
+                  <template v-else-if="col.name === 'courses'">
+                    <!-- Display course codes as a comma-separated string -->
+                    {{ props.row.courses?.map((course) => course.code).join(', ') }}
                   </template>
                   <template v-else>
                     {{
@@ -438,7 +442,6 @@ const editStatusOption = ref(['Regular', 'Irregular'])
 
 const tableLoading = ref(false)
 
-
 const selectedStudentId = ref(null)
 
 async function cancelAdd() {
@@ -616,6 +619,13 @@ const columns = ref([
     sortable: true,
   },
   {
+    name: 'courses',
+    align: 'left',
+    label: 'Prerequisite',
+    field: (row) => row.courses?.map((course) => course.code).join(', '),
+    sortable: false,
+  },
+  {
     name: 'action',
     align: 'left',
     label: 'Action',
@@ -659,7 +669,6 @@ async function getAllStudents() {
     tableLoading.value = false
   }
 }
-
 
 function openEditDialog(student) {
   editForm.value = {
@@ -902,7 +911,6 @@ async function userInfo() {
     })
   }
 }
-
 
 // export button
 function wrapCsvValue(val, formatFn, row) {

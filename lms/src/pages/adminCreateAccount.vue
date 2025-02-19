@@ -494,6 +494,7 @@ async function createAccount() {
         email: email.value,
         password: password.value,
         role: role.value,
+        isEmailSent: true
       },
       {
         headers: {
