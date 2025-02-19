@@ -621,7 +621,7 @@ const columns = ref([
   {
     name: 'courses',
     align: 'left',
-    label: 'Prerequisite',
+    label: 'Course Taken',
     field: (row) => row.courses?.map((course) => course.code).join(', '),
     sortable: false,
   },

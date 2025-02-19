@@ -184,8 +184,7 @@ async function login() {
 .main-container
   display: flex
   justify-content: center
-  padding-top: 150px
-
+  padding-top: 140px
 
 @media (max-width: 1024px)
   .login-container

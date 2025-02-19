@@ -139,7 +139,7 @@ const columns = ref([
   {
     name: 'courses',
     align: 'left',
-    label: 'Prerequisite',
+    label: 'Course Taken',
     field: 'courses',
   },
   {
