@@ -33,7 +33,7 @@ export default defineConfig((/* ctx */) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#build
     build: {
       env: {
-        // api_host: 'https://g188k323-3000.asse.devtunnels.ms',
+        // api_host: 'https://g188k323-3005.asse.devtunnels.ms',
         api_host: "https://pre-registration-and-queueing-system-be.vercel.app",
       },
       target: {

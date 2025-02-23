@@ -266,7 +266,6 @@ async function getPrograms() {
     courseOption.value = {
       option: response.data.map((program) => program.name),
     }
-    console.log(response.data)
   } catch (err) {
     console.error(err)
   }

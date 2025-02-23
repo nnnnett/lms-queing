@@ -13,6 +13,11 @@
       >
         <div class="main-container">
           <q-card-section class="container-courseInfo">
+            <q-card-section>
+              <q-btn flat @click="backBtn">
+                <q-icon name="arrow_back_ios" />
+              </q-btn>
+            </q-card-section>
             <q-card-section class="text-center">
               <div class="text-h4 text-weight-bold text-uppercase">Student Login</div>
             </q-card-section>
@@ -111,6 +116,10 @@ async function login() {
   } finally {
     loading.value = false
   }
+}
+
+async function backBtn() {
+  router.push(`/`)
 }
 </script>
 

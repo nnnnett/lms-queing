@@ -127,30 +127,79 @@ async function printQr() {
     return;
   }
 
-  const qrImage = qrCanvas.toDataURL(); // Capture the QR code as an image
+  const qrImage = qrCanvas.toDataURL();
 
-  const printWindow = window.print('', '_blank');
-  printWindow.document.write(`
+  // Create a hidden iframe for printing
+  const printFrame = document.createElement('iframe');
+  printFrame.style.display = 'none';
+  document.body.appendChild(printFrame);
+
+  const printContent = `
     <html>
       <head>
-        <title>Print Queue Ticket</title>
+        <title>Queue Ticket</title>
         <style>
-          body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-          .queue-number { font-size: 24px; font-weight: bold; color: green; margin-bottom: 20px; }
-          .qr-wrapper img { margin: 0 auto; }
+          @page {
+            margin: 0;
+            size: 58mm auto;  /* Width: 58mm, Height: auto */
+          }
+          body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            width: 58mm;
+            padding: 5px;
+            margin: 0;
+          }
+          .queue-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: green;
+            margin: 5px 0;
+          }
+          .certificate-text {
+            font-size: 12px;
+            margin: 5px 0;
+          }
+          .qr-code {
+            width: 120px;
+            height: 120px;
+            margin: 5px auto;
+          }
+          .scan-text {
+            font-size: 10px;
+            margin: 5px 0;
+          }
         </style>
       </head>
       <body>
-        <div class="queue-number">Q-${queueNumber}</div>
-        <div class="qr-wrapper">
-          <img src="${qrImage}" alt="QR Code">
+        <div class="queue-number">${queueNumber}</div>
+        <div class="certificate-text">
+          Release of Certificate<br>
+          of Registration
+        </div>
+        <div class="qr-code">
+          <img src="${qrImage}" alt="QR Code" style="width: 100%; height: 100%;">
+        </div>
+        <div class="scan-text">
+          Scan the QR Code to monitor<br>the queue flow
         </div>
       </body>
     </html>
-  `);
+  `;
 
-  printWindow.document.close();
-  printWindow.print();
+  const frameDoc = printFrame.contentWindow.document;
+  frameDoc.open();
+  frameDoc.write(printContent);
+  frameDoc.close();
+
+  // Wait for images to load before printing
+  printFrame.onload = function() {
+    printFrame.contentWindow.print();
+    // Remove the iframe after printing
+    setTimeout(() => {
+      document.body.removeChild(printFrame);
+    }, 1000);
+  };
 }
 
 onMounted(() => {

@@ -4,7 +4,9 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       // { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: '', component: () => import('pages/loginPage.vue') },
+      { path: '', component: () => import('pages/landingPage.vue') },
+      { path: 'loginPage', component: () => import('pages/loginPage.vue') },
+      { path: 'transactionPage', component: () => import('pages/transactionPage.vue') },
       { path: 'studentInfo', component: () => import('pages/studentInfo.vue') },
       { path: 'studentRegister', component: () => import('pages/studentRegister.vue') },
       { path: 'studentInfoInput', component: () => import('pages/studentInfoInput.vue') },
@@ -33,7 +35,6 @@ const routes = [
       { path: 'adminCreateAccount', component: () => import('src/pages/adminCreateAccount.vue') },
       { path: 'adminQueuePage', component: () => import('src/pages/adminQueuePage.vue') },
       { path: 'queueList', component: () => import('src/pages/queueList.vue') },
-
     ],
   },
 

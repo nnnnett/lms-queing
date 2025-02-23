@@ -574,7 +574,7 @@ const columns = ref([
     name: 'fullName',
     align: 'left',
     label: 'Student Name',
-    field: (row) => `${row.firstName} ${row.lastName}`,
+    field: (row) => `${row.firstName} ${row.middleName} ${row.lastName}`,
     sortable: true,
   },
   {
