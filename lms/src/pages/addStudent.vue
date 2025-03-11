@@ -639,24 +639,57 @@ async function getAllStudents() {
   tableLoading.value = true
   try {
     const token = localStorage.getItem('authToken')
-    const response = await axios.get(
-      `${process.env.api_host}/users?role=student&&isArchived=false`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: token,
-        },
+    const userResponse = await axios.get(`${process.env.api_host}/users/myProfile`, {
+      headers: {
+        Authorization: token,
       },
-    )
-    if (response.data && Array.isArray(response.data)) {
-      rows.value = response.data
+    })
+
+    if (
+      userResponse.data.role === 'admin' ||
+      userResponse.data.role === 'osas' ||
+      userResponse.data.role === 'cashier' ||
+      userResponse.data.role === 'registrar'
+    ) {
+      const response = await axios.get(
+        `${process.env.api_host}/users?role=student&isArchived=false`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token,
+          },
+        },
+      )
+      if (response.data && Array.isArray(response.data)) {
+        rows.value = response.data
+      } else {
+        console.error('Invalid response format:', response)
+        rows.value = []
+        Notify.create({
+          type: 'negative',
+          message: 'Invalid data format received from server',
+        })
+      }
     } else {
-      console.error('Invalid response format:', response)
-      rows.value = []
-      Notify.create({
-        type: 'negative',
-        message: 'Invalid data format received from server',
-      })
+      const response = await axios.get(
+        `${process.env.api_host}/users?role=student&program=${userResponse.data.role}&isArchived=false`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token,
+          },
+        },
+      )
+      if (response.data && Array.isArray(response.data)) {
+        rows.value = response.data
+      } else {
+        console.error('Invalid response format:', response)
+        rows.value = []
+        Notify.create({
+          type: 'negative',
+          message: 'Invalid data format received from server',
+        })
+      }
     }
   } catch (err) {
     console.error(err)
