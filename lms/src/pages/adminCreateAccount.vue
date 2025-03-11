@@ -7,7 +7,7 @@
             Admin/<span style="color: #b1b2b4">Users</span>
           </div>
 
-          <q-card-section class="q-px-none"  >
+          <q-card-section class="q-px-none">
             <q-card-section style="background-color: #30582d" class=" ">
               <div style="color: #ffffff" class="text-h6 text-weight-medium">User List</div>
             </q-card-section>
@@ -39,13 +39,32 @@
                         <q-btn-dropdown flat dropdown-icon="more_vert">
                           <q-list>
                             <div>
-                              <q-btn label="Edit" no-caps flat style="width: 100%;" color="primary" @click="openEditDialog(props.row)"/>
+                              <q-btn
+                                label="Edit"
+                                no-caps
+                                flat
+                                style="width: 100%"
+                                color="primary"
+                                @click="openEditDialog(props.row)"
+                              />
                             </div>
                             <div>
-                              <q-btn label="Delete" no-caps flat style="width: 100%;color: red;" @click="deleteUserDialog(props.row.id)"/>
+                              <q-btn
+                                label="Delete"
+                                no-caps
+                                flat
+                                style="width: 100%; color: red"
+                                @click="deleteUserDialog(props.row.id)"
+                              />
                             </div>
                             <div>
-                              <q-btn :loading="loading" label="Send Email"  no-caps flat style="width: 100%;color: green;" />
+                              <q-btn
+                                :loading="loading"
+                                label="Send Email"
+                                no-caps
+                                flat
+                                style="width: 100%; color: green"
+                              />
                             </div>
                           </q-list>
                         </q-btn-dropdown>
@@ -83,7 +102,14 @@
               <div class="text-subtitle1 q-pb-md">Are you sure you want to delete this user?</div>
               <div align="right">
                 <q-btn flat v-close-popup label="Cancel" color="primary" />
-                <q-btn flat v-close-popup label="Delete" style="color: red;" @click="deleteUser" :loading="deleteLoading" />
+                <q-btn
+                  flat
+                  v-close-popup
+                  label="Delete"
+                  style="color: red"
+                  @click="deleteUser"
+                  :loading="deleteLoading"
+                />
               </div>
             </q-card-section>
           </q-card>
@@ -137,7 +163,7 @@
                               border-radius: 14px;
                             "
                           >
-                            <q-input type="text" v-model="middleName" borderless label="optional"/>
+                            <q-input type="text" v-model="middleName" borderless label="optional" />
                           </div>
                         </q-card-section>
                       </div>
@@ -292,7 +318,13 @@
                       <div class="col-12 col-sm-4">
                         <q-card-section>
                           First Name
-                          <div style="border: 2px solid #9fa092; background-color: #fefeff; border-radius: 14px;">
+                          <div
+                            style="
+                              border: 2px solid #9fa092;
+                              background-color: #fefeff;
+                              border-radius: 14px;
+                            "
+                          >
                             <q-input type="text" v-model="firstName" borderless />
                           </div>
                         </q-card-section>
@@ -300,7 +332,13 @@
                       <div class="col-12 col-sm-4">
                         <q-card-section>
                           Middle Name
-                          <div style="border: 2px solid #9fa092; background-color: #fefeff; border-radius: 14px;">
+                          <div
+                            style="
+                              border: 2px solid #9fa092;
+                              background-color: #fefeff;
+                              border-radius: 14px;
+                            "
+                          >
                             <q-input type="text" v-model="middleName" borderless />
                           </div>
                         </q-card-section>
@@ -308,7 +346,13 @@
                       <div class="col-12 col-sm-4">
                         <q-card-section>
                           Last Name
-                          <div style="border: 2px solid #9fa092; background-color: #fefeff; border-radius: 14px;">
+                          <div
+                            style="
+                              border: 2px solid #9fa092;
+                              background-color: #fefeff;
+                              border-radius: 14px;
+                            "
+                          >
                             <q-input type="text" v-model="lastName" borderless />
                           </div>
                         </q-card-section>
@@ -318,7 +362,13 @@
                       <div class="col-12 col-sm-6">
                         <q-card-section>
                           Username
-                          <div style="border: 2px solid #9fa092; background-color: #fefeff; border-radius: 14px;">
+                          <div
+                            style="
+                              border: 2px solid #9fa092;
+                              background-color: #fefeff;
+                              border-radius: 14px;
+                            "
+                          >
                             <q-input type="text" v-model="userName" borderless />
                           </div>
                         </q-card-section>
@@ -326,7 +376,13 @@
                       <div class="col-12 col-sm-6">
                         <q-card-section>
                           Email
-                          <div style="border: 2px solid #9fa092; background-color: #fefeff; border-radius: 14px;">
+                          <div
+                            style="
+                              border: 2px solid #9fa092;
+                              background-color: #fefeff;
+                              border-radius: 14px;
+                            "
+                          >
                             <q-input type="email" v-model="email" borderless />
                           </div>
                         </q-card-section>
@@ -336,7 +392,13 @@
                       <div class="col-12 col-sm-6">
                         <q-card-section>
                           Role
-                          <div style="border: 2px solid #9fa092; background-color: #fefeff; border-radius: 14px;">
+                          <div
+                            style="
+                              border: 2px solid #9fa092;
+                              background-color: #fefeff;
+                              border-radius: 14px;
+                            "
+                          >
                             <q-select v-model="role" :options="roleOptions" borderless />
                           </div>
                         </q-card-section>
@@ -399,14 +461,14 @@ const roleValidation = ref('')
 const isAdmin = ref('')
 const notAdmin = ref('')
 
-const roleOptions = ['registrar', 'osas', 'cashier', 'admin']
+const roleOptions = ['registrar', 'osas', 'cashier', 'admin', 'BS Information Technology']
 
 const statusOptions = ['Active', 'Inactive']
 
 const filter = ref('')
 const rows = ref([])
 const columns = ref([
-{
+  {
     name: 'username',
     required: true,
     label: 'Username',
@@ -436,7 +498,6 @@ const columns = ref([
     field: 'email',
     align: 'left',
   },
-
 
   {
     name: 'action',
@@ -494,7 +555,7 @@ async function createAccount() {
         email: email.value,
         password: password.value,
         role: role.value,
-        isEmailSent: true
+        isEmailSent: true,
       },
       {
         headers: {
@@ -534,20 +595,20 @@ async function getusers() {
     const response = await axios.get(`${process.env.api_host}/users?isArchived=false`)
 
     rows.value = response.data
-      .filter(user => user.role !== 'student')
-      .map(user => ({
+      .filter((user) => user.role !== 'student')
+      .map((user) => ({
         id: user._id,
         username: user.username,
         role: user.role,
         name: `${user.firstName} ${user.middleName || ''} ${user.lastName}`.trim(),
         email: user.email,
-        fullData: user
+        fullData: user,
       }))
   } catch (err) {
     console.error(err)
     Notify.create({
       type: 'negative',
-      message: 'Error fetching users'
+      message: 'Error fetching users',
     })
   } finally {
     tableLoading.value = false
@@ -572,30 +633,32 @@ async function deleteUserDialog(studentId) {
 
 async function deleteUser() {
   deleteLoading.value = true
-  try{
+  try {
     const token = localStorage.getItem('authToken')
-    const response = await axios.post(`${process.env.api_host}/users/update/${selectedUser.value}`,
+    const response = await axios.post(
+      `${process.env.api_host}/users/update/${selectedUser.value}`,
       {
         isArchived: true,
-      },{
-        headers:{
+      },
+      {
+        headers: {
           'Content-Type': 'application/json',
           authorization: token,
-        }
-      }
+        },
+      },
     )
     Notify.create({
       type: 'positive',
       message: 'User deleted successfully',
     })
     getusers()
-  }catch(err){
+  } catch (err) {
     console.error(err)
     Notify.create({
       type: 'negative',
       message: 'Error deleting user',
     })
-  }finally{
+  } finally {
     deleteUserDialogPopup.value = false
     deleteLoading.value = false
   }
@@ -620,7 +683,7 @@ async function updateUser() {
           'Content-Type': 'application/json',
           authorization: token,
         },
-      }
+      },
     )
     Notify.create({
       type: 'positive',
@@ -662,13 +725,11 @@ async function userInfo() {
   }
 }
 
-
 onMounted(() => {
   userInfo()
   getusers()
 })
 </script>
-
 
 <style lang="sass" scoped>
 

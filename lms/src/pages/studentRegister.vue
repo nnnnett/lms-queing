@@ -82,7 +82,7 @@
                     <q-card-section style="width: 100%">
                       Student Number:
                       <div style="width: 100%">
-                        <q-input label="(optional)" type="text" outlined v-model="studentNumber" />
+                        <q-input type="text" outlined v-model="studentNumber" />
                       </div>
                     </q-card-section>
                     <q-card-section style="width: 100%">
@@ -138,7 +138,6 @@
 </template>
 
 <script setup>
-
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { Notify } from 'quasar'
@@ -162,9 +161,7 @@ const yearOption = ref({
 })
 
 const course = ref('')
-const courseOption = ref({
-
-})
+const courseOption = ref({})
 const sectionOption = ref({
   options: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
 })
@@ -175,9 +172,19 @@ async function registerStudent() {
   loading.value = true
   try {
     // Validate that all required fields are filled in
-    if (!firstName.value || !lastName.value || !username.value ||
-        !password.value || !confirmPassword.value || !email.value ||
-        !course.value || !year.value || !section.value || !status.value) {
+    if (
+      !firstName.value ||
+      !lastName.value ||
+      !username.value ||
+      !password.value ||
+      !confirmPassword.value ||
+      !studentNumber.value ||
+      !email.value ||
+      !course.value ||
+      !year.value ||
+      !section.value ||
+      !status.value
+    ) {
       Notify.create({
         type: 'negative',
         message: 'Please fill in all required fields',
@@ -231,7 +238,7 @@ async function registerStudent() {
         },
       },
     )
-    console.log(response.data.saveUser._id,'wes')
+    console.log(response.data.saveUser._id, 'wes')
     // Notify the user of successful registration
     Notify.create({
       type: 'positive',

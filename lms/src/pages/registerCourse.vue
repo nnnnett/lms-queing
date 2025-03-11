@@ -149,7 +149,15 @@ async function getCourses() {
   tableLoading.value = true
   try {
     const token = localStorage.getItem('Authtoken')
-    const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
+
+    // const userResponse = await axios.get(`${process.env.api_host}/users/myProfile`, {
+    //   headers: {
+    //     Authorization: token,
+    //   },
+    // })
+    // const user = userResponse.data
+
+    const response = await axios.get(`${process.env.api_host}/courses?program=&isArchived=false`, {
       headers: {
         'Content-Type': 'application/json',
         authorization: token,
@@ -195,23 +203,21 @@ async function updateCourses() {
     )
     Notify.create({
       type: 'positive',
-      message: 'Courses updated successfully'
+      message: 'Courses updated successfully',
     })
     router.replace(`/`)
   } catch (err) {
     console.error(err)
     Notify.create({
       type: 'negative',
-      message: 'Failed to update courses'
+      message: 'Failed to update courses',
     })
   }
 }
 
-
 const onSelectAllClick = (val) => {
   selected.value = val ? [...rows.value] : []
 }
-
 
 watch(selected, (newVal) => {
   selectedCourseIds.value = newVal.map((course) => course._id)
@@ -222,7 +228,7 @@ watch(selected, (newVal) => {
 const formatPrerequisites = (prerequisites) => {
   if (!prerequisites) return 'None'
   if (Array.isArray(prerequisites)) {
-    return prerequisites.map(pre => pre.code).join(', ')
+    return prerequisites.map((pre) => pre.code).join(', ')
   }
   return prerequisites.code || 'None'
 }

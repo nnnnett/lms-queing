@@ -292,6 +292,7 @@ const notAdmin = ref('')
 async function getPrograms() {
   try {
     const token = localStorage.getItem('authToken')
+
     const response = await axios.get(
       `${process.env.api_host}/courses/getProgram?isArchived=false`,
       {
@@ -309,24 +310,58 @@ async function getPrograms() {
 async function getCourses() {
   try {
     const token = localStorage.getItem('authToken')
-    const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
+
+    const userResponse = await axios.get(`${process.env.api_host}/users/myProfile`, {
       headers: {
         Authorization: token,
       },
     })
 
-    rows.value = response.data.map((course, index) => ({
-      index: index + 1,
-      courseCode: course.code,
-      courseTitle: course.course,
-      courseName: course.name,
-      description: course.description,
-      prerequisite: course.prerequisite.length
-        ? course.prerequisite.map((prereq) => prereq.code).join(', ')
-        : '',
-      numUnits: course.unit || 0,
-      action: course._id,
-    }))
+    if (
+      userResponse.data.role === 'admin' ||
+      userResponse.data.role === 'osas' ||
+      userResponse.data.role === 'cashier' ||
+      userResponse.data.role === 'registrar'
+    ) {
+      const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
+        headers: {
+          Authorization: token,
+        },
+      })
+      rows.value = response.data.map((course, index) => ({
+        index: index + 1,
+        courseCode: course.code,
+        courseTitle: course.course,
+        courseName: course.name,
+        description: course.description,
+        prerequisite: course.prerequisite.length
+          ? course.prerequisite.map((prereq) => prereq.code).join(', ')
+          : '',
+        numUnits: course.unit || 0,
+        action: course._id,
+      }))
+    } else {
+      const response = await axios.get(
+        `${process.env.api_host}/courses?program=${userResponse.data.role}&isArchived=false`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      )
+      rows.value = response.data.map((course, index) => ({
+        index: index + 1,
+        courseCode: course.code,
+        courseTitle: course.course,
+        courseName: course.name,
+        description: course.description,
+        prerequisite: course.prerequisite.length
+          ? course.prerequisite.map((prereq) => prereq.code).join(', ')
+          : '',
+        numUnits: course.unit || 0,
+        action: course._id,
+      }))
+    }
   } catch (err) {
     console.error('Error fetching programs:', err)
   }
