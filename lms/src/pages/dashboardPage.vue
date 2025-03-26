@@ -242,7 +242,7 @@ async function getQeueue() {
 }
 
 async function copySignUp() {
-  const registrationLink = `https://queing.vercel.app/#/studentRegister`
+  const registrationLink = `https://queuing-nu.vercel.app/#/studentRegister`
   try {
     await navigator.clipboard.writeText(registrationLink)
     Notify.create({

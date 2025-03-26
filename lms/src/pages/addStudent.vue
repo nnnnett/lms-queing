@@ -175,7 +175,7 @@
                     {{ props.rowIndex + 1 }}
                   </template>
                   <template v-else-if="col.name === 'action'">
-                    <div class="row q-gutter-x-sm" v-if="isAdmin">
+                    <div class="row q-gutter-x-sm">
                       <q-btn-dropdown flat dropdown-icon="more_vert">
                         <q-list>
                           <div>
