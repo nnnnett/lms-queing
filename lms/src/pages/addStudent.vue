@@ -189,6 +189,16 @@
                           </div>
                           <div>
                             <q-btn
+                              @click="enrollCourse(props.row._id)"
+                              style="width: 100%"
+                              :loading="loading"
+                              label="Enroll Courses"
+                              no-caps
+                              flat
+                            />
+                          </div>
+                          <div>
+                            <q-btn
                               @click="openDeleteDialog(props.row._id)"
                               style="width: 100%"
                               label="Delete"
@@ -387,10 +397,15 @@
 /* eslint-disable no-unused-vars */
 import { ref, onMounted } from 'vue'
 import { Notify, exportFile, is } from 'quasar'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 
 // loading
 const loading = ref(false)
+
+//router
+const route = useRoute()
+const router = useRouter()
 
 // popup
 const addStudentPopUp = ref(false)
@@ -834,6 +849,11 @@ async function resetPassword(studentId) {
   } finally {
     loading.value = false
   }
+}
+
+async function enrollCourse(studentId) {
+  loading.value = true
+  router.push(`/queueCourse/` + `${studentId}`)
 }
 
 async function sendEmail(studentId) {

@@ -265,7 +265,7 @@
                               border-radius: 14px;
                             "
                           >
-                            <q-select v-model="role" :options="roleOptions" borderless />
+                            <q-select v-model="role" :options="roleOptions.option" borderless />
                           </div>
                         </q-card-section>
                       </div>
@@ -461,7 +461,8 @@ const roleValidation = ref('')
 const isAdmin = ref('')
 const notAdmin = ref('')
 
-const roleOptions = ['registrar', 'osas', 'cashier', 'admin', 'BS Information Technology']
+const roleOptions = ref({})
+const extraOptions = ['registrar', 'osas', 'cashier', 'admin']
 
 const statusOptions = ['Active', 'Inactive']
 
@@ -507,6 +508,26 @@ const columns = ref([
     align: 'left',
   },
 ])
+
+async function getPrograms() {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await axios.get(
+      `${process.env.api_host}/courses/getProgram?isArchived=false`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      },
+    )
+    roleOptions.value = {
+      option: [...response.data.map((program) => program.name), ...extraOptions],
+    }
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 async function cancelCreate() {
   ;(firstName.value = ''),
     (middleName.value = ''),
@@ -728,6 +749,7 @@ async function userInfo() {
 onMounted(() => {
   userInfo()
   getusers()
+  getPrograms()
 })
 </script>
 

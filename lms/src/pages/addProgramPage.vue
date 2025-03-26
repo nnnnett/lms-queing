@@ -40,6 +40,12 @@
                     <q-input v-model="totalUnits" type="number" borderless />
                   </div>
                 </div>
+                <div class="col-12 col-sm-4">
+                  <div class="text-subtitle2 q-mb-sm">Year(Level)</div>
+                  <div class="input-field">
+                    <q-select v-model="year" type="text" borderless :options="yearOption" />
+                  </div>
+                </div>
               </div>
               <div class="row q-col-gutter-md">
                 <div class="col-12">
@@ -122,6 +128,8 @@ const optionPrograms = ref({})
 const courseTitle = ref('')
 const coursePrerequisite = ref([])
 const totalUnits = ref(0)
+const year = ref('')
+const yearOption = ['First', 'Second', 'Third', 'Fourth']
 
 const loading = ref(false)
 const selectedPrerequisites = ref([])
@@ -202,6 +210,7 @@ async function addCourse() {
         description: courseDescription.value,
         prerequisite: selectedPrerequisites.value,
         unit: totalUnits.value,
+        year: year.value,
       },
       {
         headers: {
@@ -222,6 +231,7 @@ async function addCourse() {
     courseDescription.value = ''
     selectedPrerequisites.value = []
     totalUnits.value = ''
+    year.value = ''
   } catch (err) {
     console.error(err)
     Notify.create({
@@ -240,6 +250,7 @@ async function cancelAdd() {
   courseDescription.value = ''
   selectedPrerequisites.value = []
   totalUnits.value = ''
+  year.value = ''
   router.push('/new/addCourses')
 }
 

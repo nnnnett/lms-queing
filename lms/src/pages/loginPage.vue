@@ -56,10 +56,16 @@
                 />
               </q-card-section>
             </q-form>
-            <q-card-section style="display: flex;justify-content: space-around;">
+            <q-card-section style="display: flex; justify-content: space-around">
               <!-- <q-btn label="Admin Login" flat style="border: 1px solid #606060" no-caps @click="router.push('/adminLogin')" /> -->
 
-              <q-btn label="Public Monitor" flat style="border: 1px solid #606060" no-caps @click="router.push('/publicMonitor')" />
+              <q-btn
+                label="Public Monitor"
+                flat
+                style="border: 1px solid #606060"
+                no-caps
+                @click="router.push('/publicMonitor')"
+              />
             </q-card-section>
           </q-card-section>
         </div>
@@ -75,8 +81,8 @@ import { Notify } from 'quasar'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const username = ref('')
-const password = ref('')
+const username = ref('user01')
+const password = ref('@admin123')
 const loading = ref(false)
 
 async function login() {
@@ -94,12 +100,27 @@ async function login() {
         },
       },
     )
+
     if (response.status === 200) {
-      const token = response.data.token // Adjust based on your response structure
+      const token = await response.data.token // Adjust based on your response structure
       localStorage.setItem('authToken', 'Bearer ' + token) // Save token to local storage
       Notify.create({ type: 'positive', message: 'Login successful!' })
       await new Promise((resolve) => setTimeout(resolve, 500))
-      router.replace(`/queueCourse`)
+
+      const newToken = localStorage.getItem('authToken')
+
+      const createQueueResponse = await axios.post(
+        `${process.env.api_host}/queues/createQueue`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: newToken,
+          },
+        },
+      )
+      router.replace(`/queuingPage/` + `${createQueueResponse.data.queue._id}`)
+
       // Handle successful login (e.g., redirect or store user info)
     } else {
       Notify.create({

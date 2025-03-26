@@ -178,12 +178,16 @@
                 <span class="text-h6">Delete Program?</span>
               </q-card-title>
               <q-card-main>
-                <div class="text-subtitle1">
-                  Are you sure you want to delete this program?
-                </div>
+                <div class="text-subtitle1">Are you sure you want to delete this program?</div>
               </q-card-main>
               <q-card-actions align="right">
-                <q-btn flat label="Cancel" color="red-8" @click="deleteConfirmation = false" class="q-px-md" />
+                <q-btn
+                  flat
+                  label="Cancel"
+                  color="red-8"
+                  @click="deleteConfirmation = false"
+                  class="q-px-md"
+                />
                 <q-btn
                   flat
                   label="Delete"
@@ -202,7 +206,6 @@
 </template>
 
 <script setup>
-
 import { ref, onMounted } from 'vue'
 import { Notify } from 'quasar'
 import axios from 'axios'
@@ -223,8 +226,21 @@ const ProgramCode = ref('')
 const filter = ref('')
 const columns = ref([
   { name: '#', required: true, label: '#', align: 'center', field: 'index', sortable: true },
-  { name: 'program', required: true, label: 'Program Code', align: 'left', field: 'program', sortable: true },
-  { name: 'programTitle', align: 'left', label: 'Program Title', field: 'programTitle', sortable: true },
+  {
+    name: 'program',
+    required: true,
+    label: 'Program Code',
+    align: 'left',
+    field: 'program',
+    sortable: true,
+  },
+  {
+    name: 'programTitle',
+    align: 'left',
+    label: 'Program Title',
+    field: 'programTitle',
+    sortable: true,
+  },
   { name: 'action', align: 'center', label: 'Action', field: 'action' },
 ])
 const rows = ref([])
@@ -253,7 +269,7 @@ async function confirmDeleteProgram() {
 async function addProgram() {
   loading.value = true
   try {
-    const token = localStorage.getItem("authToken")
+    const token = localStorage.getItem('authToken')
     await axios.post(
       `${process.env.api_host}/courses/createProgram`,
       {
@@ -263,17 +279,17 @@ async function addProgram() {
       {
         headers: {
           Authorization: token,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-      }
+      },
     )
     Notify.create({
-      type: "positive",
-      message: "Program added successfully!",
+      type: 'positive',
+      message: 'Program added successfully!',
     })
 
-    programTitle.value = ""
-    ProgramCode.value = ""
+    programTitle.value = ''
+    ProgramCode.value = ''
     fetchPrograms()
   } catch (err) {
     console.error(err)
@@ -284,14 +300,14 @@ async function addProgram() {
 }
 async function fetchPrograms() {
   try {
-    const token = localStorage.getItem("authToken")
+    const token = localStorage.getItem('authToken')
     const response = await axios.get(
       `${process.env.api_host}/courses/getProgram?isArchived=false`,
       {
         headers: {
           Authorization: token,
         },
-      }
+      },
     )
     rows.value = response.data.map((program, index) => ({
       index: index + 1,
@@ -300,7 +316,7 @@ async function fetchPrograms() {
       action: program._id,
     }))
   } catch (err) {
-    console.error("Error fetching programs:", err)
+    console.error('Error fetching programs:', err)
   }
 }
 
@@ -316,7 +332,7 @@ function openEditDialog(program) {
 async function editProgram(program_id) {
   loading.value = true
   try {
-    const token = localStorage.getItem("authToken")
+    const token = localStorage.getItem('authToken')
     await axios.post(
       `${process.env.api_host}/courses/updateProgram/${program_id}`,
       {
@@ -326,13 +342,13 @@ async function editProgram(program_id) {
       {
         headers: {
           Authorization: token,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-      }
+      },
     )
     Notify.create({
-      type: "positive",
-      message: "Program edited",
+      type: 'positive',
+      message: 'Program edited',
     })
     editProgramPopUp.value = false
   } catch (err) {
@@ -346,26 +362,26 @@ async function editProgram(program_id) {
 async function deleteProgram(program_id) {
   loading.value = true
   try {
-    const token = localStorage.getItem("authToken")
+    const token = localStorage.getItem('authToken')
     await axios.post(
       `${process.env.api_host}/courses/updateProgram/${program_id}`,
       { isArchived: true },
       {
         headers: {
           Authorization: token,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-      }
+      },
     )
     Notify.create({
-      type: "positive",
-      message: "Program deleted",
+      type: 'positive',
+      message: 'Program deleted',
     })
   } catch (err) {
     console.error(err)
     Notify.create({
-      type: "negative",
-      message: "Something Went Wrong",
+      type: 'negative',
+      message: 'Something Went Wrong',
     })
   } finally {
     fetchPrograms()
@@ -374,8 +390,8 @@ async function deleteProgram(program_id) {
 }
 
 async function cancelAdd() {
-  programTitle.value = ""
-  ProgramCode.value = ""
+  programTitle.value = ''
+  ProgramCode.value = ''
   addProgramPopUp.value = false
 }
 

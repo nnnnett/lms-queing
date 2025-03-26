@@ -132,6 +132,7 @@ import { Notify } from 'quasar'
 const route = useRoute()
 const router = useRouter()
 const tableLoading = ref(false)
+const studentId = route.params.studentId
 // input
 const userId = route.params.userId
 const loading = ref(false)
@@ -201,13 +202,18 @@ const prerequisitesColumn = ref([
 async function getCourses() {
   tableLoading.value = true
   try {
+    const studentProfile = await axios.get(`${process.env.api_host}/users?query=${studentId}`)
+    console.log(studentProfile.data[0].course)
     const token = localStorage.getItem('Authtoken')
-    const response = await axios.get(`${process.env.api_host}/courses?isArchived=false`, {
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: token,
+    const response = await axios.get(
+      `${process.env.api_host}/courses?isArchived=false&program=${studentProfile.data[0].course}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: token,
+        },
       },
-    })
+    )
 
     if (response.data && Array.isArray(response.data)) {
       rows.value = response.data.map((course) => ({
@@ -247,10 +253,12 @@ async function checkCourse() {
       })
       return
     }
-    const token = localStorage.getItem('authToken')
+    const token = localStorage.getItem('authToken') //UPDATE: replace this with id and bypass auth check
+
     const response = await axios.post(
       `${process.env.api_host}/queues/checkPrerequisites`,
       {
+        studentId: studentId,
         selectedCourses: selectedCourseIds.value,
       },
       {
@@ -291,7 +299,7 @@ async function checkCourse() {
           },
         },
       )
-      router.replace(`/queuingPage/` + `${createQueueResponse.data.queue._id}`)
+      router.replace(`/new/addStudent/`)
     }
     prerequisitesMessage.value = response.data
   } catch (err) {
@@ -308,7 +316,6 @@ async function checkCourse() {
 const onSelectAllClick = (val) => {
   selected.value = val ? [...rows.value] : []
 }
-
 
 watch(selected, (newVal) => {
   selectedCourseIds.value = newVal.map((course) => course._id)
