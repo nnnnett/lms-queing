@@ -35,6 +35,9 @@
                   </q-card-section>
                   <q-card-section class="q-py-none">
                     <div class="certificate-text text-center q-py-md text-weight-medium">
+                      Estimated Time:
+                      <div style="color: green">{{ queueData.estimatedTime }} Mins</div>
+                      <br />
                       Release of Certificate <br />
                       of Registration
                     </div>
@@ -51,7 +54,7 @@
                   </q-card-section>
                 </div>
                 <div class="print-btn q-mt-lg">
-                  <q-btn style="width: 100%; height: 100%" flat label="Print" @click="printQr"  />
+                  <q-btn style="width: 100%; height: 100%" flat label="Print" @click="printQr" />
                 </div>
                 <div class="done-btn q-mt-lg">
                   <q-btn
@@ -83,7 +86,7 @@ const queueId = route.params.queueId
 
 const queueData = ref(null)
 
-const qrValue = ref(`https://queing.vercel.app/#/queueSummary/${queueId}`)
+const qrValue = ref(`https://queuing-nu.vercel.app/#/queueSummary/${queueId}`)
 
 // Add responsive QR code size
 const qrSize = ref(150)
@@ -102,7 +105,6 @@ const clearLocalStorage = () => {
 }
 const handleLogout = async () => {
   try {
-
     clearLocalStorage()
 
     Notify.create({ type: 'positive', message: 'Queuing number has been released' })
@@ -110,7 +112,6 @@ const handleLogout = async () => {
 
     router.replace('/')
   } catch (error) {
-
     Notify.create({ type: 'negative', message: 'Error during logout' })
     console.error(error)
   } finally {
@@ -119,20 +120,20 @@ const handleLogout = async () => {
 }
 
 async function printQr() {
-  const queueNumber = queueData.value.queueNumber;
-  const qrCanvas = document.querySelector('.qr-wrapper canvas');
+  const queueNumber = queueData.value.queueNumber
+  const qrCanvas = document.querySelector('.qr-wrapper canvas')
 
   if (!queueNumber || !qrCanvas) {
-    console.error('Queue number or QR code not found');
-    return;
+    console.error('Queue number or QR code not found')
+    return
   }
 
-  const qrImage = qrCanvas.toDataURL();
+  const qrImage = qrCanvas.toDataURL()
 
   // Create a hidden iframe for printing
-  const printFrame = document.createElement('iframe');
-  printFrame.style.display = 'none';
-  document.body.appendChild(printFrame);
+  const printFrame = document.createElement('iframe')
+  printFrame.style.display = 'none'
+  document.body.appendChild(printFrame)
 
   const printContent = `
     <html>
@@ -185,21 +186,21 @@ async function printQr() {
         </div>
       </body>
     </html>
-  `;
+  `
 
-  const frameDoc = printFrame.contentWindow.document;
-  frameDoc.open();
-  frameDoc.write(printContent);
-  frameDoc.close();
+  const frameDoc = printFrame.contentWindow.document
+  frameDoc.open()
+  frameDoc.write(printContent)
+  frameDoc.close()
 
   // Wait for images to load before printing
-  printFrame.onload = function() {
-    printFrame.contentWindow.print();
+  printFrame.onload = function () {
+    printFrame.contentWindow.print()
     // Remove the iframe after printing
     setTimeout(() => {
-      document.body.removeChild(printFrame);
-    }, 1000);
-  };
+      document.body.removeChild(printFrame)
+    }, 1000)
+  }
 }
 
 onMounted(() => {
